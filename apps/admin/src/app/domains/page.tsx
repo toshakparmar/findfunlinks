@@ -1,0 +1,177 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { api } from '../../lib/api';
+import { StatusBadge } from '../../components/StatusBadge';
+import { formatTimeAgo } from '../../lib/utils';
+import type { DomainItem } from '@findfunlinks/contracts';
+import { Search, ExternalLink, Activity, RotateCcw, Loader2 } from 'lucide-react';
+
+export default function DomainsAdminPage() {
+  const [domains, setDomains] = useState<DomainItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [checkingId, setCheckingId] = useState<string | null>(null);
+
+  const fetchDomains = async () => {
+    try {
+      setLoading(true);
+      // Retrieve websites with domains
+      const res = await api.admin.getWebsites({ limit: 100 });
+      const extracted: DomainItem[] = [];
+      if (res && res.items) {
+        for (const site of res.items) {
+          const detail = await api.public.getWebsiteBySlug(site.slug).catch(() => null);
+          if (detail && detail.domains) {
+            extracted.push(...detail.domains);
+          }
+        }
+      }
+      setDomains(extracted);
+    } catch {
+      toast.error('Failed to load domains.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDomains();
+  }, []);
+
+  const handleCheckDomain = async (id: string, hostname: string) => {
+    try {
+      setCheckingId(id);
+      const res = await api.owner.checkDomain(id);
+      toast.success(`Health check passed for ${hostname} (${res.lastResponseMs || 0}ms)`);
+      await fetchDomains();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Health check failed.');
+    } finally {
+      setCheckingId(null);
+    }
+  };
+
+  const filteredDomains = domains.filter((d) =>
+    search ? d.hostname.toLowerCase().includes(search.toLowerCase()) : true,
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-black text-foreground">Domains & Working Mirrors</h1>
+          <p className="text-xs text-muted-foreground mt-1">
+            Real-time status inspector for all hostnames, DNS entries, and ping latencies.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={fetchDomains}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-card text-xs font-semibold hover:bg-muted transition-colors self-start sm:self-auto"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+          Refresh
+        </button>
+      </div>
+
+      {/* Search Bar */}
+      <div className="relative max-w-md">
+        <Search className="h-4 w-4 text-muted-foreground absolute left-3 top-2.5" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Filter by hostname..."
+          className="w-full rounded-xl border border-input bg-background pl-9 pr-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+
+      {/* Table */}
+      <div className="rounded-2xl border border-border/80 bg-card shadow-sm overflow-hidden">
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : filteredDomains.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-border/60 bg-muted/30 text-muted-foreground">
+                  <th className="py-3 px-4 font-semibold">Hostname</th>
+                  <th className="py-3 px-4 font-semibold">Type</th>
+                  <th className="py-3 px-4 font-semibold">Health Status</th>
+                  <th className="py-3 px-4 font-semibold">Response Latency</th>
+                  <th className="py-3 px-4 font-semibold">Last Probed</th>
+                  <th className="py-3 px-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {filteredDomains.map((dom) => (
+                  <tr key={dom.id} className="hover:bg-muted/40 transition-colors">
+                    <td className="py-3.5 px-4 font-mono font-medium text-foreground">
+                      <div className="flex items-center gap-1.5">
+                        <span>{dom.hostname}</span>
+                        <a
+                          href={dom.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:text-primary/80"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground uppercase">
+                        {dom.type}
+                      </span>
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <StatusBadge status={dom.status} />
+                    </td>
+
+                    <td className="py-3.5 px-4 font-mono text-muted-foreground">
+                      {dom.lastResponseMs !== null && dom.lastResponseMs !== undefined
+                        ? `${dom.lastResponseMs}ms`
+                        : '—'}
+                    </td>
+
+                    <td className="py-3.5 px-4 text-muted-foreground">
+                      {formatTimeAgo(dom.lastCheckedAt)}
+                    </td>
+
+                    <td className="py-3.5 px-4 text-right">
+                      <button
+                        type="button"
+                        disabled={checkingId === dom.id}
+                        onClick={() => handleCheckDomain(dom.id, dom.hostname)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border text-primary hover:bg-primary/10 transition-colors text-xs font-semibold disabled:opacity-50"
+                      >
+                        {checkingId === dom.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Activity className="h-3.5 w-3.5" />
+                        )}
+                        Probe Now
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-16 text-xs text-muted-foreground">
+            No active domain mirrors found.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

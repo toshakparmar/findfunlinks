@@ -247,4 +247,187 @@ export class ApiClient {
         method: 'POST',
       }),
   };
+
+  // --- Super Admin Endpoints ---
+  public admin = {
+    // Registrations
+    getRegistrations: (query?: {
+      page?: number;
+      limit?: number;
+      status?: string;
+      search?: string;
+    }) => {
+      const params = new URLSearchParams();
+      if (query) {
+        Object.entries(query).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && v !== '') params.set(k, String(v));
+        });
+      }
+      const qs = params.toString();
+      return this.request<{
+        items: RegistrationRequestDetails[];
+        total: number;
+        page: number;
+        totalPages: number;
+      }>(`/api/v1/registrations${qs ? `?${qs}` : ''}`);
+    },
+    getRegistration: (id: string) =>
+      this.request<RegistrationRequestDetails>(`/api/v1/registrations/${id}`),
+    approveRegistration: (id: string) =>
+      this.request<{ message: string; userId: string; websiteId: string }>(
+        `/api/v1/registrations/${id}/approve`,
+        { method: 'POST' },
+      ),
+    rejectRegistration: (id: string, reason: string) =>
+      this.request<{ message: string }>(`/api/v1/registrations/${id}/reject`, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'REJECT', reviewNote: reason }),
+      }),
+    requestChangesRegistration: (id: string, note: string) =>
+      this.request<{ message: string }>(`/api/v1/registrations/${id}/request-changes`, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'REQUEST_CHANGES', reviewNote: note }),
+      }),
+
+    // Websites
+    getWebsites: (query?: { page?: number; limit?: number; status?: string; search?: string }) => {
+      const params = new URLSearchParams();
+      if (query) {
+        Object.entries(query).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && v !== '') params.set(k, String(v));
+        });
+      }
+      const qs = params.toString();
+      return this.request<{
+        items: WebsiteCard[];
+        total: number;
+        page: number;
+        totalPages: number;
+      }>(`/api/v1/websites/admin/all${qs ? `?${qs}` : ''}`);
+    },
+    updateWebsite: (id: string, input: UpdateWebsiteInput) =>
+      this.request<WebsiteCard>(`/api/v1/websites/admin/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(input),
+      }),
+    updateWebsiteStatus: (id: string, status: string) =>
+      this.request<{ updated: boolean }>(`/api/v1/websites/admin/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status }),
+      }),
+    deleteWebsite: (id: string) =>
+      this.request<{ deleted: boolean }>(`/api/v1/websites/admin/${id}`, {
+        method: 'DELETE',
+      }),
+
+    // Categories
+    getCategories: () => this.request<Category[]>('/api/v1/categories/admin/all'),
+    createCategory: (data: {
+      name: string;
+      slug: string;
+      description?: string;
+      icon?: string;
+      sortOrder?: number;
+      isActive?: boolean;
+    }) =>
+      this.request<Category>('/api/v1/categories', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    updateCategory: (id: string, data: Partial<Category>) =>
+      this.request<Category>(`/api/v1/categories/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    deleteCategory: (id: string) =>
+      this.request<{ deleted: boolean }>(`/api/v1/categories/${id}`, {
+        method: 'DELETE',
+      }),
+    reorderCategories: (items: Array<{ id: string; sortOrder: number }>) =>
+      this.request<{ updated: number }>('/api/v1/categories/reorder', {
+        method: 'PUT',
+        body: JSON.stringify({ items }),
+      }),
+
+    // Tags
+    getTags: () => this.request<Tag[]>('/api/v1/tags'),
+    createTag: (name: string) =>
+      this.request<Tag>('/api/v1/tags', {
+        method: 'POST',
+        body: JSON.stringify({ name }),
+      }),
+    deleteTag: (id: string) =>
+      this.request<{ deleted: boolean }>(`/api/v1/tags/${id}`, {
+        method: 'DELETE',
+      }),
+
+    // Reports
+    getReports: (query?: { page?: number; limit?: number; status?: string }) => {
+      const params = new URLSearchParams();
+      if (query) {
+        Object.entries(query).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && v !== '') params.set(k, String(v));
+        });
+      }
+      const qs = params.toString();
+      return this.request<{ items: any[]; total: number; page: number; totalPages: number }>(
+        `/api/v1/reports${qs ? `?${qs}` : ''}`,
+      );
+    },
+    updateReportStatus: (id: string, status: string) =>
+      this.request<{ updated: boolean }>(`/api/v1/reports/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status }),
+      }),
+
+    // Audit Logs
+    getAuditLogs: (query?: {
+      page?: number;
+      limit?: number;
+      entityType?: string;
+      actorId?: string;
+    }) => {
+      const params = new URLSearchParams();
+      if (query) {
+        Object.entries(query).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && v !== '') params.set(k, String(v));
+        });
+      }
+      const qs = params.toString();
+      return this.request<{ items: any[]; total: number; page: number; totalPages: number }>(
+        `/api/v1/audit-logs${qs ? `?${qs}` : ''}`,
+      );
+    },
+
+    // Settings
+    getSettings: () => this.request<Record<string, unknown>>('/api/v1/settings'),
+    updateSettings: (data: Record<string, unknown>) =>
+      this.request<{ updated: boolean }>('/api/v1/settings', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+
+    // Users
+    getUsers: (query?: { page?: number; limit?: number; search?: string }) => {
+      const params = new URLSearchParams();
+      if (query) {
+        Object.entries(query).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && v !== '') params.set(k, String(v));
+        });
+      }
+      const qs = params.toString();
+      return this.request<{ items: any[]; total: number; page: number; totalPages: number }>(
+        `/api/v1/admin/users${qs ? `?${qs}` : ''}`,
+      );
+    },
+    setUserStatus: (id: string, status: string) =>
+      this.request<{ updated: boolean }>(`/api/v1/admin/users/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      }),
+
+    // Roles & Permissions
+    getRoles: () => this.request<any[]>('/api/v1/admin/roles'),
+    getPermissions: () => this.request<any[]>('/api/v1/admin/roles/permissions'),
+  };
 }
