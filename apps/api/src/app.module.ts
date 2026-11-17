@@ -1,6 +1,17 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER, APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+
+import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { RolesModule } from './modules/roles/roles.module';
+
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 @Module({
   imports: [
@@ -8,7 +19,48 @@ import { HealthModule } from './health/health.module';
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
+    ThrottlerModule.forRoot([
+      {
+        name: 'default',
+        ttl: 60000, // 60 seconds
+        limit: 100, // 100 requests per minute
+      },
+      {
+        name: 'strict',
+        ttl: 60000,
+        limit: 10, // 10 requests per minute for sensitive endpoints
+      },
+    ]),
+    PrismaModule,
     HealthModule,
+    AuthModule,
+    UsersModule,
+    RolesModule,
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformResponseInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass:
+        process.env.NODE_ENV === 'test'
+          ? (class BypassThrottlerInTests {
+              canActivate() {
+                return true;
+              }
+            } as any)
+          : ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

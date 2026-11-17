@@ -1,4 +1,7 @@
-# Dependencies
+# Database
+.pgdata
+*.db
+
 node_modules
 .pnpm-store
 
@@ -8,6 +11,7 @@ build
 .next
 out
 .turbo
+*.tsbuildinfo
 
 # Environment variables
 .env

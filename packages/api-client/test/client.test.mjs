@@ -19,3 +19,4 @@ describe('ApiClient Unit Tests', () => {
     assert.equal(error.requestId, 'req-123');
   });
 });
+
