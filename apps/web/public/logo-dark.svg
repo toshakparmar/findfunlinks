@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 120" fill="none">
+  <!-- Magnifying Glass Icon for Dark Theme -->
+  <g transform="translate(10, 10)">
+    <!-- Handle -->
+    <path d="M26 74L8 92C5 95 5 100 8 103L9 104C12 107 17 107 20 104L38 86" stroke="#2563EB" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Outer Rim -->
+    <circle cx="56" cy="46" r="38" stroke="#3B82F6" stroke-width="11" fill="#0B132B"/>
+
+    <!-- Sun with Rays inside Lens -->
+    <circle cx="44" cy="35" r="9" fill="#F59E0B"/>
+    <!-- Sun Rays -->
+    <line x1="44" y1="21" x2="44" y2="16" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="44" y1="49" x2="44" y2="54" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="30" y1="35" x2="25" y2="35" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="58" y1="35" x2="63" y2="35" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="34" y1="25" x2="30" y2="21" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="54" y1="45" x2="58" y2="49" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="34" y1="45" x2="30" y2="49" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="54" y1="25" x2="58" y2="21" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Light Focus Beam -->
+    <path d="M49 39L69 66C66 69 60 70 54 66L45 42Z" fill="#F59E0B" opacity="0.95"/>
+
+    <!-- Flame Effect at Focal Point -->
+    <path d="M54 70C52 64 56 60 62 56C65 60 69 62 70 66C71 70 67 73 62 73C57 73 54 71 54 70Z" fill="#EA580C"/>
+    <!-- White hot inner flame -->
+    <path d="M59 71C58 68 60 66 63 64C65 66 66 68 66 70C66 71 64 72 62 72C60 72 59 71 59 71Z" fill="#FFFFFF"/>
+
+    <!-- Burning base plate -->
+    <line x1="50" y1="74" x2="74" y2="74" stroke="#EA580C" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- Wordmark "FindFunLinks" for Dark Theme -->
+  <text x="130" y="78" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="64" font-weight="800" fill="#FFFFFF" letter-spacing="-1.5">Find<tspan fill="#3B82F6">Fun</tspan><tspan fill="#FFFFFF">Links</tspan></text>
+</svg>

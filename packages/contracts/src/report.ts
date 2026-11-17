@@ -17,6 +17,7 @@ export const SubmitReportSchema = z.object({
   honeypot: z.string().max(0).optional(),
 });
 export type SubmitReportInput = z.infer<typeof SubmitReportSchema>;
+export type ReportReason = SubmitReportInput['reason'];
 
 export const ReportItemSchema = z.object({
   id: z.string().uuid(),
