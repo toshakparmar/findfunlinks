@@ -97,4 +97,3 @@ export function StatusBadge({ status, type = 'status' }: StatusBadgeProps) {
       );
   }
 }
-

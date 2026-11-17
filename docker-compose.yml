@@ -1,0 +1,164 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: findfunlinks_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-findfunlinks_prod}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ${POSTGRES_DB:-findfunlinks_prod}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  redis:
+    image: redis:7-alpine
+    container_name: findfunlinks_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - internal
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: findfunlinks_mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATA_FILE: /data/mailpit.db
+    volumes:
+      - mailpit_data:/data
+    networks:
+      - internal
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: findfunlinks_api
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-findfunlinks_prod}?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change_this_to_a_secure_random_string_in_production_32_chars}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change_this_to_another_secure_random_string_32_chars}
+      JWT_EXPIRES_IN: 15m
+      REFRESH_TOKEN_EXPIRES_IN: 7d
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_FROM: "FindFunLinks <noreply@findfunlinks.com>"
+      ENABLE_SWAGGER: "false"
+      CORS_ORIGIN: "https://findfunlinks.com,https://www.findfunlinks.com,https://admin.findfunlinks.com,https://owner.findfunlinks.com,http://localhost:3000,http://localhost:3001,http://localhost:3002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - internal
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://api:4000
+        NEXT_PUBLIC_SITE_URL: https://findfunlinks.com
+    container_name: findfunlinks_web
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://api:4000
+    depends_on:
+      - api
+    networks:
+      - internal
+
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://api:4000
+        NEXT_PUBLIC_PUBLIC_WEB_URL: https://findfunlinks.com
+    container_name: findfunlinks_admin
+    restart: unless-stopped
+    environment:
+      PORT: 3001
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://api:4000
+      NEXT_PUBLIC_PUBLIC_WEB_URL: https://findfunlinks.com
+    depends_on:
+      - api
+    networks:
+      - internal
+
+  owner:
+    build:
+      context: .
+      dockerfile: apps/owner/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://api:4000
+        NEXT_PUBLIC_PUBLIC_WEB_URL: https://findfunlinks.com
+    container_name: findfunlinks_owner
+    restart: unless-stopped
+    environment:
+      PORT: 3002
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://api:4000
+      NEXT_PUBLIC_PUBLIC_WEB_URL: https://findfunlinks.com
+    depends_on:
+      - api
+    networks:
+      - internal
+
+  nginx:
+    image: nginx:alpine
+    container_name: findfunlinks_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - web
+      - admin
+      - owner
+      - api
+    networks:
+      - internal
+
+volumes:
+  postgres_data:
+  redis_data:
+  mailpit_data:
+
+networks:
+  internal:
+    driver: bridge
+

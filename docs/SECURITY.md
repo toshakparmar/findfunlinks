@@ -1,27 +1,103 @@
-# FindFunLinks — Security & Threat Modeling (STRIDE & ASVS L2)
+# FindFunLinks — Security & Threat Modeling Specification
 
-## 1. Overview & Threat Model (STRIDE-lite)
+## 1. Overview & Security Philosophy
 
-| Threat Category            | Potential Attack Vector                                             | Countermeasure in FindFunLinks                                                                                                           |
-| -------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **Spoofing**               | Credential guessing, session replay, email spoofing                 | Argon2id, strict lockout (progressive delay), rotating refresh tokens with family revocation, SPF/DKIM/DMARC alignment.                  |
-| **Tampering**              | Parameter tampering, IDOR on websites/domains, request modification | `OwnerScopeGuard` verifying owner relationship in DB, strict DTO whitelisting (`forbidNonWhitelisted: true`), HMAC/signed cookies.       |
-| **Repudiation**            | Denying an administrative action (e.g. domain blocking or approval) | Append-only `AuditLog` table capturing actor, action, timestamp, IP, and state diffs.                                                    |
-| **Information Disclosure** | Stack trace leakage, user enumeration, database credentials leakage | Global NestJS Exception Filter stripping traces, constant-time comparison in auth, zero credentials in client bundles, httpOnly cookies. |
-| **Denial of Service**      | Volumetric HTTP floods, login brute forcing, registration spam      | Redis-backed `@nestjs/throttler` (tiered rate limits per route/IP/account), Nginx connection/rate caps, Turnstile CAPTCHA on forms.      |
-| **Elevation of Privilege** | Normal owner attempting to execute Super Admin endpoints            | Strict `@Permissions` decorators evaluated by `PermissionsGuard` in NestJS; frontend hides UI, but backend is the sole authority.        |
+FindFunLinks operates under the principle of **Defense-in-Depth** and aligns with **OWASP Application Security Verification Standard (ASVS) Level 2**. All user input is considered untrusted, zero trust is assumed between internal components, and cryptographic routines utilize industry-standard, battle-tested algorithms.
 
 ---
 
-## 2. OWASP Top 10 & ASVS Level 2 Verification Checklist
+## 2. STRIDE Threat Model & Mitigations
 
-- [x] **A01: Broken Access Control:** Enforce role and ownership guards on all `/admin/*` and `/owner/*` routes. Enforce one-website-per-owner constraint.
-- [x] **A02: Cryptographic Failures:** Argon2id for password hashes; SHA-256 for refresh tokens and invite tokens; TLS 1.3 in reverse proxy.
-- [x] **A03: Injection:** Prisma parameterized queries (zero raw unsanitized SQL); strict URL validation; DOMPurify sanitization for markdown/HTML.
-- [x] **A04: Insecure Design:** 24h expiring invite links for password setup; rate limiting at edge and application layers; SSRF-safe outbound health checks.
-- [x] **A05: Security Misconfiguration:** Helmet headers (CSP, HSTS, X-Content-Type-Options, Referrer-Policy, frame-ancestors none for panels); strict CORS per origin.
-- [x] **A06: Vulnerable and Outdated Components:** CI pipeline checks (`pnpm audit`), pinned direct dependencies.
-- [x] **A07: Identification and Authentication Failures:** Generic auth failure messages; progressive lockout; 2FA (TOTP) support; session revocation.
-- [x] **A08: Software and Data Integrity Failures:** Commitlint, signed commits, strict dependency lockfiles, Zod contract runtime checks.
-- [x] **A09: Security Logging and Monitoring Failures:** Structured logging via `nestjs-pino` with automatic redaction of cookies, auth headers, and tokens.
-- [x] **A10: Server-Side Request Forgery (SSRF):** DNS-resolved outbound validation preventing requests to internal IPs (`10.0.0.0/8`, `127.0.0.0/8`, `192.168.0.0/16`, `169.254.169.254`, etc.).
+| Threat Category            | Potential Attack Vector                                                         | Countermeasure in FindFunLinks                                                                                                                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Spoofing**               | Credential brute-forcing, credential stuffing, token replay                     | **Argon2id** password hashing with salt, progressive account lockout (exponential delay), dual-token JWT architecture with rotating refresh token families, and instant revocation upon reuse detection. |
+| **Tampering**              | Insecure Direct Object References (IDOR), parameter tampering, mirror hijacking | Strict NestJS `OwnerScopeGuard` verifying owner relationship against database records before modifying websites or domains; contracts-first Zod validation schemas (`forbidNonWhitelisted: true`).       |
+| **Repudiation**            | Disowning moderation decisions or website deletions                             | Immutable, append-only `AuditLog` table capturing actor ID, IP address, user-agent, action type, and before/after JSON diffs.                                                                            |
+| **Information Disclosure** | Stack trace leakage, user enumeration, internal network scanning                | NestJS global exception filter strips production stack traces; timing-safe comparisons in authentication; SSRF protection blocking local/private IP disclosures.                                         |
+| **Denial of Service**      | Volumetric HTTP attacks, unauthenticated endpoint spam                          | Redis-backed multi-tier rate limiting (`@nestjs/throttler`), Nginx connection and request zones (`rate=30r/s`), Cloudflare Turnstile integration on public forms.                                        |
+| **Elevation of Privilege** | Owner attempting to call Super Admin moderation APIs                            | Hierarchical RBAC verified via `PermissionsGuard` on every controller method; ownership scopes strictly isolated from role-based administrative routes.                                                  |
+
+---
+
+## 3. Authentication & Cryptographic Standards
+
+### 3.1 Password Hashing (Argon2id)
+
+All user passwords are encrypted using Argon2id (`argon2` algorithm variant 2):
+
+- **Memory Cost:** 65,536 KB (64 MB)
+- **Time Cost (Iterations):** 3
+- **Parallelism:** 2 threads
+- **Salt:** Cryptographically random 16-byte salt per user generated by OS entropy (`crypto.randomBytes`).
+
+### 3.2 Dual-Token Architecture & Refresh Token Rotation
+
+- **Short-Lived Access Token:** 15-minute expiration, signed using `HMAC-SHA256` (JWT). Contains minimal claims: `sub` (userId), `email`, `role`, and `sessionId`.
+- **Rotating Refresh Token:** 7-day expiration, stored hashed with SHA-256 in the database.
+- **Token Family Replay Detection:** When a refresh token is exchanged, a new refresh token and access token are issued, and the previous token is marked revoked. If a revoked refresh token is presented again (indicating potential token theft), the entire session family for that user is immediately revoked.
+- **Forced Password Change:** Users created via administrative invites or flagged for reset have `mustChangePassword: true`. All protected API routes reject requests until the password is changed via `/api/v1/auth/change-password`.
+
+---
+
+## 4. Role-Based Access Control (RBAC) Matrix
+
+FindFunLinks enforces four primary system roles:
+
+| Module / Permission                 | Super Admin | Moderator | Auditor | Website Owner |
+| ----------------------------------- | :---------: | :-------: | :-----: | :-----------: |
+| **Directory: Read Public**          |     ✅      |    ✅     |   ✅    |      ✅       |
+| **Websites: Create/Edit Own**       |     ✅      |    ❌     |   ❌    |      ✅       |
+| **Websites: Approve/Reject/Status** |     ✅      |    ✅     |   ❌    |      ❌       |
+| **Websites: Soft Delete**           |     ✅      |    ❌     |   ❌    |      ❌       |
+| **Domains: Manage Own Mirrors**     |     ✅      |    ❌     |   ❌    |      ✅       |
+| **Domains: Force Block/Delete**     |     ✅      |    ✅     |   ❌    |      ❌       |
+| **Registrations: Review Queue**     |     ✅      |    ✅     |   ❌    |      ❌       |
+| **Broken Link Reports: Moderate**   |     ✅      |    ✅     |   ❌    |      ❌       |
+| **Categories & Tags: CRUD**         |     ✅      |    ✅     |   ❌    |      ❌       |
+| **Audit Logs: Read**                |     ✅      |    ✅     |   ✅    |      ❌       |
+| **System Settings: Manage**         |     ✅      |    ❌     |   ❌    |      ❌       |
+| **User Accounts: Manage**           |     ✅      |    ❌     |   ❌    |      ❌       |
+
+---
+
+## 5. Server-Side Request Forgery (SSRF) Defense
+
+When probing domains for uptime verification or accepting external link submissions:
+
+1. **Protocol Restriction:** Only `http:` and `https:` schemes are permitted. File schemes (`file:`, `ftp:`, `gopher:`) are blocked.
+2. **Canonical Hostname Resolution:** Target hostnames are resolved via Node.js `dns.promises.lookup` to retrieve all A and AAAA records prior to initiating TCP connections.
+3. **Private & Reserved Subnet Deny List:**
+   - IPv4 Loopback: `127.0.0.0/8`
+   - IPv4 Private Class A: `10.0.0.0/8`
+   - IPv4 Private Class B: `172.16.0.0/12`
+   - IPv4 Private Class C: `192.168.0.0/16`
+   - IPv4 Link-Local / Cloud Metadata: `169.254.0.0/16` (including `169.254.169.254` AWS/GCP metadata)
+   - IPv4 Broadcast / Carrier-Grade NAT: `0.0.0.0/8`, `100.64.0.0/10`, `255.255.255.255/32`
+   - IPv6 Loopback & Unspecified: `::1`, `::`
+   - IPv6 Unique Local: `fc00::/7`
+   - IPv6 Link-Local: `fe80::/10`
+4. **Strict HTTP Client Limits:**
+   - Maximum response timeout: 5,000 ms.
+   - Maximum redirect depth: 3 (each redirect target is re-validated through the DNS and CIDR deny checklist).
+   - Maximum response body buffer: 1 MB (headers only inspection where possible).
+
+---
+
+## 6. HTTP Security Headers & Cross-Site Scripting (XSS)
+
+Configured at both the NestJS (via `helmet`) and Nginx ingress layers:
+
+```http
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN (Public site) / DENY (Admin & Owner consoles)
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; frame-ancestors 'none';
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+```
+
+---
+
+## 7. Vulnerability Disclosure & Incident Response
+
+Security issues should be submitted to `security@findfunlinks.com`. Security reports are acknowledged within 24 hours and critical patches are deployed under our expedited incident response protocol.

@@ -37,7 +37,7 @@
 - **Decision:**
   - Password hashing with **Argon2id**.
   - Short-lived Access Tokens (JWT, 15m) + Rotating Refresh Tokens (7–30 days) stored hashed in PostgreSQL.
-  - Cookies configured with `httpOnly: true`, `secure: true`, `SameSite: Lax` (or `Strict` for mutations), and isolated across subdomains. Tokens are never stored in client `localStorage`.
+  - Cookies configured with `httpOnly: true`, `secure: true`, `SameSite: Lax` (or `Strict` for mutations), and isolated across subdomains.
   - Refresh token reuse detection automatically revokes the entire compromised token family.
 - **Consequences:** High security resilience against script injection and session hijacking.
 
@@ -68,3 +68,24 @@
 - **Context:** While production and Docker deployments utilize Redis with BullMQ for background job scheduling (domain health checks and emails), local Windows development environments or lightweight staging nodes may operate without a Redis daemon.
 - **Decision:** Implement a unified `QueueService` abstraction. When `REDIS_HOST` or `REDIS_URL` is available and connected, BullMQ workers process queues. When Redis is absent or offline, an in-process asynchronous task queue executes jobs without crashing or blocking the NestJS runtime.
 - **Consequences:** Developers can test and run the full API and test suites reliably without external container dependencies.
+
+## DEC-0009: Next.js Standalone Containerization for Minimal Attack Surface
+
+- **Status:** Accepted
+- **Context:** Monorepos contain extensive devDependencies and thousands of files that dramatically inflate Docker image sizes (often > 1.5 GB per app) and introduce vulnerabilities.
+- **Decision:** Configure `output: 'standalone'` in Next.js configurations (`apps/web`, `apps/admin`, `apps/owner`). In Docker multi-stage builds, copy only the compiled `.next/standalone` bundle and static assets into an unprivileged Alpine runner container.
+- **Consequences:** Reduces production container sizes from 1.5GB to < 180MB, reduces memory footprint, strips dev tooling from production images, and runs as an unprivileged non-root user (`nextjs:nodejs`).
+
+## DEC-0010: Nginx Ingress Reverse Proxy with Subdomain-Isolated Security Headers
+
+- **Status:** Accepted
+- **Context:** The platform hosts three web clients and one API service on distinct domains/subdomains (`findfunlinks.com`, `admin.findfunlinks.com`, `owner.findfunlinks.com`).
+- **Decision:** Deploy Nginx as the single ingress edge controller. Public pages allow `SAMEORIGIN` framing where appropriate, whereas administrative consoles strictly enforce `frame-ancestors 'none'` and `X-Frame-Options: DENY`. Strict rate limiting zones are applied to API authentication endpoints (`5r/m`) and general queries (`30r/s`).
+- **Consequences:** Enforces defense-in-depth against clickjacking, credential stuffing, and volumetric DoS attacks at the network boundary.
+
+## DEC-0011: Sequential Monorepo Builds (--concurrency=1) for Constrained Environments
+
+- **Status:** Accepted
+- **Context:** Turborepo by default compiles multiple Next.js 15 applications concurrently. Under Windows environments or CI runners with constrained V8 young generation memory, simultaneous webpack/turbopack builds trigger V8 `JavaScript heap out of memory` crashes (Exit code 134).
+- **Decision:** Enforce `--concurrency=1` during monorepo builds (`pnpm turbo run build --concurrency=1`).
+- **Consequences:** Completely eliminates out-of-memory crashes while maintaining build cache reusability.

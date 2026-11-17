@@ -6,9 +6,13 @@ on:
   pull_request:
     branches: [main, master, develop]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint-and-typecheck:
-    name: Lint & Typecheck
+    name: Lint, Format & Typecheck
     runs-on: ubuntu-latest
 
     steps:
@@ -27,14 +31,103 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile=false
+        run: pnpm install --frozen-lockfile
 
-      - name: Run Lint
+      - name: Code Formatting Check
+        run: pnpm format:check
+
+      - name: Static Code Analysis (ESLint)
         run: pnpm lint
 
-      - name: Run Typecheck
+      - name: TypeScript Typecheck
         run: pnpm typecheck
 
-      - name: Run Tests
+  test:
+    name: Unit & E2E Integration Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: findfunlinks_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client & Migrate Test DB
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public"
+        run: |
+          pnpm --filter @findfunlinks/api db:generate
+          pnpm --filter @findfunlinks/api db:migrate
+
+      - name: Run Test Suites
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public"
+          JWT_ACCESS_SECRET: "test_jwt_access_secret_for_ci_pipeline_32_chars"
+          JWT_REFRESH_SECRET: "test_jwt_refresh_secret_for_ci_pipeline_32_chars"
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          NODE_ENV: test
         run: pnpm test
 
+  build:
+    name: Production Build Verification
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Monorepo Production Build
+        run: pnpm turbo run build --concurrency=1

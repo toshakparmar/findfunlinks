@@ -1,67 +1,67 @@
 # FindFunLinks — System Architecture Specification
 
-## 1. Monorepo Organization
+## 1. Executive Summary & Monorepo Organization
 
-FindFunLinks uses Turborepo and pnpm workspaces to manage applications and shared packages:
+FindFunLinks is an enterprise-grade curated web directory with automated mirror discovery and real-time uptime monitoring. Built as a high-performance monorepo using **Turborepo** and **pnpm workspaces**, it enforces strict architectural boundaries, contract-first API design, and multi-layered defense-in-depth security.
 
 ```
 findfunlinks/
 ├── apps/
-│   ├── web/             # Public directory website (Next.js App Router, Tailwind, Framer Motion, GSAP)
-│   ├── admin/           # Super Admin panel (Next.js App Router, Radix UI / shadcn, TanStack Table)
-│   ├── owner/           # Website Owner panel (Next.js App Router, Radix UI / shadcn, TanStack Table)
-│   └── api/             # Backend service (NestJS, PostgreSQL, Prisma, Redis, BullMQ)
+│   ├── web/             # Public directory website (Next.js 15 App Router, Tailwind CSS, Framer Motion, GSAP)
+│   ├── admin/           # Super Admin operations console (Next.js 15, Radix UI, TanStack Table)
+│   ├── owner/           # Website Owner management portal (Next.js 15, Mirror manager, Profile editor)
+│   └── api/             # Backend REST service (NestJS 11, Fastify, PostgreSQL 17, Prisma ORM, Redis 7, BullMQ)
 ├── packages/
-│   ├── config/          # Shared tsconfig, eslint configs, Tailwind presets, Prettier
-│   ├── contracts/       # Single source of truth: Zod schemas, TypeScript types, and enums
-│   ├── ui/              # Shared UI design tokens, brand logo assets, common components
-│   └── api-client/      # Strongly-typed fetch client generated/built on top of contracts
+│   ├── config/          # Shared ESLint, Prettier, TypeScript, and Tailwind configurations
+│   ├── contracts/       # Single source of truth: Zod schemas, TypeScript types, DTOs, and RBAC enums
+│   ├── ui/              # Shared UI design tokens, brand SVG logos, Status badges, and BaseButton primitives
+│   └── api-client/      # Type-safe isomorphic HTTP client generated on top of @findfunlinks/contracts
 ├── infra/
-│   ├── docker/          # Dockerfiles & docker-compose configurations (Postgres, Redis, Mailpit)
-│   ├── nginx/           # Reverse proxy, SSL/TLS termination, rate limiting, and security headers
-│   └── ci/              # CI/CD pipelines & GitHub Actions definitions
-└── docs/                # Architectural, security, and operational documentation
+│   ├── docker/          # Local development backing services (PostgreSQL 17, Redis 7, Mailpit)
+│   ├── nginx/           # Production reverse proxy, SSL/TLS termination, rate limiting, and security headers
+│   └── ci/              # CI/CD pipeline documentation and automation specifications
+└── docs/                # Comprehensive architectural, security, operational, and ADR documentation
 ```
 
 ---
 
-## 2. High-Level System Architecture
+## 2. High-Level System Topology
 
 ```mermaid
 flowchart TD
-    subgraph Clients["Frontend Clients"]
-        WEB["Public Site (apps/web)<br/>Next.js App Router (ISR/SSG)"]
-        ADMIN["Super Admin Panel (apps/admin)<br/>Role-Based Console"]
-        OWNER["Website Owner Panel (apps/owner)<br/>Single-Tenant Console"]
+    subgraph Clients["Frontend Clients (Next.js 15 App Router)"]
+        WEB["Public Directory (apps/web)<br/>Port 3000 | ISR & SSR"]
+        ADMIN["Super Admin Console (apps/admin)<br/>Port 3001 | CSR & RBAC"]
+        OWNER["Website Owner Portal (apps/owner)<br/>Port 3002 | Single-Tenant Scope"]
     end
 
-    subgraph Gateway["Edge & Gateway"]
-        CF["Cloudflare WAF / CDN"]
-        NGINX["Nginx Reverse Proxy<br/>TLS / Rate Limiting / Security Headers"]
+    subgraph Edge["Edge & Ingress (infra/nginx)"]
+        NGINX["Nginx Reverse Proxy & Load Balancer<br/>SSL/TLS Termination | Rate Limiting | HSTS | CSP"]
     end
 
-    subgraph Backend["Backend Application (apps/api)"]
-        NEST["NestJS REST API (/api/v1)<br/>Controllers & Services"]
-        AUTH_M["Auth & RBAC Guards"]
-        QUEUE["BullMQ Job Processor<br/>Email & Health Checks"]
+    subgraph Backend["Core Backend API (apps/api)"]
+        NEST["NestJS 11 REST API (/api/v1)<br/>Fastify Engine | Global Pipes & Filters"]
+        AUTH_M["Auth, JWT, & RBAC Engine<br/>Argon2id | Rotating Refresh | Lockout"]
+        QUEUE["BullMQ Workers & Queues<br/>Email Delivery & Domain Health Checks"]
+        SSRF["SSRF Defense Guard<br/>DNS Pre-flight & CIDR Deny"]
     end
 
     subgraph Storage["Data & Cache Layer"]
-        PG[("PostgreSQL 16<br/>Prisma ORM")]
-        REDIS[("Redis 7<br/>Cache, Rate Limit, Queues")]
-        MAIL[("Mailpit / SMTP / Resend")]
+        PG[("PostgreSQL 17<br/>Prisma ORM | Fully Relational")]
+        REDIS[("Redis 7<br/>Cache, Queues, Token Blacklist")]
+        MAIL[("Mailpit (Dev) / SMTP (Prod)<br/>Transactional Notifications")]
     end
 
-    WEB --> CF
-    ADMIN --> CF
-    OWNER --> CF
-    CF --> NGINX
+    WEB --> NGINX
+    ADMIN --> NGINX
+    OWNER --> NGINX
     NGINX --> NEST
 
     NEST --> AUTH_M
+    NEST --> SSRF
+    NEST --> QUEUE
     NEST --> PG
     NEST --> REDIS
-    NEST --> QUEUE
     QUEUE --> REDIS
     QUEUE --> MAIL
     QUEUE --> PG
@@ -69,33 +69,130 @@ flowchart TD
 
 ---
 
-## 3. Data & Security Architecture
+## 3. Core Domain Entities & Relational Data Model
 
-### 3.1 Authentication & Authorization
+The PostgreSQL schema is managed via Prisma ORM and enforces strict relational integrity:
 
-- **Argon2id** password hashing.
-- **Stateless Access Token (JWT):** 15-minute expiration, containing `userId`, `role`, and essential claims.
-- **Rotating Refresh Token:** Stored hashed in PostgreSQL with IP and user-agent metadata; rotated on each use. Reuse detection revokes token families.
-- **HttpOnly, Secure, SameSite Cookies:** Protects session tokens from client-side script access.
-- **Role-Based Access Control (RBAC):** Hierarchical permissions (`module.action`) with `PermissionsGuard`.
-- **Ownership Scope:** Enforces that owners can only inspect or modify their assigned `Website` and its related `Domain` records.
+```mermaid
+erDiagram
+    USER ||--o{ REFRESH_TOKEN : issues
+    USER ||--o{ AUDIT_LOG : initiates
+    USER ||--o{ WEBSITE : owns
+    USER }|--|| ROLE : assigned
+    ROLE ||--o{ ROLE_PERMISSION : contains
+    ROLE_PERMISSION }|--|| PERMISSION : grants
 
-### 3.2 Data Boundaries & Validation
+    CATEGORY ||--o{ WEBSITE : categorizes
+    WEBSITE ||--o{ DOMAIN : resolves
+    WEBSITE ||--o{ WEBSITE_TAG : tagged
+    TAG ||--o{ WEBSITE_TAG : applied
+    WEBSITE ||--o{ REPORT : flagged
+    WEBSITE ||--o{ REGISTRATION : requested
 
-- **Contracts-First:** `packages/contracts` defines Zod validation schemas.
-- **Backend Enforcement:** NestJS `ValidationPipe` with `whitelist: true`, `forbidNonWhitelisted: true`, and custom sanitizers.
-- **Client-Side Form Validation:** React Hook Form coupled with Zod resolvers.
-- **Database Integrity:** Foreign key constraints, unique indexes, and cascading deletes where applicable.
+    USER {
+        string id PK
+        string email UK
+        string passwordHash
+        string roleId FK
+        boolean isActive
+        boolean mustChangePassword
+        datetime createdAt
+    }
+
+    WEBSITE {
+        string id PK
+        string slug UK
+        string name
+        string tagline
+        string description
+        string categoryId FK
+        string ownerId FK
+        string status
+        boolean isFeatured
+        int priority
+    }
+
+    DOMAIN {
+        string id PK
+        string websiteId FK
+        string domain UK
+        string label
+        boolean isPrimary
+        boolean isPublic
+        string healthStatus
+        int latencyMs
+        datetime lastCheckedAt
+        int consecutiveFails
+    }
+
+    REGISTRATION {
+        string id PK
+        string websiteName
+        string primaryUrl
+        string email
+        string status
+        string reviewNotes
+        datetime submittedAt
+    }
+```
 
 ---
 
-## 4. Background Processing & Health Checker
+## 4. Mirror Discovery & Fallback Resolution Model
 
-- **BullMQ Workers:**
-  1. `mail-queue`: Processes transactional emails (invitations, password resets, report notifications, status alerts) with exponential backoff retries.
-  2. `health-check-queue`: Concurrency-controlled, rate-throttled domain health verification.
-- **SSRF Hardening:**
-  - Performs DNS resolution before making outgoing requests.
-  - Rejects all private RFC1918 subnets, loopbacks, link-local, and AWS metadata endpoints.
-  - Strict timeout (5s) and redirect limits (max 3).
-  - Updates domain status: `ACTIVE`, `DOWN` (after threshold of consecutive failures), `PENDING`, or `BLOCKED`.
+FindFunLinks solves link rot and regional ISP blocks by maintaining an active mirror mesh for each curated website:
+
+1. **Hierarchy & Priority:**
+   - Each `Website` maintains a collection of `Domain` records.
+   - Exactly one domain is designated as `isPrimary: true`. Alternate mirrors have priority indices (0, 1, 2...).
+2. **Automated Health Probes:**
+   - Scheduled background workers probe all registered domains every 5 to 15 minutes.
+   - Domains are probed with strict SSRF-safe HTTP `GET` requests (5-second timeout, maximum 3 redirects).
+   - Dynamic status transitions:
+     - `ACTIVE` (HTTP 200–399, latency recorded).
+     - `WARNING` (High latency > 3000ms or 1–2 consecutive probe failures).
+     - `DOWN` (3+ consecutive probe failures).
+     - `BLOCKED` (DNS resolution failures or protocol violations).
+3. **Client-Side Mirror Popover:**
+   - When a user interacts with a website card in `apps/web`, the UI displays a live Mirror Selector popover listing all online mirrors sorted by lowest latency.
+   - If the primary domain goes down, the directory dynamically promotes the healthiest mirror with a verified fallback badge.
+
+---
+
+## 5. Multi-Layer SSRF Defense Architecture
+
+To protect internal infrastructure when probing external domains submitted by anonymous users or website owners, the health checker employs defense-in-depth:
+
+```mermaid
+flowchart TD
+    URL["Incoming URL Probe Request"] --> PROTO["1. Protocol Whitelist<br/>Rejects non-http/https"]
+    PROTO --> PARSE["2. Hostname Normalization<br/>Detects octal/hex/IPv6 tricks"]
+    PARSE --> DNS["3. DNS Lookup (A/AAAA)<br/>Resolves all IP endpoints"]
+    DNS --> CIDR{"4. Private Subnet Check<br/>10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16<br/>127.0.0.0/8, 169.254.169.254, ::1, fc00::/7"}
+    CIDR -- "Is Private / Reserved" --> BLOCK["REJECT WITH 403 FORBIDDEN<br/>Audit Log Security Violation"]
+    CIDR -- "Is Public IP" --> HTTP["5. Safe HTTP Client<br/>5s Timeout | Max 3 Redirects | User-Agent: FindFunLinks-HealthCheck/1.0"]
+    HTTP --> REDIR{"Redirect Returned?"}
+    REDIR -- Yes --> PROTO
+    REDIR -- No --> RESULT["Record Status, Latency & Update DB"]
+```
+
+---
+
+## 6. Frontend Client Architectures
+
+1. **Public Directory (`apps/web`):**
+   - Built on Next.js 15 App Router.
+   - Incremental Static Regeneration (ISR) and Server-Side Rendering (SSR) for search engines.
+   - Hero animations powered by Framer Motion and GSAP.
+   - Responsive category filter tabs, interactive search with debounce, and live mirror status indicators.
+2. **Super Admin Console (`apps/admin`):**
+   - Full moderation and pipeline review suite.
+   - Registration approval pipeline (Approve, Reject with reasons, Request Changes).
+   - Domain inspector with on-demand manual health check execution.
+   - Audit log viewer with JSON state diff modal.
+   - Role-Based Access Control (Super Admin vs Moderator vs Auditor).
+3. **Website Owner Portal (`apps/owner`):**
+   - Single-tenant ownership scope: authenticated owners can only manage their own website and mirrors.
+   - Single and bulk mirror registration with immediate validation.
+   - Real-time website profile editor with instant side-by-side card preview.
+   - Account settings and forced password change workflow.
