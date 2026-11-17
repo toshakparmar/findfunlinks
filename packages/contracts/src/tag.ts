@@ -14,3 +14,6 @@ export const CreateTagSchema = TagSchema.pick({
   slug: true,
 });
 export type CreateTagInput = z.infer<typeof CreateTagSchema>;
+
+export const UpdateTagSchema = CreateTagSchema.partial();
+export type UpdateTagInput = z.infer<typeof UpdateTagSchema>;

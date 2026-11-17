@@ -30,3 +30,6 @@ export const ReportItemSchema = z.object({
   createdAt: z.string(),
 });
 export type ReportItem = z.infer<typeof ReportItemSchema>;
+
+export const CreateReportSchema = SubmitReportSchema;
+export type CreateReportInput = SubmitReportInput;

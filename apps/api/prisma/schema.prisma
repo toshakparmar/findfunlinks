@@ -361,3 +361,17 @@ model Page {
   @@index([slug])
 }
 
+model EmailLog {
+  id         String   @id @default(uuid())
+  to         String
+  template   String
+  status     String   // "SENT" | "FAILED"
+  providerId String?
+  error      String?
+  createdAt  DateTime @default(now())
+
+  @@index([to])
+  @@index([createdAt])
+}
+
+

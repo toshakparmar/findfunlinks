@@ -8,6 +8,16 @@ import { HealthModule } from './health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
+import { MailModule } from './modules/mail/mail.module';
+import { AuditModule } from './modules/audit/audit.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { TagsModule } from './modules/tags/tags.module';
+import { SettingsModule } from './modules/settings/settings.module';
+import { ReportsModule } from './modules/reports/reports.module';
+import { RegistrationsModule } from './modules/registrations/registrations.module';
+import { WebsitesModule } from './modules/websites/websites.module';
+import { DomainsModule } from './modules/domains/domains.module';
+import { HealthCheckModule } from './modules/health-check/health-check.module';
 
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
@@ -33,9 +43,19 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
     ]),
     PrismaModule,
     HealthModule,
+    MailModule,
+    AuditModule,
     AuthModule,
     UsersModule,
     RolesModule,
+    CategoriesModule,
+    TagsModule,
+    SettingsModule,
+    ReportsModule,
+    RegistrationsModule,
+    WebsitesModule,
+    DomainsModule,
+    HealthCheckModule,
   ],
   providers: [
     {

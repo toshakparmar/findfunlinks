@@ -37,8 +37,19 @@ export const UpdateWebsiteSchema = z.object({
   seoTitle: z.string().trim().max(100).optional(),
   seoDescription: z.string().trim().max(300).optional(),
   socialLinks: z.record(z.string().url()).optional(),
+  isFeatured: z.boolean().optional(),
 });
 export type UpdateWebsiteInput = z.infer<typeof UpdateWebsiteSchema>;
+
+export const WebsiteFilterParamsSchema = z.object({
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
+  search: z.string().optional(),
+  categorySlug: z.string().optional(),
+  tagSlug: z.string().optional(),
+  sortBy: z.enum(['popular', 'newest', 'alphabetical']).optional(),
+});
+export type WebsiteFilterParams = z.infer<typeof WebsiteFilterParamsSchema>;
 
 export const PublicWebsitesQuerySchema = PaginationQuerySchema.extend({
   category: z.string().trim().optional(),

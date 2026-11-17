@@ -22,3 +22,6 @@ export const CreateCategorySchema = CategorySchema.pick({
   isActive: true,
 });
 export type CreateCategoryInput = z.infer<typeof CreateCategorySchema>;
+
+export const UpdateCategorySchema = CreateCategorySchema.partial();
+export type UpdateCategoryInput = z.infer<typeof UpdateCategorySchema>;

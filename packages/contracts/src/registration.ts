@@ -7,7 +7,8 @@ export const SubmitRegistrationSchema = z.object({
   applicantName: z.string().trim().min(2, 'Full name must be at least 2 characters').max(100),
   applicantEmail: z.string().trim().email('Valid email address is required').toLowerCase(),
   applicantPhone: z.string().trim().max(30).optional(),
-  applicantCountry: z.string().trim().min(2).max(100),
+  applicantCountry: z.string().trim().min(2).max(100).default('Global'),
+  country: z.string().trim().optional(),
   telegramOrDiscord: z.string().trim().max(100).optional(),
 
   // Website details
@@ -38,3 +39,6 @@ export const ResubmitRegistrationSchema = SubmitRegistrationSchema.omit({
   honeypot: true,
 });
 export type ResubmitRegistrationInput = z.infer<typeof ResubmitRegistrationSchema>;
+
+export const RegistrationSubmitSchema = SubmitRegistrationSchema;
+export type RegistrationSubmitInput = SubmitRegistrationInput;

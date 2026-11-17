@@ -61,3 +61,10 @@
   - Derived neutral scales for light and dark modes with WCAG AA compliance.
   - Standardized Tailwind CSS preset and CSS variables in `packages/ui` and `@findfunlinks/config`.
 - **Consequences:** Consistent, original, and accessible aesthetic across all apps.
+
+## DEC-0008: Dual Queue Dispatcher (BullMQ with In-Process Fallback)
+
+- **Status:** Accepted
+- **Context:** While production and Docker deployments utilize Redis with BullMQ for background job scheduling (domain health checks and emails), local Windows development environments or lightweight staging nodes may operate without a Redis daemon.
+- **Decision:** Implement a unified `QueueService` abstraction. When `REDIS_HOST` or `REDIS_URL` is available and connected, BullMQ workers process queues. When Redis is absent or offline, an in-process asynchronous task queue executes jobs without crashing or blocking the NestJS runtime.
+- **Consequences:** Developers can test and run the full API and test suites reliably without external container dependencies.

@@ -24,21 +24,48 @@ export const CreateDomainSchema = z.object({
   url: z.string().trim().regex(SafeUrlRegex, 'Valid HTTP/HTTPS URL required'),
   label: z.string().trim().max(50).optional(),
   type: z.nativeEnum(DomainType).default(DomainType.MIRROR),
+  sortOrder: z.number().int().optional(),
   isPublic: z.boolean().default(true),
 });
 export type CreateDomainInput = z.infer<typeof CreateDomainSchema>;
 
 export const BulkCreateDomainsSchema = z.object({
-  rawLines: z.string().min(1, 'Please provide one or more domains or URLs'),
+  rawLines: z.string().optional(),
+  domains: z
+    .array(
+      z.object({
+        url: z.string(),
+        label: z.string().optional(),
+        type: z.nativeEnum(DomainType).optional(),
+        isPublic: z.boolean().optional(),
+        sortOrder: z.number().int().optional(),
+      }),
+    )
+    .optional(),
   defaultType: z.nativeEnum(DomainType).default(DomainType.MIRROR),
   isPublic: z.boolean().default(true),
 });
 export type BulkCreateDomainsInput = z.infer<typeof BulkCreateDomainsSchema>;
 
+export const BulkCreateDomainSchema = BulkCreateDomainsSchema;
+export type BulkCreateDomainInput = BulkCreateDomainsInput;
+
+export const ReorderDomainsSchema = z.object({
+  items: z.array(
+    z.object({
+      id: z.string().uuid(),
+      sortOrder: z.number().int(),
+    }),
+  ),
+});
+export type ReorderDomainsInput = z.infer<typeof ReorderDomainsSchema>;
+
 export const UpdateDomainSchema = z.object({
+  url: z.string().trim().optional(),
   label: z.string().trim().max(50).optional().nullable(),
   type: z.nativeEnum(DomainType).optional(),
   sortOrder: z.number().int().optional(),
+  status: z.nativeEnum(DomainStatus).optional(),
   isPublic: z.boolean().optional(),
 });
 export type UpdateDomainInput = z.infer<typeof UpdateDomainSchema>;
