@@ -1,0 +1,21 @@
+{
+  "name": "@findfunlinks/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 0",
+    "test": "node --test test/client.test.mjs"
+  },
+  "dependencies": {
+    "@findfunlinks/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@findfunlinks/config": "workspace:*",
+    "typescript": "^5.7.3"
+  }
+}

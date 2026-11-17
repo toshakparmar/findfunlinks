@@ -1,0 +1,16 @@
+import { z } from 'zod';
+import { SlugRegex } from './common';
+
+export const TagSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().trim().min(2).max(40),
+  slug: z.string().trim().regex(SlugRegex),
+  websiteCount: z.number().int().default(0).optional(),
+});
+export type Tag = z.infer<typeof TagSchema>;
+
+export const CreateTagSchema = TagSchema.pick({
+  name: true,
+  slug: true,
+});
+export type CreateTagInput = z.infer<typeof CreateTagSchema>;
