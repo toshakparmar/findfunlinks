@@ -47,6 +47,48 @@ export class DomainsController {
   // Website Owner / Super Admin Endpoints
   // ---------------------------------------------------------------------------
 
+  @Get('my-domains')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('domain.view')
+  @ApiOperation({ summary: "List all domains for the authenticated owner's website" })
+  async getMyDomains(@CurrentUser() user: UserContext) {
+    return this.domainsService.getMyDomains(user);
+  }
+
+  @Post('my-domains')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('domain.create')
+  @ApiOperation({ summary: "Add a new domain to the authenticated owner's website" })
+  async createForMyWebsite(@Body() body: CreateDomainInput, @CurrentUser() user: UserContext) {
+    const validated = CreateDomainSchema.parse(body);
+    return this.domainsService.createForMyWebsite(validated, user);
+  }
+
+  @Post('my-domains/bulk')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('domain.create')
+  @ApiOperation({ summary: "Bulk-add domains to the authenticated owner's website" })
+  async createBulkForMyWebsite(
+    @Body() body: BulkCreateDomainInput,
+    @CurrentUser() user: UserContext,
+  ) {
+    const validated = BulkCreateDomainSchema.parse(body);
+    return this.domainsService.createBulkForMyWebsite(validated, user);
+  }
+
+  @Put('my-domains/reorder')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('domain.update')
+  @ApiOperation({ summary: "Reorder domains for the authenticated owner's website" })
+  async reorderForMyWebsite(@Body() body: ReorderDomainsInput, @CurrentUser() user: UserContext) {
+    const validated = ReorderDomainsSchema.parse(body);
+    return this.domainsService.reorderForMyWebsite(validated, user);
+  }
+
   @Get('website/:websiteId')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, PermissionsGuard)

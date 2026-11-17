@@ -48,4 +48,3 @@ export function AdminTopbar() {
     </header>
   );
 }
-

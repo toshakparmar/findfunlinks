@@ -24,6 +24,32 @@ export const WebsiteCardSchema = z.object({
 });
 export type WebsiteCard = z.infer<typeof WebsiteCardSchema>;
 
+export interface OwnerWebsiteDetails {
+  id: string;
+  ownerId: string;
+  name: string;
+  slug: string;
+  tagline?: string | null;
+  description: string;
+  logoUrl?: string | null;
+  coverUrl?: string | null;
+  categoryId: string;
+  category?: { id: string; name: string; slug: string } | null;
+  categoryName?: string;
+  categorySlug?: string;
+  tags?: Array<{ id: string; name: string; slug: string }>;
+  language: string;
+  contentRating: ContentRating;
+  status: string;
+  isFeatured: boolean;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  socialLinks?: Record<string, string> | null;
+  viewCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export const UpdateWebsiteSchema = z.object({
   name: z.string().trim().min(2).max(100).optional(),
   tagline: z.string().trim().max(200).optional(),

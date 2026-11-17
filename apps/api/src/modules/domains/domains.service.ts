@@ -92,6 +92,38 @@ export class DomainsService {
   // Owner & Admin Methods
   // ---------------------------------------------------------------------------
 
+  async getOwnerWebsite(userId: string) {
+    const website = await this.prisma.website.findUnique({
+      where: { ownerId: userId },
+    });
+    if (!website || website.deletedAt) {
+      throw new NotFoundException(
+        'You do not have an active website associated with this account.',
+      );
+    }
+    return website;
+  }
+
+  async getMyDomains(user: UserContext) {
+    const website = await this.getOwnerWebsite(user.id);
+    return this.findAllByWebsite(website.id, user);
+  }
+
+  async createForMyWebsite(input: CreateDomainInput, user: UserContext) {
+    const website = await this.getOwnerWebsite(user.id);
+    return this.create(website.id, input, user);
+  }
+
+  async createBulkForMyWebsite(input: BulkCreateDomainInput, user: UserContext) {
+    const website = await this.getOwnerWebsite(user.id);
+    return this.createBulk(website.id, input, user);
+  }
+
+  async reorderForMyWebsite(input: ReorderDomainsInput, user: UserContext) {
+    const website = await this.getOwnerWebsite(user.id);
+    return this.reorder(website.id, input, user);
+  }
+
   async findAllByWebsite(websiteId: string, user: UserContext) {
     await this.verifyWebsiteOwnership(websiteId, user);
 

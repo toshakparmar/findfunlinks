@@ -9,6 +9,7 @@ import type {
   SubmitRegistrationInput,
   ResubmitRegistrationInput,
   WebsiteCard,
+  OwnerWebsiteDetails,
   WebsiteFilterParams,
   DomainItem,
   CreateDomainInput,
@@ -140,6 +141,7 @@ export class ApiClient {
         method: 'POST',
       }),
     me: () => this.request<UserProfile>('/api/v1/auth/me'),
+    getMe: () => this.request<UserProfile>('/api/v1/auth/me'),
     forgotPassword: (input: ForgotPasswordInput) =>
       this.request<{ message: string }>('/api/v1/auth/forgot-password', {
         method: 'POST',
@@ -217,33 +219,34 @@ export class ApiClient {
 
   // --- Owner Endpoints ---
   public owner = {
-    getWebsite: () => this.request<WebsiteCard>('/api/v1/websites/my-website'),
+    getWebsite: () => this.request<OwnerWebsiteDetails>('/api/v1/websites/my-website'),
     updateWebsite: (input: UpdateWebsiteInput) =>
-      this.request<WebsiteCard>('/api/v1/websites/my-website', {
+      this.request<OwnerWebsiteDetails>('/api/v1/websites/my-website', {
         method: 'PUT',
         body: JSON.stringify(input),
       }),
-    getDomains: () => this.request<DomainItem[]>('/api/v1/domains'),
+    getDomains: () => this.request<DomainItem[]>('/api/v1/domains/my-domains'),
     createDomain: (input: CreateDomainInput) =>
-      this.request<DomainItem>('/api/v1/domains', {
+      this.request<DomainItem>('/api/v1/domains/my-domains', {
         method: 'POST',
         body: JSON.stringify(input),
       }),
     bulkCreateDomains: (input: BulkCreateDomainsInput) =>
-      this.request<{ added: number; failed: Array<{ url: string; reason: string }> }>(
-        '/api/v1/domains/bulk',
-        {
-          method: 'POST',
-          body: JSON.stringify(input),
-        },
-      ),
-    reorderDomains: (domainIds: string[]) =>
-      this.request<{ updated: number }>('/api/v1/domains/reorder', {
+      this.request<{
+        added: number;
+        skipped: number;
+        reasons: Array<{ line: string; reason: string }>;
+      }>('/api/v1/domains/my-domains/bulk', {
         method: 'POST',
-        body: JSON.stringify({ domainIds }),
+        body: JSON.stringify(input),
+      }),
+    reorderDomains: (items: Array<{ id: string; sortOrder: number }>) =>
+      this.request<{ message: string }>('/api/v1/domains/my-domains/reorder', {
+        method: 'PUT',
+        body: JSON.stringify({ items }),
       }),
     checkDomain: (domainId: string) =>
-      this.request<DomainItem>(`/api/v1/domains/${domainId}/check`, {
+      this.request<DomainItem>(`/api/v1/health-check/domain/${domainId}`, {
         method: 'POST',
       }),
   };

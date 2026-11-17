@@ -19,4 +19,3 @@ export function formatTimeAgo(dateString?: string | null): string {
   const diffInDays = Math.floor(diffInHours / 24);
   return `${diffInDays}d ago`;
 }
-
