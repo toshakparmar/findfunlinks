@@ -2,19 +2,18 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { api } from '../lib/api';
 import { DirectoryView } from '../components/DirectoryView';
-import { FALLBACK_CATEGORIES, FALLBACK_WEBSITES } from '../lib/directory-data';
+import { FALLBACK_CATEGORIES, FALLBACK_WEBSITES, CategoryMeta } from '../lib/directory-data';
 import { WebsiteCardData } from '../components/DirectoryCard';
-import { CategoryTab } from '../components/DirectoryGrid';
 import { ContentRating, DomainStatus, DomainType } from '@findfunlinks/contracts';
 
 export const revalidate = 60; // ISR revalidation every 60 seconds
 
 export const metadata: Metadata = {
-  title: 'FindFunLinks — Curated Fun Websites & Active Working Mirrors',
+  title: 'FindFunLinks — Curated Web Directory & Working Mirrors',
   description:
     'Discover curated, entertaining websites and all their live working domains and mirrors so you never get stuck behind a broken link.',
   openGraph: {
-    title: 'FindFunLinks — Curated Fun Websites & Active Working Mirrors',
+    title: 'FindFunLinks — Curated Web Directory & Working Mirrors',
     description:
       'Curated web directory with live health-checked mirrors. Find alternatives and active links for the best fun websites.',
     url: 'https://findfunlinks.com',
@@ -23,13 +22,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FindFunLinks — Curated Fun Websites & Active Working Mirrors',
+    title: 'FindFunLinks — Curated Web Directory & Working Mirrors',
     description: 'Never get stuck behind a dead link. Find working mirrors for the fun web.',
   },
 };
 
 async function getDirectoryData(): Promise<{
-  categories: CategoryTab[];
+  categories: CategoryMeta[];
   websites: WebsiteCardData[];
 }> {
   try {
@@ -38,14 +37,20 @@ async function getDirectoryData(): Promise<{
       api.public.getWebsitesGrouped().catch(() => null),
     ]);
 
-    let categories: CategoryTab[] = FALLBACK_CATEGORIES;
+    let categories: CategoryMeta[] = FALLBACK_CATEGORIES;
     if (categoriesRes && Array.isArray(categoriesRes) && categoriesRes.length > 0) {
-      categories = categoriesRes.map((c) => ({
-        id: c.id,
-        name: c.name,
-        slug: c.slug,
-        count: c.websiteCount || 0,
-      }));
+      categories = categoriesRes.map((c) => {
+        const fallback = FALLBACK_CATEGORIES.find((f) => f.slug === c.slug);
+        return {
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+          count: c.websiteCount || 0,
+          iconName: fallback?.iconName || 'Compass',
+          themeColor: fallback?.themeColor || '#3b82f6',
+          description: c.description || fallback?.description,
+        };
+      });
     }
 
     let websites: WebsiteCardData[] = FALLBACK_WEBSITES;

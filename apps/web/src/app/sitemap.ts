@@ -45,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Categories
-  let categories = FALLBACK_CATEGORIES;
+  let categories: Array<{ slug: string }> = FALLBACK_CATEGORIES;
   try {
     const res = await api.public.getCategories().catch(() => null);
     if (res && Array.isArray(res) && res.length > 0) {
