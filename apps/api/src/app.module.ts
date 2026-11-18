@@ -18,6 +18,7 @@ import { RegistrationsModule } from './modules/registrations/registrations.modul
 import { WebsitesModule } from './modules/websites/websites.module';
 import { DomainsModule } from './modules/domains/domains.module';
 import { HealthCheckModule } from './modules/health-check/health-check.module';
+import { StorageModule } from './modules/storage/storage.module';
 
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
@@ -56,6 +57,7 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
     WebsitesModule,
     DomainsModule,
     HealthCheckModule,
+    StorageModule,
   ],
   providers: [
     {

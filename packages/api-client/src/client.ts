@@ -433,4 +433,36 @@ export class ApiClient {
     getRoles: () => this.request<any[]>('/api/v1/admin/roles'),
     getPermissions: () => this.request<any[]>('/api/v1/admin/roles/permissions'),
   };
+
+  storage = {
+    upload: async (file: File | Blob, filename: string, folder = 'uploads') => {
+      const formData = new FormData();
+      formData.append('file', file, filename);
+      const res = await this.request<{
+        success: boolean;
+        data: { url: string; path: string; size: number; mimeType: string };
+      }>(`/api/v1/storage/upload?folder=${encodeURIComponent(folder)}`, {
+        method: 'POST',
+        body: formData,
+      });
+      return res.data;
+    },
+    uploadPublic: async (file: File | Blob, filename: string) => {
+      const formData = new FormData();
+      formData.append('file', file, filename);
+      const res = await this.request<{
+        success: boolean;
+        data: { url: string; path: string; size: number; mimeType: string };
+      }>('/api/v1/storage/upload-public', {
+        method: 'POST',
+        body: formData,
+      });
+      return res.data;
+    },
+    delete: (path: string) =>
+      this.request<{ success: boolean }>('/api/v1/storage', {
+        method: 'DELETE',
+        body: JSON.stringify({ path }),
+      }),
+  };
 }
