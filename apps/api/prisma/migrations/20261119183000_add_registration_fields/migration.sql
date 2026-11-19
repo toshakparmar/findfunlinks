@@ -13,3 +13,4 @@ CREATE UNIQUE INDEX "RegistrationRequest_referenceId_key" ON "RegistrationReques
 
 -- CreateIndex
 CREATE INDEX "RegistrationRequest_referenceId_idx" ON "RegistrationRequest"("referenceId");
+
