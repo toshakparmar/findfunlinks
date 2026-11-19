@@ -33,6 +33,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public"
+          DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public"
+        run: pnpm --filter @findfunlinks/api db:generate
+
       - name: Code Formatting Check
         run: pnpm format:check
 
@@ -95,7 +101,7 @@ jobs:
           DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public"
         run: |
           pnpm --filter @findfunlinks/api db:generate
-          pnpm --filter @findfunlinks/api db:migrate
+          pnpm --filter @findfunlinks/api db:migrate:deploy
 
       - name: Run Test Suites
         env:
@@ -130,6 +136,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public"
+          DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public"
+        run: pnpm --filter @findfunlinks/api db:generate
 
       - name: Monorepo Production Build
         run: pnpm turbo run build --concurrency=1
