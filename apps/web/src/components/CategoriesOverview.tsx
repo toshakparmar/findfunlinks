@@ -34,7 +34,7 @@ export const CategoriesOverview: React.FC<CategoriesOverviewProps> = ({
       (c) =>
         c.name.toLowerCase().includes(q) ||
         c.slug.toLowerCase().includes(q) ||
-        c.sites.some((s) => s.name.toLowerCase().includes(q))
+        c.sites.some((s) => s.name.toLowerCase().includes(q)),
     );
   }, [categories, searchQuery]);
 
@@ -47,7 +47,8 @@ export const CategoriesOverview: React.FC<CategoriesOverviewProps> = ({
             All Categories
           </h1>
           <p className="text-xs md:text-sm text-[var(--text-2,#A8B3C7)] mt-1">
-            Browse {totalSites} curated websites across {totalCategories} categories with verified live mirrors.
+            Browse {totalSites} curated websites across {totalCategories} categories with verified
+            live mirrors.
           </p>
         </div>
 
@@ -119,7 +120,11 @@ export const CategoriesOverview: React.FC<CategoriesOverviewProps> = ({
                     {cat.name}
                   </h2>
                   <p className="text-[11px] text-[var(--text-2,#A8B3C7)] mt-1 line-clamp-1">
-                    Top links: {cat.sites.slice(0, 3).map((s) => s.name).join(', ')}
+                    Top links:{' '}
+                    {cat.sites
+                      .slice(0, 3)
+                      .map((s) => s.name)
+                      .join(', ')}
                   </p>
                 </div>
 
@@ -166,4 +171,3 @@ export const CategoriesOverview: React.FC<CategoriesOverviewProps> = ({
     </div>
   );
 };
-

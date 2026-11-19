@@ -34,7 +34,9 @@ export function TrustShieldPopover() {
           <div className="flex items-center justify-between pb-2 border-b border-token/10">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-status-online" />
-              <span className="font-display font-bold text-sm text-token">Verified Mirror Fleet</span>
+              <span className="font-display font-bold text-sm text-token">
+                Verified Mirror Fleet
+              </span>
             </div>
             <button
               onClick={() => setIsOpen(false)}
@@ -68,4 +70,3 @@ export function TrustShieldPopover() {
     </div>
   );
 }
-

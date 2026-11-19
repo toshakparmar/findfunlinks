@@ -22,7 +22,11 @@ export function DirectoryView(_props?: DirectoryViewProps) {
   // Filter sites within category if search query active
   const q = searchQuery?.toLowerCase().trim() || '';
 
-  const handleSelectSite = (site: CategoryCardSiteItem, categoryName: string, accentColor?: string) => {
+  const handleSelectSite = (
+    site: CategoryCardSiteItem,
+    categoryName: string,
+    accentColor?: string,
+  ) => {
     // Find complete site from catalog to populate drawer
     for (const cat of CLIENT_18_CATEGORIES) {
       const found = cat.sites.find((s) => s.id === site.id || s.slug === site.slug);
@@ -73,9 +77,7 @@ export function DirectoryView(_props?: DirectoryViewProps) {
         {visibleCategories.map((cat) => {
           const matchingSites = q
             ? cat.sites.filter(
-                (s) =>
-                  s.name.toLowerCase().includes(q) ||
-                  s.slug.toLowerCase().includes(q)
+                (s) => s.name.toLowerCase().includes(q) || s.slug.toLowerCase().includes(q),
               )
             : cat.sites;
 

@@ -58,10 +58,10 @@ export function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps) {
         </div>
 
         <div className="pt-2 text-center text-[11px] text-token/40 font-mono">
-          Press <kbd className="px-1 py-0.5 rounded bg-surface-2 border border-token/15">ESC</kbd> to dismiss
+          Press <kbd className="px-1 py-0.5 rounded bg-surface-2 border border-token/15">ESC</kbd>{' '}
+          to dismiss
         </div>
       </div>
     </div>
   );
 }
-

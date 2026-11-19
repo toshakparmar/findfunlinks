@@ -74,10 +74,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   LayoutGrid,
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({
-  categories,
-  className = '',
-}) => {
+export const Sidebar: React.FC<SidebarProps> = ({ categories, className = '' }) => {
   const pathname = usePathname();
   const { sidebar: activeSidebarSlug } = getActive(pathname || '/');
 

@@ -127,11 +127,15 @@ function StatusContent() {
             Track website registration status
           </h1>
           <p className="text-xs sm:text-sm text-token/60 mt-1">
-            Enter the Reference ID generated when you submitted your website, along with your applicant email address.
+            Enter the Reference ID generated when you submitted your website, along with your
+            applicant email address.
           </p>
         </div>
 
-        <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end"
+        >
           <div className="sm:col-span-5 space-y-1.5">
             <label className="text-xs font-semibold text-token">
               Reference ID <span className="text-hot">*</span>
@@ -164,7 +168,11 @@ function StatusContent() {
               disabled={loading}
               className="w-full py-2.5 px-4 rounded-lg text-xs font-bold bg-primary text-primary-fg hover:bg-primary/90 focus:outline-none disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
             >
-              {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
+              {loading ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Search className="w-3.5 h-3.5" />
+              )}
               <span>Lookup</span>
             </button>
           </div>
@@ -199,8 +207,8 @@ function StatusContent() {
                 </a>
               </div>
               <p className="text-xs text-token/60 mt-1 font-mono">
-                Ref: <strong className="text-token">{requestData.referenceId}</strong> &bull; Submitted{' '}
-                {new Date(requestData.submittedAt).toLocaleDateString()}
+                Ref: <strong className="text-token">{requestData.referenceId}</strong> &bull;
+                Submitted {new Date(requestData.submittedAt).toLocaleDateString()}
               </p>
             </div>
 
@@ -245,16 +253,21 @@ function StatusContent() {
                   Your application is in the curation queue
                 </p>
                 <p className="text-xs text-token/60 leading-relaxed">
-                  Our review team is currently verifying website performance, directory categorization, and ownership.
-                  Normal turn-around time is <strong>2–3 business days</strong>. You will receive an email as soon as an editorial decision is reached.
+                  Our review team is currently verifying website performance, directory
+                  categorization, and ownership. Normal turn-around time is{' '}
+                  <strong>2–3 business days</strong>. You will receive an email as soon as an
+                  editorial decision is reached.
                 </p>
               </div>
 
               {requestData.verificationToken && (
                 <div className="bg-surface-2/40 border border-token/10 rounded-xl p-4 space-y-2">
-                  <p className="text-xs font-semibold text-token">Verification Method: {requestData.verificationMethod}</p>
+                  <p className="text-xs font-semibold text-token">
+                    Verification Method: {requestData.verificationMethod}
+                  </p>
                   <p className="text-xs text-token/60 text-[11px]">
-                    Make sure your verification record or meta tag is active so our review check succeeds:
+                    Make sure your verification record or meta tag is active so our review check
+                    succeeds:
                   </p>
                   <div className="flex items-center gap-2 bg-surface-1 border border-token/15 rounded-lg px-3 py-2 font-mono text-xs text-primary">
                     <span className="flex-1 truncate">{requestData.verificationToken}</span>
@@ -264,7 +277,11 @@ function StatusContent() {
                       className="p-1 hover:text-token transition-colors"
                       title="Copy token"
                     >
-                      {copiedToken ? <Check className="w-3.5 h-3.5 text-status-online" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copiedToken ? (
+                        <Check className="w-3.5 h-3.5 text-status-online" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -281,12 +298,16 @@ function StatusContent() {
                   Reviewer Feedback / Action Required
                 </p>
                 <p className="text-xs sm:text-sm text-token leading-relaxed font-medium bg-surface-1/60 p-3 rounded-lg border border-hot/20">
-                  {requestData.reviewNote || 'Please provide updated ownership verification proof or correct your primary URL.'}
+                  {requestData.reviewNote ||
+                    'Please provide updated ownership verification proof or correct your primary URL.'}
                 </p>
               </div>
 
               {/* Resubmission Form */}
-              <form onSubmit={handleResubmit} className="border border-token/10 rounded-xl p-5 space-y-4 bg-surface-2/30">
+              <form
+                onSubmit={handleResubmit}
+                className="border border-token/10 rounded-xl p-5 space-y-4 bg-surface-2/30"
+              >
                 <h3 className="text-xs font-bold font-display uppercase tracking-wider text-token flex items-center gap-1.5">
                   <Edit3 className="w-3.5 h-3.5 text-primary" />
                   Update details & resubmit for review
@@ -304,7 +325,9 @@ function StatusContent() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-token">Updated verification proof or details</label>
+                    <label className="text-xs font-semibold text-token">
+                      Updated verification proof or details
+                    </label>
                     <input
                       type="text"
                       value={updatedProof}
@@ -356,7 +379,8 @@ function StatusContent() {
               </p>
               <p className="text-xs text-token/70 leading-relaxed">
                 Your website is now active in the directory. An invite email was dispatched to{' '}
-                <strong className="text-token">{emailInput}</strong> with a single-use setup link to establish your password.
+                <strong className="text-token">{emailInput}</strong> with a single-use setup link to
+                establish your password.
               </p>
               <div className="pt-2">
                 <a
@@ -377,14 +401,14 @@ function StatusContent() {
                 <XCircle className="w-4 h-4" />
                 Application not accepted
               </p>
-              <p className="text-xs text-token/70 leading-relaxed">
-                Reason given by review team:
-              </p>
+              <p className="text-xs text-token/70 leading-relaxed">Reason given by review team:</p>
               <div className="bg-surface-1/70 border border-status-down/20 rounded-lg p-3 text-xs text-token font-medium">
-                {requestData.reviewNote || 'The submitted domain did not meet directory listing standards.'}
+                {requestData.reviewNote ||
+                  'The submitted domain did not meet directory listing standards.'}
               </div>
               <p className="text-[11px] text-token/50 pt-1">
-                If your website changes or resolves these issues, you are welcome to submit a new application.
+                If your website changes or resolves these issues, you are welcome to submit a new
+                application.
               </p>
             </div>
           )}
@@ -397,11 +421,15 @@ function StatusContent() {
             </div>
             <div>
               <span className="text-token/50 block text-[11px]">Role</span>
-              <span className="font-semibold text-token">{requestData.applicantRole || 'Owner'}</span>
+              <span className="font-semibold text-token">
+                {requestData.applicantRole || 'Owner'}
+              </span>
             </div>
             <div>
               <span className="text-token/50 block text-[11px]">Primary Domain</span>
-              <span className="font-semibold text-token font-mono truncate block">{requestData.primaryUrl}</span>
+              <span className="font-semibold text-token font-mono truncate block">
+                {requestData.primaryUrl}
+              </span>
             </div>
             <div>
               <span className="text-token/50 block text-[11px]">Mirrors Listed</span>

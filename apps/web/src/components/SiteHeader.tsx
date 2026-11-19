@@ -91,7 +91,10 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
           href="/register"
           onClick={() => {
             if (typeof window !== 'undefined' && (window as any).va) {
-              (window as any).va('event', { name: 'cta_register_click', data: { source: 'header' } });
+              (window as any).va('event', {
+                name: 'cta_register_click',
+                data: { source: 'header' },
+              });
             }
           }}
           className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[12px] text-xs font-semibold bg-[var(--primary,#2563EB)] hover:bg-[var(--primary-hover,#1D4ED8)] text-white shadow-sm transition-all duration-150 cursor-pointer select-none mr-1"
@@ -119,11 +122,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
             aria-label={`Switch to ${currentTheme === 'dark' ? 'light' : 'dark'} mode`}
             className="hidden md:flex w-9 h-9 md:w-10 md:h-10 rounded-full bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] hover:border-[var(--text-2,#A8B3C7)] items-center justify-center text-[var(--text-2,#A8B3C7)] hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
           >
-            {currentTheme === 'dark' ? (
-              <Sun className="w-4 h-4" />
-            ) : (
-              <Moon className="w-4 h-4" />
-            )}
+            {currentTheme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
         )}
 

@@ -91,9 +91,7 @@ export function AdminSidebar() {
                 {item.badge && (
                   <span
                     className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                      isActive
-                        ? 'bg-white/20 text-white'
-                        : 'bg-primary/15 text-primary'
+                      isActive ? 'bg-white/20 text-white' : 'bg-primary/15 text-primary'
                     }`}
                   >
                     {item.badge}
@@ -112,4 +110,3 @@ export function AdminSidebar() {
     </aside>
   );
 }
-

@@ -2,7 +2,15 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Flame, TrendingUp, Search, Trophy, ChevronRight, PlusCircle, ArrowRight } from 'lucide-react';
+import {
+  Flame,
+  TrendingUp,
+  Search,
+  Trophy,
+  ChevronRight,
+  PlusCircle,
+  ArrowRight,
+} from 'lucide-react';
 import { CLIENT_18_CATEGORIES } from '../lib/client-catalog';
 import { SiteDomainsDrawer, SiteDetailModalData } from './SiteDomainsDrawer';
 
@@ -33,11 +41,12 @@ export function PopularView() {
   // Generate popular sites ranked across catalog
   const rankedSites = useMemo<PopularSiteItem[]>(() => {
     const list: PopularSiteItem[] = [];
-    const multiplier = range === '24h' ? 0.08 : range === '7d' ? 0.35 : range === '30d' ? 0.75 : 1.0;
+    const multiplier =
+      range === '24h' ? 0.08 : range === '7d' ? 0.35 : range === '30d' ? 0.75 : 1.0;
 
     CLIENT_18_CATEGORIES.forEach((cat) => {
       cat.sites.forEach((site, sIdx) => {
-        const rankVal = site.rank ?? (sIdx + 1);
+        const rankVal = site.rank ?? sIdx + 1;
         const baseScore = Math.max(120000 - rankVal * 6500, 8500);
         const variance = ((site.name.charCodeAt(0) * 13) % 2500) + ((site.name.length * 37) % 1800);
         const clicks = Math.round((baseScore + variance) * multiplier);
@@ -96,21 +105,24 @@ export function PopularView() {
       badge: 'Rank #1',
       title: 'Most Visited',
       accentColor: '#EAB308',
-      borderColor: 'border-[#EAB308]/40 hover:border-[#EAB308]/70 shadow-[0_0_20px_-6px_rgba(234,179,8,0.2)]',
+      borderColor:
+        'border-[#EAB308]/40 hover:border-[#EAB308]/70 shadow-[0_0_20px_-6px_rgba(234,179,8,0.2)]',
       pillBg: 'bg-[#EAB308]/15 border-[#EAB308]/30 text-[#EAB308]',
     },
     {
       badge: 'Rank #2',
       title: 'Runner Up',
       accentColor: '#94A3B8',
-      borderColor: 'border-[#94A3B8]/40 hover:border-[#94A3B8]/70 shadow-[0_0_20px_-6px_rgba(148,163,184,0.2)]',
+      borderColor:
+        'border-[#94A3B8]/40 hover:border-[#94A3B8]/70 shadow-[0_0_20px_-6px_rgba(148,163,184,0.2)]',
       pillBg: 'bg-[#94A3B8]/15 border-[#94A3B8]/30 text-[#E2E8F0]',
     },
     {
       badge: 'Rank #3',
       title: 'Top Contender',
       accentColor: '#F97316',
-      borderColor: 'border-[#F97316]/40 hover:border-[#F97316]/70 shadow-[0_0_20px_-6px_rgba(249,115,22,0.2)]',
+      borderColor:
+        'border-[#F97316]/40 hover:border-[#F97316]/70 shadow-[0_0_20px_-6px_rgba(249,115,22,0.2)]',
       pillBg: 'bg-[#F97316]/15 border-[#F97316]/30 text-[#FB923C]',
     },
   ];
@@ -118,7 +130,10 @@ export function PopularView() {
   return (
     <div className="w-full space-y-6">
       {/* 1. Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium">
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium"
+      >
         <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
           Home
         </Link>
@@ -143,7 +158,8 @@ export function PopularView() {
                 </span>
               </div>
               <p className="text-xs text-[var(--text-2,#A8B3C7)] mt-1 max-w-2xl">
-                Highest-traffic destinations and trending web platforms across all 18 curated directory categories.
+                Highest-traffic destinations and trending web platforms across all 18 curated
+                directory categories.
               </p>
             </div>
           </div>
@@ -252,7 +268,9 @@ export function PopularView() {
                 <div>
                   {/* Card Header */}
                   <div className="flex items-center justify-between pb-3 mb-3 border-b border-[var(--line,#1A2442)]">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${style.pillBg}`}>
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${style.pillBg}`}
+                    >
                       <Trophy className="w-3.5 h-3.5" />
                       <span>{style.badge}</span>
                     </span>
@@ -293,11 +311,12 @@ export function PopularView() {
                 {/* Footer Metrics */}
                 <div className="pt-3 mt-3 border-t border-[var(--line,#1A2442)] flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-900 dark:text-white">{site.clicksFormatted}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">
+                      {site.clicksFormatted}
+                    </span>
                     <span className="text-[var(--text-3,#6B7893)] text-[11px]">clicks</span>
                     <span className="inline-flex items-center text-[10px] text-emerald-500 dark:text-emerald-400 font-semibold gap-0.5">
-                      <TrendingUp className="w-3 h-3" />
-                      +{site.trendPercent}%
+                      <TrendingUp className="w-3 h-3" />+{site.trendPercent}%
                     </span>
                   </div>
 
@@ -321,9 +340,7 @@ export function PopularView() {
               Complete Traffic Rankings ({filteredSites.length})
             </h2>
           </div>
-          <span className="text-[11px] text-[var(--text-3,#6B7893)]">
-            Verified Analytics
-          </span>
+          <span className="text-[11px] text-[var(--text-3,#6B7893)]">Verified Analytics</span>
         </div>
 
         <div className="p-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
@@ -377,7 +394,9 @@ export function PopularView() {
 
               <div className="flex items-center gap-2.5 shrink-0 text-right">
                 <div className="flex flex-col items-end">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white">{site.clicksFormatted}</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">
+                    {site.clicksFormatted}
+                  </span>
                   <span className="text-[9px] text-emerald-400 font-semibold inline-flex items-center gap-0.5">
                     +{site.trendPercent}%
                   </span>

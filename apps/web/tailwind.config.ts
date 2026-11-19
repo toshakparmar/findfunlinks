@@ -4,10 +4,7 @@ import preset from '@findfunlinks/config/tailwind.preset.js';
 const config: Config = {
   presets: [preset],
   darkMode: 'class',
-  content: [
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
-    '../../packages/ui/src/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}', '../../packages/ui/src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {

@@ -1,15 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  X,
-  ExternalLink,
-  Copy,
-  Check,
-  AlertTriangle,
-  Clock,
-  ShieldCheck,
-} from 'lucide-react';
+import { X, ExternalLink, Copy, Check, AlertTriangle, Clock, ShieldCheck } from 'lucide-react';
 
 export interface DomainItemData {
   id: string;
@@ -131,9 +123,7 @@ export const SiteDomainsDrawer: React.FC<SiteDomainsDrawerProps> = ({
               <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider">
                 Active Mirrors & Domains ({site.domains?.length || 0})
               </h4>
-              <span className="text-[10px] text-[var(--text-3,#6B7893)]">
-                Click link to open
-              </span>
+              <span className="text-[10px] text-[var(--text-3,#6B7893)]">Click link to open</span>
             </div>
 
             <div className="space-y-2">
@@ -141,11 +131,7 @@ export const SiteDomainsDrawer: React.FC<SiteDomainsDrawerProps> = ({
                 site.domains.map((domain, index) => {
                   const isOnline = domain.status === 'ACTIVE';
                   const isDegraded = domain.status === 'DEGRADED';
-                  const statusColor = isOnline
-                    ? '#22C55E'
-                    : isDegraded
-                    ? '#F59E0B'
-                    : '#EF4444';
+                  const statusColor = isOnline ? '#22C55E' : isDegraded ? '#F59E0B' : '#EF4444';
 
                   return (
                     <div
@@ -168,13 +154,12 @@ export const SiteDomainsDrawer: React.FC<SiteDomainsDrawerProps> = ({
                           )}
                         </div>
 
-                        {domain.lastResponseMs !== undefined &&
-                          domain.lastResponseMs !== null && (
-                            <span className="text-[10px] font-mono text-[var(--text-3,#6B7893)] flex items-center gap-1">
-                              <Clock className="w-2.5 h-2.5" />
-                              {domain.lastResponseMs}ms
-                            </span>
-                          )}
+                        {domain.lastResponseMs !== undefined && domain.lastResponseMs !== null && (
+                          <span className="text-[10px] font-mono text-[var(--text-3,#6B7893)] flex items-center gap-1">
+                            <Clock className="w-2.5 h-2.5" />
+                            {domain.lastResponseMs}ms
+                          </span>
+                        )}
                       </div>
 
                       {/* Domain URL & Action Buttons */}

@@ -27,4 +27,3 @@ export function ShinyText({ text, className = '', disabled = false, speed = 5 }:
     </span>
   );
 }
-

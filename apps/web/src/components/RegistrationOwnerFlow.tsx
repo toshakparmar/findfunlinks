@@ -102,14 +102,20 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
   const handleRemoveMirror = (index: number) => {
     const next = mirrors.filter((_, i) => i !== index);
     setMirrors(next);
-    setValue('additionalDomains', next.filter((m) => m.trim().length > 0));
+    setValue(
+      'additionalDomains',
+      next.filter((m) => m.trim().length > 0),
+    );
   };
 
   const handleMirrorChange = (index: number, val: string) => {
     const next = [...mirrors];
     next[index] = val;
     setMirrors(next);
-    setValue('additionalDomains', next.filter((m) => m.trim().length > 0));
+    setValue(
+      'additionalDomains',
+      next.filter((m) => m.trim().length > 0),
+    );
   };
 
   const handleCopy = (text: string, type: 'token' | 'ref') => {
@@ -129,9 +135,7 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
     try {
       setSubmitting(true);
       // Clean up mirror inputs
-      const cleanMirrors = mirrors
-        .map((m) => m.trim())
-        .filter((m) => m.length > 0);
+      const cleanMirrors = mirrors.map((m) => m.trim()).filter((m) => m.length > 0);
 
       const payload: SubmitRegistrationInput = {
         ...data,
@@ -152,7 +156,11 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
       toast.success('Registration submitted! Please save your Reference ID.');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Registration submission failed. Please review your entries.');
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : 'Registration submission failed. Please review your entries.',
+      );
     } finally {
       setSubmitting(false);
     }
@@ -192,7 +200,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
           {/* Reference ID Callout */}
           <div className="bg-surface-2 border border-token/10 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <p className="text-xs font-medium text-token/60 uppercase tracking-wider">Your Reference ID</p>
+              <p className="text-xs font-medium text-token/60 uppercase tracking-wider">
+                Your Reference ID
+              </p>
               <p className="text-2xl font-mono font-bold text-primary tracking-wide mt-0.5">
                 {submittedData.referenceId}
               </p>
@@ -235,7 +245,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 </div>
                 <p className="text-xs font-semibold text-token">Confirmation Email</p>
                 <p className="text-xs text-token/60 leading-relaxed">
-                  We sent a confirmation to <strong className="text-token">{submittedData.email}</strong> with your reference details.
+                  We sent a confirmation to{' '}
+                  <strong className="text-token">{submittedData.email}</strong> with your reference
+                  details.
                 </p>
               </div>
 
@@ -255,7 +267,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 </div>
                 <p className="text-xs font-semibold text-token">Owner Credentials</p>
                 <p className="text-xs text-token/60 leading-relaxed">
-                  Upon approval, you receive a secure 24h link by email to set your password and access your Owner Console.
+                  Upon approval, you receive a secure 24h link by email to set your password and
+                  access your Owner Console.
                 </p>
               </div>
             </div>
@@ -269,7 +282,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 <span>Verification Check Reminder</span>
               </div>
               <p className="text-xs text-token/60 leading-relaxed">
-                If you selected <strong>DNS TXT</strong> or <strong>HTML Meta Tag</strong>, please make sure the token is in place so our reviewer can verify it:
+                If you selected <strong>DNS TXT</strong> or <strong>HTML Meta Tag</strong>, please
+                make sure the token is in place so our reviewer can verify it:
               </p>
               <div className="flex items-center gap-2 bg-surface-1 border border-token/15 rounded-lg px-3 py-2 font-mono text-xs text-primary">
                 <span className="flex-1 truncate">{submittedData.verificationToken}</span>
@@ -279,7 +293,11 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   className="p-1 hover:text-token transition-colors"
                   title="Copy token"
                 >
-                  {copiedToken ? <Check className="w-3.5 h-3.5 text-status-online" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedToken ? (
+                    <Check className="w-3.5 h-3.5 text-status-online" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -353,7 +371,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 Register your website as an owner
               </h1>
               <p className="text-xs sm:text-sm text-token/60 mt-2 leading-relaxed">
-                Submit your website for editorial review. Once verified, you get a dedicated owner account to manage your live links, add working mirrors, and monitor uptime.
+                Submit your website for editorial review. Once verified, you get a dedicated owner
+                account to manage your live links, add working mirrors, and monitor uptime.
               </p>
             </div>
 
@@ -370,7 +389,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   <div>
                     <p className="text-xs font-semibold text-token">Submit this form</p>
                     <p className="text-xs text-token/60 mt-0.5">
-                      Provide your official domain, mirrors, category, and ownership verification method.
+                      Provide your official domain, mirrors, category, and ownership verification
+                      method.
                     </p>
                   </div>
                 </li>
@@ -381,7 +401,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   <div>
                     <p className="text-xs font-semibold text-token">Review & verification</p>
                     <p className="text-xs text-token/60 mt-0.5">
-                      Our curators inspect your site and check ownership proof (usually within 2–3 business days).
+                      Our curators inspect your site and check ownership proof (usually within 2–3
+                      business days).
                     </p>
                   </div>
                 </li>
@@ -392,7 +413,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   <div>
                     <p className="text-xs font-semibold text-token">Receive credentials</p>
                     <p className="text-xs text-token/60 mt-0.5">
-                      You receive an email invite to set your password and access the Website Owner Console.
+                      You receive an email invite to set your password and access the Website Owner
+                      Console.
                     </p>
                   </div>
                 </li>
@@ -452,19 +474,22 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
               <div className="pt-2 first:pt-0">
                 <p className="font-medium text-token">How long does the review take?</p>
                 <p className="text-token/60 text-[11px] mt-0.5 leading-relaxed">
-                  Most submissions are reviewed within 2–3 business days. You will receive an automated email as soon as a decision is made.
+                  Most submissions are reviewed within 2–3 business days. You will receive an
+                  automated email as soon as a decision is made.
                 </p>
               </div>
               <div className="pt-2">
                 <p className="font-medium text-token">Can I add more mirrors later?</p>
                 <p className="text-token/60 text-[11px] mt-0.5 leading-relaxed">
-                  Yes! Once approved, you can add, remove, and reorder unlimited domain links directly inside your Owner Console.
+                  Yes! Once approved, you can add, remove, and reorder unlimited domain links
+                  directly inside your Owner Console.
                 </p>
               </div>
               <div className="pt-2">
                 <p className="font-medium text-token">How do I track my request?</p>
                 <p className="text-token/60 text-[11px] mt-0.5 leading-relaxed">
-                  You can track your application status at any time using your Reference ID and email address on our{' '}
+                  You can track your application status at any time using your Reference ID and
+                  email address on our{' '}
                   <Link href="/register/status" className="text-primary hover:underline">
                     Status Check page
                   </Link>
@@ -489,7 +514,13 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
             className="bg-surface-1 border border-token/10 rounded-2xl p-6 sm:p-8 space-y-8 shadow-sm"
           >
             {/* Honeypot field for bot defense */}
-            <input type="text" {...register('honeypot')} className="hidden" tabIndex={-1} autoComplete="off" />
+            <input
+              type="text"
+              {...register('honeypot')}
+              className="hidden"
+              tabIndex={-1}
+              autoComplete="off"
+            />
 
             {/* SECTION 1: Your Details */}
             <div className="space-y-4">
@@ -531,7 +562,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   {errors.applicantEmail ? (
                     <p className="text-[11px] text-status-down">{errors.applicantEmail.message}</p>
                   ) : (
-                    <p className="text-[11px] text-token/40">We will email review decisions & your login link here.</p>
+                    <p className="text-[11px] text-token/40">
+                      We will email review decisions & your login link here.
+                    </p>
                   )}
                 </div>
 
@@ -558,7 +591,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   </label>
                   <CustomSelect
                     value={watch('applicantRole') || ApplicantRole.OWNER}
-                    onChange={(val) => setValue('applicantRole', val as any, { shouldValidate: true })}
+                    onChange={(val) =>
+                      setValue('applicantRole', val as any, { shouldValidate: true })
+                    }
                     options={[
                       { value: ApplicantRole.OWNER, label: 'Owner / Founder' },
                       { value: ApplicantRole.ADMIN, label: 'Administrator' },
@@ -577,7 +612,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
               <div>
                 <h2 className="text-base font-bold font-display text-token">2. Website details</h2>
                 <p className="text-xs text-token/60 mt-0.5">
-                  Information about your site that will be indexed and presented to directory visitors.
+                  Information about your site that will be indexed and presented to directory
+                  visitors.
                 </p>
               </div>
 
@@ -620,7 +656,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-semibold text-token">
-                      Additional working domains / mirrors <span className="text-token/40 font-normal">(optional, max 10)</span>
+                      Additional working domains / mirrors{' '}
+                      <span className="text-token/40 font-normal">(optional, max 10)</span>
                     </label>
                     <button
                       type="button"
@@ -735,7 +772,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 {/* Logo URL (Optional) */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-token">
-                    Logo or Icon URL <span className="text-token/40 font-normal">(optional HTTPS URL)</span>
+                    Logo or Icon URL{' '}
+                    <span className="text-token/40 font-normal">(optional HTTPS URL)</span>
                   </label>
                   <input
                     type="url"
@@ -755,9 +793,12 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
             {/* SECTION 3: Ownership Verification */}
             <div className="space-y-4">
               <div>
-                <h2 className="text-base font-bold font-display text-token">3. Ownership verification</h2>
+                <h2 className="text-base font-bold font-display text-token">
+                  3. Ownership verification
+                </h2>
                 <p className="text-xs text-token/60 mt-0.5">
-                  To prevent unauthorized domain listings, choose how you will verify control of this website.
+                  To prevent unauthorized domain listings, choose how you will verify control of
+                  this website.
                 </p>
               </div>
 
@@ -793,17 +834,24 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   <div className="space-y-2 text-xs">
                     <p className="font-semibold text-token">DNS TXT Record Instructions:</p>
                     <p className="text-token/60 leading-relaxed text-[11px]">
-                      Add the following TXT record to your root domain DNS settings. Our reviewer will query the record during inspection:
+                      Add the following TXT record to your root domain DNS settings. Our reviewer
+                      will query the record during inspection:
                     </p>
                     <div className="flex items-center gap-2 bg-surface-1 border border-token/15 rounded-lg px-3 py-2 font-mono text-xs text-primary">
                       <span className="flex-1 truncate">findfunlinks-verify={tempVerifyToken}</span>
                       <button
                         type="button"
-                        onClick={() => handleCopy(`findfunlinks-verify=${tempVerifyToken}`, 'token')}
+                        onClick={() =>
+                          handleCopy(`findfunlinks-verify=${tempVerifyToken}`, 'token')
+                        }
                         className="p-1 hover:text-token transition-colors"
                         title="Copy DNS record"
                       >
-                        {copiedToken ? <Check className="w-3.5 h-3.5 text-status-online" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copiedToken ? (
+                          <Check className="w-3.5 h-3.5 text-status-online" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -813,7 +861,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   <div className="space-y-2 text-xs">
                     <p className="font-semibold text-token">HTML &lt;meta&gt; Tag Instructions:</p>
                     <p className="text-token/60 leading-relaxed text-[11px]">
-                      Insert this tag into the <code>&lt;head&gt;</code> section of your homepage HTML:
+                      Insert this tag into the <code>&lt;head&gt;</code> section of your homepage
+                      HTML:
                     </p>
                     <div className="flex items-center gap-2 bg-surface-1 border border-token/15 rounded-lg px-3 py-2 font-mono text-xs text-primary">
                       <span className="flex-1 truncate">
@@ -822,12 +871,19 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                       <button
                         type="button"
                         onClick={() =>
-                          handleCopy(`<meta name="findfunlinks-verification" content="${tempVerifyToken}" />`, 'token')
+                          handleCopy(
+                            `<meta name="findfunlinks-verification" content="${tempVerifyToken}" />`,
+                            'token',
+                          )
                         }
                         className="p-1 hover:text-token transition-colors"
                         title="Copy meta tag"
                       >
-                        {copiedToken ? <Check className="w-3.5 h-3.5 text-status-online" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copiedToken ? (
+                          <Check className="w-3.5 h-3.5 text-status-online" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -837,16 +893,21 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   <div className="space-y-2 text-xs">
                     <p className="font-semibold text-token">Domain Email Verification:</p>
                     <p className="text-token/60 leading-relaxed text-[11px]">
-                      Your applicant email should match your site's domain (e.g. <code>contact@yourdomain.com</code>). You can also provide an alternative official domain email below:
+                      Your applicant email should match your site's domain (e.g.{' '}
+                      <code>contact@yourdomain.com</code>). You can also provide an alternative
+                      official domain email below:
                     </p>
                   </div>
                 )}
 
                 {selectedMethod === VerificationMethod.SOCIAL_PROFILE && (
                   <div className="space-y-2 text-xs">
-                    <p className="font-semibold text-token">Social / Public Repository Profile Link:</p>
+                    <p className="font-semibold text-token">
+                      Social / Public Repository Profile Link:
+                    </p>
                     <p className="text-token/60 leading-relaxed text-[11px]">
-                      Provide a link to an official GitHub organization, Discord server, or Twitter/X profile that openly links to this website domain.
+                      Provide a link to an official GitHub organization, Discord server, or
+                      Twitter/X profile that openly links to this website domain.
                     </p>
                   </div>
                 )}
@@ -854,7 +915,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 {/* Proof / Handle Input */}
                 <div className="space-y-1.5 pt-2 border-t border-token/10">
                   <label className="text-xs font-semibold text-token">
-                    Verification proof details <span className="text-token/40 font-normal">(optional notes or link)</span>
+                    Verification proof details{' '}
+                    <span className="text-token/40 font-normal">(optional notes or link)</span>
                   </label>
                   <input
                     type="text"
@@ -863,8 +925,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                       selectedMethod === VerificationMethod.DNS_TXT
                         ? 'e.g. DNS TXT configured at Cloudflare'
                         : selectedMethod === VerificationMethod.SOCIAL_PROFILE
-                        ? 'e.g. https://github.com/my-org or https://x.com/my_project'
-                        : 'e.g. Verified via contact@domain.com'
+                          ? 'e.g. https://github.com/my-org or https://x.com/my_project'
+                          : 'e.g. Verified via contact@domain.com'
                     }
                     className="w-full px-3.5 py-2.5 rounded-lg text-xs bg-surface-1 border border-token/10 focus:border-primary focus:outline-none text-token placeholder:text-token/30 transition-colors"
                   />
@@ -877,7 +939,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
             {/* SECTION 4: Admin Notes & Consent */}
             <div className="space-y-4">
               <div>
-                <h2 className="text-base font-bold font-display text-token">4. Reviewer note & consent</h2>
+                <h2 className="text-base font-bold font-display text-token">
+                  4. Reviewer note & consent
+                </h2>
                 <p className="text-xs text-token/60 mt-0.5">
                   Finalize your application and confirm your authorization.
                 </p>
@@ -905,7 +969,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                     className="mt-0.5 w-4 h-4 rounded border-token/20 text-primary focus:ring-primary/20 accent-primary"
                   />
                   <span className="text-xs text-token/70 leading-relaxed">
-                    I confirm that I own or hold explicit operational authority to register this website on FindFunLinks, and I agree to the{' '}
+                    I confirm that I own or hold explicit operational authority to register this
+                    website on FindFunLinks, and I agree to the{' '}
                     <Link href="/terms" target="_blank" className="text-primary hover:underline">
                       Terms of Service
                     </Link>{' '}
@@ -913,7 +978,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   </span>
                 </label>
                 {errors.termsAccepted && (
-                  <p className="text-[11px] text-status-down pl-7">{errors.termsAccepted.message}</p>
+                  <p className="text-[11px] text-status-down pl-7">
+                    {errors.termsAccepted.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -938,7 +1005,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 )}
               </button>
               <p className="text-center text-[11px] text-token/40 mt-2.5">
-                Reviewed by human curators within 2–3 business days &bull; 100% Free directory listing
+                Reviewed by human curators within 2–3 business days &bull; 100% Free directory
+                listing
               </p>
             </div>
           </form>

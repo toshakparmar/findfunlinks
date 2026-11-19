@@ -92,6 +92,7 @@ jobs:
       - name: Generate Prisma Client & Migrate Test DB
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public"
+          DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public"
         run: |
           pnpm --filter @findfunlinks/api db:generate
           pnpm --filter @findfunlinks/api db:migrate
@@ -99,6 +100,7 @@ jobs:
       - name: Run Test Suites
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public"
+          DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public"
           JWT_ACCESS_SECRET: "test_jwt_access_secret_for_ci_pipeline_32_chars"
           JWT_REFRESH_SECRET: "test_jwt_refresh_secret_for_ci_pipeline_32_chars"
           REDIS_HOST: localhost

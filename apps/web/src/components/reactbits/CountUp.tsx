@@ -45,7 +45,8 @@ export function CountUp({
     return () => cancelAnimationFrame(animationFrameId);
   }, [from, to, duration]);
 
-  const formattedValue = decimals > 0 ? value.toFixed(decimals) : Math.round(value).toLocaleString();
+  const formattedValue =
+    decimals > 0 ? value.toFixed(decimals) : Math.round(value).toLocaleString();
 
   return (
     <span className={`tabular-nums font-mono ${className}`}>
@@ -55,4 +56,3 @@ export function CountUp({
     </span>
   );
 }
-

@@ -373,21 +373,25 @@ function RegistrationsContent() {
               </div>
 
               {/* Mirrors / Additional Domains */}
-              {Array.isArray(selectedItem.additionalDomains) && selectedItem.additionalDomains.length > 0 && (
-                <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-2">
-                  <div className="flex items-center gap-1.5 font-bold text-foreground text-sm">
-                    <Radio className="h-4 w-4 text-accent" />
-                    <span>Additional Mirrors ({selectedItem.additionalDomains.length})</span>
+              {Array.isArray(selectedItem.additionalDomains) &&
+                selectedItem.additionalDomains.length > 0 && (
+                  <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-2">
+                    <div className="flex items-center gap-1.5 font-bold text-foreground text-sm">
+                      <Radio className="h-4 w-4 text-accent" />
+                      <span>Additional Mirrors ({selectedItem.additionalDomains.length})</span>
+                    </div>
+                    <div className="space-y-1">
+                      {selectedItem.additionalDomains.map((m: string, i: number) => (
+                        <div
+                          key={i}
+                          className="font-mono text-xs text-primary bg-background p-2 rounded border border-border/40"
+                        >
+                          {m}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    {selectedItem.additionalDomains.map((m: string, i: number) => (
-                      <div key={i} className="font-mono text-xs text-primary bg-background p-2 rounded border border-border/40">
-                        {m}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                )}
 
               {/* Ownership Verification Proof */}
               <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-2">
@@ -398,7 +402,9 @@ function RegistrationsContent() {
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <span className="text-muted-foreground">Method:</span>
-                    <div className="font-semibold text-foreground">{selectedItem.verificationMethod || 'DNS_TXT'}</div>
+                    <div className="font-semibold text-foreground">
+                      {selectedItem.verificationMethod || 'DNS_TXT'}
+                    </div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Token:</span>

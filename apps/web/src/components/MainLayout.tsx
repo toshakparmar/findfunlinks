@@ -20,10 +20,7 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const {
-    reportModalWebsite,
-    setReportModalWebsite,
-  } = useSearch();
+  const { reportModalWebsite, setReportModalWebsite } = useSearch();
 
   const { resolvedTheme, setTheme } = useTheme();
   const [isSearchOpen, setIsSearchOpen] = useState(false);

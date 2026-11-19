@@ -29,7 +29,7 @@ export function ThemeToggle() {
       const y = rect.top + rect.height / 2;
       const endRadius = Math.hypot(
         Math.max(x, window.innerWidth - x),
-        Math.max(y, window.innerHeight - y)
+        Math.max(y, window.innerHeight - y),
       );
 
       const transition = (document as any).startViewTransition(() => {
@@ -45,7 +45,7 @@ export function ThemeToggle() {
             duration: 400,
             easing: 'ease-in-out',
             pseudoElement: '::view-transition-new(root)',
-          }
+          },
         );
       });
     } else {

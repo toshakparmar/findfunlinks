@@ -104,7 +104,13 @@ export function CustomSelect({
       >
         <span className="truncate flex items-center gap-2">
           {selectedOption?.icon && <span className="shrink-0">{selectedOption.icon}</span>}
-          <span className={selectedOption ? 'text-slate-900 dark:text-white font-medium' : 'text-[var(--text-3,#6B7893)]'}>
+          <span
+            className={
+              selectedOption
+                ? 'text-slate-900 dark:text-white font-medium'
+                : 'text-[var(--text-3,#6B7893)]'
+            }
+          >
             {selectedOption ? selectedOption.label : placeholder}
           </span>
         </span>
@@ -150,7 +156,9 @@ export function CustomSelect({
                   )}
                 </div>
 
-                {isSelected && <Check className="w-3.5 h-3.5 text-[var(--brand-link,#3B82F6)] shrink-0" />}
+                {isSelected && (
+                  <Check className="w-3.5 h-3.5 text-[var(--brand-link,#3B82F6)] shrink-0" />
+                )}
               </div>
             );
           })}

@@ -65,10 +65,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   LayoutGrid,
 };
 
-export const CategoryChips: React.FC<CategoryChipsProps> = ({
-  categories,
-  className = '',
-}) => {
+export const CategoryChips: React.FC<CategoryChipsProps> = ({ categories, className = '' }) => {
   const pathname = usePathname();
   const { sidebar: activeSlug } = getActive(pathname || '/');
 
@@ -99,9 +96,7 @@ export const CategoryChips: React.FC<CategoryChipsProps> = ({
         }`}
       >
         <LayoutGrid className="w-5 h-5 shrink-0" />
-        <span className="text-[11px] font-semibold truncate leading-none">
-          All Links
-        </span>
+        <span className="text-[11px] font-semibold truncate leading-none">All Links</span>
       </Link>
 
       {/* Category Tiles */}
@@ -125,9 +120,7 @@ export const CategoryChips: React.FC<CategoryChipsProps> = ({
               className="w-5 h-5 shrink-0"
               style={{ color: isActive ? '#FFFFFF' : iconColor }}
             />
-            <span className="text-[11px] font-medium truncate leading-none">
-              {cat.name}
-            </span>
+            <span className="text-[11px] font-medium truncate leading-none">{cat.name}</span>
           </Link>
         );
       })}

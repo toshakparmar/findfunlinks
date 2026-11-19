@@ -1,4 +1,5 @@
 # FindFunLinks 🌐
+
 > **Your Hub for Movies, Shows, OTT, Anime and More.**
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
@@ -14,6 +15,7 @@ FindFunLinks is an enterprise-grade curated entertainment directory featuring au
 ---
 
 ## 📑 Table of Contents
+
 - [Monorepo Structure](#-monorepo-structure)
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
@@ -82,6 +84,7 @@ findfunlinks/
 ## 📋 Prerequisites
 
 Before starting, ensure you have the following installed locally:
+
 - **Node.js** >= `20.18.0` (LTS recommended)
 - **pnpm** >= `9.x` or `10.x` (`npm install -g pnpm`)
 - **Docker & Docker Compose** (for PostgreSQL, Redis, and Mailpit)
@@ -92,24 +95,30 @@ Before starting, ensure you have the following installed locally:
 ## 🚀 Local Development Setup
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/toshakparmar/findfunlinks.git
 cd findfunlinks
 ```
 
 ### 2. Install Workspace Dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 3. Start Backing Infrastructure (Docker)
+
 Launch PostgreSQL, Redis, and Mailpit:
+
 ```bash
 docker compose -f infra/docker/docker-compose.yml up -d
 ```
 
 ### 4. Configure Environment Variables
+
 Copy the example environment files:
+
 ```bash
 cp .env.example .env
 cp apps/api/.env.example apps/api/.env
@@ -119,6 +128,7 @@ cp apps/owner/.env.example apps/owner/.env.local
 ```
 
 ### 5. Run Database Migrations and Seed
+
 ```bash
 # Push Prisma schema and seed initial categories and administrative accounts
 pnpm --filter @findfunlinks/api prisma migrate dev
@@ -126,7 +136,9 @@ pnpm --filter @findfunlinks/api prisma db seed
 ```
 
 ### 6. Start Development Servers
+
 Run all applications in parallel using Turborepo:
+
 ```bash
 pnpm dev
 ```
@@ -135,15 +147,15 @@ pnpm dev
 
 ## 🌐 Service Ports & Seed Credentials
 
-| Service | Port | URL | Default Credentials |
-| :--- | :--- | :--- | :--- |
-| **Public Web App** | `3000` | [http://localhost:3000](http://localhost:3000) | Public access |
-| **Super Admin Console** | `3001` | [http://localhost:3001](http://localhost:3001) | `admin@findfunlinks.com` / `Admin@123456` |
-| **Website Owner Portal** | `3002` | [http://localhost:3002](http://localhost:3002) | Owner email verification magic link |
-| **Backend REST API** | `4000` | [http://localhost:4000](http://localhost:4000) | Swagger docs at `/docs` |
-| **Mailpit (Local Email)** | `8025` | [http://localhost:8025](http://localhost:8025) | Webmail viewer for test verification emails |
-| **PostgreSQL 17** | `5432` | `localhost:5432` | `postgres` / `postgres` (DB: `findfunlinks`) |
-| **Redis 7** | `6379` | `localhost:6379` | Default connection |
+| Service                   | Port   | URL                                            | Default Credentials                          |
+| :------------------------ | :----- | :--------------------------------------------- | :------------------------------------------- |
+| **Public Web App**        | `3000` | [http://localhost:3000](http://localhost:3000) | Public access                                |
+| **Super Admin Console**   | `3001` | [http://localhost:3001](http://localhost:3001) | `admin@findfunlinks.com` / `Admin@123456`    |
+| **Website Owner Portal**  | `3002` | [http://localhost:3002](http://localhost:3002) | Owner email verification magic link          |
+| **Backend REST API**      | `4000` | [http://localhost:4000](http://localhost:4000) | Swagger docs at `/docs`                      |
+| **Mailpit (Local Email)** | `8025` | [http://localhost:8025](http://localhost:8025) | Webmail viewer for test verification emails  |
+| **PostgreSQL 17**         | `5432` | `localhost:5432`                               | `postgres` / `postgres` (DB: `findfunlinks`) |
+| **Redis 7**               | `6379` | `localhost:6379`                               | Default connection                           |
 
 ---
 
@@ -176,29 +188,37 @@ pnpm format
 The public directory website (`apps/web`) is optimized for seamless deployment to **Vercel**.
 
 ### Step 1: Connect GitHub Repository on Vercel
+
 1. Go to [Vercel Dashboard](https://vercel.com/) and click **"Add New Project"**.
 2. Select the `findfunlinks` repository from GitHub.
 
 ### Step 2: Configure Project Settings
+
 In the Vercel project configuration screen:
-* **Framework Preset:** `Next.js`
-* **Root Directory:** Click "Edit" and choose `apps/web`
-* **Include files outside the Root Directory:** Check the box **"Yes"** (Vercel automatically detects the Turborepo workspace).
+
+- **Framework Preset:** `Next.js`
+- **Root Directory:** Click "Edit" and choose `apps/web`
+- **Include files outside the Root Directory:** Check the box **"Yes"** (Vercel automatically detects the Turborepo workspace).
 
 ### Step 3: Configure Build & Development Settings
+
 If Vercel does not auto-detect the monorepo root command, specify:
-* **Build Command:** `pnpm --filter @findfunlinks/web build` (or leave default if Turborepo is detected)
-* **Install Command:** `pnpm install`
-* **Output Directory:** `.next`
+
+- **Build Command:** `pnpm --filter @findfunlinks/web build` (or leave default if Turborepo is detected)
+- **Install Command:** `pnpm install`
+- **Output Directory:** `.next`
 
 ### Step 4: Set Environment Variables
+
 Add the following environment variables in Vercel project settings:
+
 ```env
 NEXT_PUBLIC_API_URL=https://api.yourdomain.com
 NEXT_PUBLIC_APP_URL=https://yourdomain.com
 ```
 
 ### Step 5: Deploy
+
 Click **"Deploy"**. Vercel will build the workspace packages (`@findfunlinks/ui`, `@findfunlinks/contracts`, `@findfunlinks/api-client`) and deploy `apps/web` with global Edge CDN caching and Server-Side Rendering.
 
 ---

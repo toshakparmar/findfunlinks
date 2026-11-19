@@ -19,10 +19,7 @@ export const BottomNav: React.FC = () => {
     <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-[var(--header,#070D1E)]/95 backdrop-blur-md border-t border-[var(--line,#1A2442)] px-2 py-1.5 flex items-center justify-around select-none">
       {navItems.map((item) => {
         const IconComponent = item.icon;
-        const isActive =
-          item.href === '/'
-            ? pathname === '/'
-            : pathname?.startsWith(item.href);
+        const isActive = item.href === '/' ? pathname === '/' : pathname?.startsWith(item.href);
 
         return (
           <Link
@@ -35,9 +32,7 @@ export const BottomNav: React.FC = () => {
             }`}
           >
             <IconComponent className="w-4 h-4 mb-0.5" />
-            <span className="text-[10px] font-semibold leading-tight">
-              {item.label}
-            </span>
+            <span className="text-[10px] font-semibold leading-tight">{item.label}</span>
           </Link>
         );
       })}

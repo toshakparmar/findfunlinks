@@ -49,4 +49,3 @@ export function Magnet({ children, distance = 30, className = '' }: MagnetProps)
     </motion.div>
   );
 }
-

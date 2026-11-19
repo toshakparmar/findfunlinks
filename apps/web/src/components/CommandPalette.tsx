@@ -2,16 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Search,
-  Layers,
-  FileText,
-  Compass,
-  ArrowRight,
-  Globe,
-  Sparkles,
-  X,
-} from 'lucide-react';
+import { Search, Layers, FileText, Compass, ArrowRight, Globe, Sparkles, X } from 'lucide-react';
 import { CategoryMeta, FALLBACK_CATEGORIES, FALLBACK_WEBSITES } from '../lib/directory-data';
 import { WebsiteCardData } from './DirectoryCard';
 
@@ -63,14 +54,16 @@ export function CommandPalette({
           (w) =>
             w.name.toLowerCase().includes(cleanQ) ||
             w.description?.toLowerCase().includes(cleanQ) ||
-            w.domains?.some((d) => d.hostname.toLowerCase().includes(cleanQ))
+            w.domains?.some((d) => d.hostname.toLowerCase().includes(cleanQ)),
         )
         .slice(0, 5)
     : websites.slice(0, 4);
 
   const matchedCategories = cleanQ
     ? categories
-        .filter((c) => c.name.toLowerCase().includes(cleanQ) || c.slug.toLowerCase().includes(cleanQ))
+        .filter(
+          (c) => c.name.toLowerCase().includes(cleanQ) || c.slug.toLowerCase().includes(cleanQ),
+        )
         .slice(0, 3)
     : categories.slice(0, 3);
 
@@ -78,12 +71,19 @@ export function CommandPalette({
     { name: 'Main Index', href: '/', icon: Compass, desc: 'Curated toplist with mirror fleet' },
     { name: 'Simple Index', href: '/#simple', icon: Layers, desc: 'Alphabetical directory view' },
     { name: 'Submit a Website', href: '/register', icon: Sparkles, desc: 'Add new fun website' },
-    { name: 'About & FAQ', href: '/about', icon: FileText, desc: 'Platform & fleet monitoring guide' },
+    {
+      name: 'About & FAQ',
+      href: '/about',
+      icon: FileText,
+      desc: 'Platform & fleet monitoring guide',
+    },
     { name: 'DMCA Notice', href: '/dmca', icon: FileText, desc: 'Copyright & takedown policy' },
   ];
 
   const matchedPages = cleanQ
-    ? pages.filter((p) => p.name.toLowerCase().includes(cleanQ) || p.desc.toLowerCase().includes(cleanQ))
+    ? pages.filter(
+        (p) => p.name.toLowerCase().includes(cleanQ) || p.desc.toLowerCase().includes(cleanQ),
+      )
     : pages.slice(0, 3);
 
   // Flattened results for keyboard navigation
@@ -93,8 +93,16 @@ export function CommandPalette({
     | { type: 'page'; data: (typeof pages)[0]; href: string };
 
   const flattenedResults: ResultItem[] = [
-    ...matchedWebsites.map((w) => ({ type: 'website' as const, data: w, href: `/website/${w.slug}` })),
-    ...matchedCategories.map((c) => ({ type: 'category' as const, data: c, href: `/category/${c.slug}` })),
+    ...matchedWebsites.map((w) => ({
+      type: 'website' as const,
+      data: w,
+      href: `/website/${w.slug}`,
+    })),
+    ...matchedCategories.map((c) => ({
+      type: 'category' as const,
+      data: c,
+      href: `/category/${c.slug}`,
+    })),
     ...matchedPages.map((p) => ({ type: 'page' as const, data: p, href: p.href })),
   ];
 
@@ -175,7 +183,7 @@ export function CommandPalette({
                   <div className="space-y-1 mt-1">
                     {matchedWebsites.map((site) => {
                       const itemIndex = flattenedResults.findIndex(
-                        (r) => r.type === 'website' && r.data.id === site.id
+                        (r) => r.type === 'website' && r.data.id === site.id,
                       );
                       const isSelected = selectedIndex === itemIndex;
                       const primaryHostname = site.domains?.[0]?.hostname || site.slug;
@@ -232,7 +240,7 @@ export function CommandPalette({
                   <div className="space-y-1 mt-1">
                     {matchedCategories.map((cat) => {
                       const itemIndex = flattenedResults.findIndex(
-                        (r) => r.type === 'category' && r.data.id === cat.id
+                        (r) => r.type === 'category' && r.data.id === cat.id,
                       );
                       const isSelected = selectedIndex === itemIndex;
 
@@ -257,7 +265,9 @@ export function CommandPalette({
                             <Globe className="w-4 h-4 text-accent" />
                             <span>{cat.name}</span>
                           </div>
-                          <span className="text-[10px] text-token/40 font-mono">Jump to section</span>
+                          <span className="text-[10px] text-token/40 font-mono">
+                            Jump to section
+                          </span>
                         </div>
                       );
                     })}
@@ -274,7 +284,7 @@ export function CommandPalette({
                   <div className="space-y-1 mt-1">
                     {matchedPages.map((pg) => {
                       const itemIndex = flattenedResults.findIndex(
-                        (r) => r.type === 'page' && r.data.name === pg.name
+                        (r) => r.type === 'page' && r.data.name === pg.name,
                       );
                       const isSelected = selectedIndex === itemIndex;
                       const Icon = pg.icon;
@@ -319,10 +329,12 @@ export function CommandPalette({
           <div className="flex items-center gap-3">
             <span>
               <kbd className="px-1 py-0.5 rounded bg-surface-1 border border-token/20">↑</kbd>{' '}
-              <kbd className="px-1 py-0.5 rounded bg-surface-1 border border-token/20">↓</kbd> to navigate
+              <kbd className="px-1 py-0.5 rounded bg-surface-1 border border-token/20">↓</kbd> to
+              navigate
             </span>
             <span>
-              <kbd className="px-1.5 py-0.5 rounded bg-surface-1 border border-token/20">↵</kbd> to select
+              <kbd className="px-1.5 py-0.5 rounded bg-surface-1 border border-token/20">↵</kbd> to
+              select
             </span>
           </div>
           <span>FindFunLinks v2.0</span>
@@ -331,4 +343,3 @@ export function CommandPalette({
     </div>
   );
 }
-

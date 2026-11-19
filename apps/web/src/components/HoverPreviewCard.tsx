@@ -27,9 +27,7 @@ export function HoverPreviewCard({ site, children }: HoverPreviewCardProps) {
             </div>
             <div className="truncate">
               <span className="font-semibold text-token text-xs block truncate">{site.name}</span>
-              <span className="text-[10px] text-token/40 font-mono block">
-                {site.categoryName}
-              </span>
+              <span className="text-[10px] text-token/40 font-mono block">{site.categoryName}</span>
             </div>
           </div>
 
@@ -49,4 +47,3 @@ export function HoverPreviewCard({ site, children }: HoverPreviewCardProps) {
     </div>
   );
 }
-

@@ -60,12 +60,15 @@ export const SubmitRegistrationSchema = z.object({
     .email('Valid email address is required')
     .toLowerCase()
     .refine(isNonDisposableEmail, {
-      message: 'Disposable email addresses are not permitted. Please use your domain or personal email.',
+      message:
+        'Disposable email addresses are not permitted. Please use your domain or personal email.',
     }),
   applicantPhone: z.string().trim().max(30).optional().or(z.literal('')),
   applicantRole: z
     .nativeEnum(ApplicantRole, {
-      errorMap: () => ({ message: 'Please select your role (Owner, Admin, Developer, or Representative)' }),
+      errorMap: () => ({
+        message: 'Please select your role (Owner, Admin, Developer, or Representative)',
+      }),
     })
     .default(ApplicantRole.OWNER),
   applicantCountry: z.string().trim().min(2).max(100).default('Global'),
@@ -133,7 +136,8 @@ export const SubmitRegistrationSchema = z.object({
     .optional()
     .or(z.literal('')),
   termsAccepted: z.boolean().refine((val) => val === true, {
-    message: 'You must agree to the Terms of Service and confirm you hold authority to register this website',
+    message:
+      'You must agree to the Terms of Service and confirm you hold authority to register this website',
   }),
 
   // Bot & Security checks
@@ -163,7 +167,13 @@ export const ResubmitRegistrationSchema = z.object({
   categoryId: z.string().optional(),
   contentRating: z.nativeEnum(ContentRating).optional(),
   description: z.string().trim().min(20).max(2000).optional(),
-  logoUrl: z.string().trim().regex(SafeUrlRegex).refine(isSafePublicUrl).optional().or(z.literal('')),
+  logoUrl: z
+    .string()
+    .trim()
+    .regex(SafeUrlRegex)
+    .refine(isSafePublicUrl)
+    .optional()
+    .or(z.literal('')),
   proposedTags: z.array(z.string().trim().min(1).max(30)).max(10).optional(),
   applicantName: z.string().trim().min(2).max(100).optional(),
   applicantEmail: z.string().trim().email().toLowerCase().optional(),

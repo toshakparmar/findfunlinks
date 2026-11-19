@@ -43,7 +43,10 @@ export function BackToTop() {
         aria-label="Scroll back to top"
       >
         {/* Circular Progress Ring */}
-        <svg className="w-full h-full -rotate-90 pointer-events-none absolute inset-0" viewBox="0 0 40 40">
+        <svg
+          className="w-full h-full -rotate-90 pointer-events-none absolute inset-0"
+          viewBox="0 0 40 40"
+        >
           <circle
             cx="20"
             cy="20"

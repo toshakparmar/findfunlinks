@@ -178,7 +178,7 @@ export function CategoryRankCard({
             const domains = site.domains || [];
             const primaryDomain = domains.find((d) => d.type === 'PRIMARY') || domains[0];
             const fastestDomain = [...domains].sort(
-              (a, b) => (a.lastResponseMs || 999) - (b.lastResponseMs || 999)
+              (a, b) => (a.lastResponseMs || 999) - (b.lastResponseMs || 999),
             )[0];
             const hasActiveMirrors = domains.some((d) => d.status === 'ACTIVE');
             const latency = primaryDomain?.lastResponseMs || 38;

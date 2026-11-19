@@ -25,7 +25,10 @@ export default function AboutPage() {
   return (
     <div className="w-full space-y-8 max-w-5xl mx-auto">
       {/* 1. Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium">
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium"
+      >
         <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
           Home
         </Link>
@@ -50,7 +53,8 @@ export default function AboutPage() {
                 </span>
               </div>
               <p className="text-xs text-[var(--text-2,#A8B3C7)] mt-1 max-w-2xl leading-relaxed">
-                FindFunLinks was built to index the most entertaining, novel websites on the internet and ensure broken links or ISP blocking never stop you from accessing them.
+                FindFunLinks was built to index the most entertaining, novel websites on the
+                internet and ensure broken links or ISP blocking never stop you from accessing them.
               </p>
             </div>
           </div>
@@ -76,7 +80,9 @@ export default function AboutPage() {
           <p className="text-xs text-[var(--text-2,#A8B3C7)]">Primary Categories</p>
         </div>
         <div className="p-4 rounded-[16px] bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] text-center space-y-1">
-          <p className="text-2xl font-bold font-heading text-emerald-500 dark:text-emerald-400">1,200+</p>
+          <p className="text-2xl font-bold font-heading text-emerald-500 dark:text-emerald-400">
+            1,200+
+          </p>
           <p className="text-xs text-[var(--text-2,#A8B3C7)]">Monitored Mirrors</p>
         </div>
         <div className="p-4 rounded-[16px] bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] text-center space-y-1">
@@ -89,10 +95,16 @@ export default function AboutPage() {
       <div id="how-it-works" className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-white font-heading">How FindFunLinks Works</h2>
-            <p className="text-xs text-[var(--text-2,#A8B3C7)]">Our 3-step engine keeps entertaining web destinations accessible at all times.</p>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white font-heading">
+              How FindFunLinks Works
+            </h2>
+            <p className="text-xs text-[var(--text-2,#A8B3C7)]">
+              Our 3-step engine keeps entertaining web destinations accessible at all times.
+            </p>
           </div>
-          <span className="text-[11px] font-semibold text-[var(--text-3,#6B7893)]">Architecture</span>
+          <span className="text-[11px] font-semibold text-[var(--text-3,#6B7893)]">
+            Architecture
+          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -105,7 +117,8 @@ export default function AboutPage() {
             </div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">Curated Discovery</h3>
             <p className="text-xs text-[var(--text-2,#A8B3C7)] leading-relaxed">
-              Every website is hand-vetted or approved through our owner verification system to guarantee high entertainment value, zero malware, and genuine utility.
+              Every website is hand-vetted or approved through our owner verification system to
+              guarantee high entertainment value, zero malware, and genuine utility.
             </p>
           </div>
 
@@ -116,9 +129,12 @@ export default function AboutPage() {
               </div>
               <Radio className="w-4 h-4 text-[var(--text-3,#6B7893)]" />
             </div>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Automated Health Probes</h3>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              Automated Health Probes
+            </h3>
             <p className="text-xs text-[var(--text-2,#A8B3C7)] leading-relaxed">
-              Our background monitoring probes ping domains every 5 minutes across multiple global checkpoints, calculating exact response latency and detecting ISP or DNS blocks.
+              Our background monitoring probes ping domains every 5 minutes across multiple global
+              checkpoints, calculating exact response latency and detecting ISP or DNS blocks.
             </p>
           </div>
 
@@ -129,9 +145,12 @@ export default function AboutPage() {
               </div>
               <Zap className="w-4 h-4 text-[var(--text-3,#6B7893)]" />
             </div>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Instant Working Mirrors</h3>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              Instant Working Mirrors
+            </h3>
             <p className="text-xs text-[var(--text-2,#A8B3C7)] leading-relaxed">
-              When a primary domain faces downtime or regional restrictions, clicking on any site opens the Domains Drawer with verified alternate links and lowest latency routing.
+              When a primary domain faces downtime or regional restrictions, clicking on any site
+              opens the Domains Drawer with verified alternate links and lowest latency routing.
             </p>
           </div>
         </div>
@@ -141,31 +160,48 @@ export default function AboutPage() {
       <div className="rounded-[16px] bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] p-6 space-y-4">
         <div className="flex items-center gap-2.5">
           <ShieldCheck className="w-5 h-5 text-[var(--primary,#2563EB)]" />
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white font-heading">The Editorial Verification Pipeline</h2>
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white font-heading">
+            The Editorial Verification Pipeline
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
           <div className="p-3.5 rounded-[12px] bg-[var(--card-hover,#0E182F)]/50 border border-[var(--line,#1A2442)] space-y-1">
-            <span className="text-[10px] font-mono font-bold text-[var(--text-3,#6B7893)]">STEP 1</span>
-            <p className="text-xs font-semibold text-slate-900 dark:text-white">Pre-Flight Safety Check</p>
+            <span className="text-[10px] font-mono font-bold text-[var(--text-3,#6B7893)]">
+              STEP 1
+            </span>
+            <p className="text-xs font-semibold text-slate-900 dark:text-white">
+              Pre-Flight Safety Check
+            </p>
             <p className="text-[11px] text-[var(--text-2,#A8B3C7)] leading-relaxed">
-              Automated tests verify SSL certificates, domain ownership tokens (DNS TXT / HTML Meta), and safe redirect status.
+              Automated tests verify SSL certificates, domain ownership tokens (DNS TXT / HTML
+              Meta), and safe redirect status.
             </p>
           </div>
 
           <div className="p-3.5 rounded-[12px] bg-[var(--card-hover,#0E182F)]/50 border border-[var(--line,#1A2442)] space-y-1">
-            <span className="text-[10px] font-mono font-bold text-[var(--text-3,#6B7893)]">STEP 2</span>
-            <p className="text-xs font-semibold text-slate-900 dark:text-white">Human Super Admin Review</p>
+            <span className="text-[10px] font-mono font-bold text-[var(--text-3,#6B7893)]">
+              STEP 2
+            </span>
+            <p className="text-xs font-semibold text-slate-900 dark:text-white">
+              Human Super Admin Review
+            </p>
             <p className="text-[11px] text-[var(--text-2,#A8B3C7)] leading-relaxed">
-              Our moderation editors inspect category placement, review safety guidelines, and confirm owner authenticity.
+              Our moderation editors inspect category placement, review safety guidelines, and
+              confirm owner authenticity.
             </p>
           </div>
 
           <div className="p-3.5 rounded-[12px] bg-[var(--card-hover,#0E182F)]/50 border border-[var(--line,#1A2442)] space-y-1">
-            <span className="text-[10px] font-mono font-bold text-slate-900 dark:text-white">STEP 3</span>
-            <p className="text-xs font-semibold text-slate-900 dark:text-white">Owner Credential Provisioning</p>
+            <span className="text-[10px] font-mono font-bold text-slate-900 dark:text-white">
+              STEP 3
+            </span>
+            <p className="text-xs font-semibold text-slate-900 dark:text-white">
+              Owner Credential Provisioning
+            </p>
             <p className="text-[11px] text-[var(--text-2,#A8B3C7)] leading-relaxed">
-              Approved owners receive an invite link to the Owner Console to manage unlimited mirror domains in real time.
+              Approved owners receive an invite link to the Owner Console to manage unlimited mirror
+              domains in real time.
             </p>
           </div>
         </div>
@@ -188,28 +224,42 @@ export default function AboutPage() {
       <div className="space-y-4 pt-2">
         <div className="flex items-center gap-2">
           <HelpCircle className="w-4 h-4 text-[var(--primary,#2563EB)]" />
-          <h2 className="text-base font-bold text-slate-900 dark:text-white font-heading">Frequently Asked Questions</h2>
+          <h2 className="text-base font-bold text-slate-900 dark:text-white font-heading">
+            Frequently Asked Questions
+          </h2>
         </div>
 
         <div className="space-y-3">
           <div className="rounded-[14px] border border-[var(--line,#1A2442)] bg-[var(--card,#0A1226)] p-4 sm:p-5 space-y-1.5">
-            <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Do you host any files, videos, or external media?</h3>
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+              Do you host any files, videos, or external media?
+            </h3>
             <p className="text-xs text-[var(--text-2,#A8B3C7)] leading-relaxed">
-              No. FindFunLinks is strictly a non-hosting web directory and mirror index. We do not host, store, or stream any media files. We index publicly accessible web links and monitor domain uptime.
+              No. FindFunLinks is strictly a non-hosting web directory and mirror index. We do not
+              host, store, or stream any media files. We index publicly accessible web links and
+              monitor domain uptime.
             </p>
           </div>
 
           <div className="rounded-[14px] border border-[var(--line,#1A2442)] bg-[var(--card,#0A1226)] p-4 sm:p-5 space-y-1.5">
-            <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">How frequently are domain health checks performed?</h3>
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+              How frequently are domain health checks performed?
+            </h3>
             <p className="text-xs text-[var(--text-2,#A8B3C7)] leading-relaxed">
-              Our automated probe engines conduct HTTP latency and DNS status checks every 5 minutes. If a domain becomes unresponsive or returns consecutive errors, it is flagged as down and alternate mirrors are prioritized.
+              Our automated probe engines conduct HTTP latency and DNS status checks every 5
+              minutes. If a domain becomes unresponsive or returns consecutive errors, it is flagged
+              as down and alternate mirrors are prioritized.
             </p>
           </div>
 
           <div className="rounded-[14px] border border-[var(--line,#1A2442)] bg-[var(--card,#0A1226)] p-4 sm:p-5 space-y-1.5">
-            <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Can I add more mirror links after my website is approved?</h3>
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+              Can I add more mirror links after my website is approved?
+            </h3>
             <p className="text-xs text-[var(--text-2,#A8B3C7)] leading-relaxed">
-              Yes! Verified website owners have access to the dedicated Owner Console where they can add unlimited domain links, set primary vs backup mirrors, and trigger on-demand health scans.
+              Yes! Verified website owners have access to the dedicated Owner Console where they can
+              add unlimited domain links, set primary vs backup mirrors, and trigger on-demand
+              health scans.
             </p>
           </div>
         </div>

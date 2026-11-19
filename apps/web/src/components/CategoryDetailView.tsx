@@ -2,11 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import {
-  ChevronRight,
-  Search,
-  PlusCircle,
-} from 'lucide-react';
+import { ChevronRight, Search, PlusCircle } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { SiteRow } from './SiteRow';
 import { SiteDomainsDrawer, SiteDetailModalData } from './SiteDomainsDrawer';
@@ -69,7 +65,7 @@ export function CategoryDetailView({ category, sites }: CategoryDetailViewProps)
         (s) =>
           s.name.toLowerCase().includes(q) ||
           s.slug.toLowerCase().includes(q) ||
-          (s.displayName && s.displayName.toLowerCase().includes(q))
+          (s.displayName && s.displayName.toLowerCase().includes(q)),
       );
     }
 
@@ -116,12 +112,18 @@ export function CategoryDetailView({ category, sites }: CategoryDetailViewProps)
   return (
     <div className="w-full space-y-5">
       {/* 1. Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium">
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium"
+      >
         <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
           Home
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-[var(--line,#1A2442)]" />
-        <Link href="/categories" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+        <Link
+          href="/categories"
+          className="hover:text-slate-900 dark:hover:text-white transition-colors"
+        >
           Categories
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-[var(--line,#1A2442)]" />

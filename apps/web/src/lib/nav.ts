@@ -9,28 +9,28 @@ export interface NavActiveState {
 }
 
 export function getActive(pathname: string): NavActiveState {
-  const normalized = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
+  const normalized =
+    pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
 
   const header: ActiveHeaderTab =
     normalized === '' || normalized === '/' || normalized.startsWith('/category/')
       ? 'home'
       : normalized.startsWith('/categories')
-      ? 'categories'
-      : normalized.startsWith('/new') || normalized.startsWith('/hot')
-      ? 'new'
-      : normalized.startsWith('/popular')
-      ? 'popular'
-      : normalized.startsWith('/requests')
-      ? 'requests'
-      : null;
+        ? 'categories'
+        : normalized.startsWith('/new') || normalized.startsWith('/hot')
+          ? 'new'
+          : normalized.startsWith('/popular')
+            ? 'popular'
+            : normalized.startsWith('/requests')
+              ? 'requests'
+              : null;
 
   const sidebar =
     normalized === '' || normalized === '/'
       ? 'all'
       : normalized.startsWith('/category/')
-      ? normalized.split('/')[2] || null
-      : null;
+        ? normalized.split('/')[2] || null
+        : null;
 
   return { header, sidebar };
 }
-

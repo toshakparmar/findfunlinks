@@ -53,4 +53,3 @@ test('capture redesigned pages and dropdown screenshots', async ({ page }) => {
     path: 'C:/Users/hp/.gemini/antigravity/brain/5a976452-709c-46b9-b024-9bb67cad7d11/redesigned-register-dropdown.png',
   });
 });
-

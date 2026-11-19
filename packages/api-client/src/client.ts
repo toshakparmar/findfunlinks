@@ -172,10 +172,13 @@ export class ApiClient {
   // --- Auth Endpoints ---
   public auth = {
     login: async (input: LoginInput) => {
-      const res = await this.request<{ user: UserProfile; accessToken: string }>('/api/v1/auth/login', {
-        method: 'POST',
-        body: JSON.stringify(input),
-      });
+      const res = await this.request<{ user: UserProfile; accessToken: string }>(
+        '/api/v1/auth/login',
+        {
+          method: 'POST',
+          body: JSON.stringify(input),
+        },
+      );
       if (res?.accessToken) {
         this.setToken(res.accessToken);
       }
@@ -203,10 +206,13 @@ export class ApiClient {
         body: JSON.stringify(input),
       }),
     acceptInvite: async (input: AcceptInviteInput) => {
-      const res = await this.request<{ user: UserProfile; accessToken?: string }>('/api/v1/auth/accept-invite', {
-        method: 'POST',
-        body: JSON.stringify(input),
-      });
+      const res = await this.request<{ user: UserProfile; accessToken?: string }>(
+        '/api/v1/auth/accept-invite',
+        {
+          method: 'POST',
+          body: JSON.stringify(input),
+        },
+      );
       if (res?.accessToken) {
         this.setToken(res.accessToken);
       }

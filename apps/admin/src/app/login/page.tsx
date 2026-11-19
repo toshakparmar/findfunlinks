@@ -140,11 +140,7 @@ export default function AdminLoginPage() {
                   className="absolute right-3 top-2.5 p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                   title={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>

@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Phase 1: Routing and State Root-Cause Verification', () => {
-  test('Test 1: Home -> click View More on OTT Platforms -> /category/ott-platforms', async ({ page }) => {
+  test('Test 1: Home -> click View More on OTT Platforms -> /category/ott-platforms', async ({
+    page,
+  }) => {
     // 1. Visit homepage
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
@@ -43,7 +45,9 @@ test.describe('Phase 1: Routing and State Root-Cause Verification', () => {
     await expect(page.locator('text=Amazon Prime Video')).toBeVisible();
   });
 
-  test('Test 2: Sidebar navigation, Home/All Links restoration, and browser history', async ({ page }) => {
+  test('Test 2: Sidebar navigation, Home/All Links restoration, and browser history', async ({
+    page,
+  }) => {
     // 1. Go to /category/ott-platforms
     await page.goto('/category/ott-platforms', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/\/category\/ott-platforms/);

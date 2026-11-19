@@ -217,7 +217,9 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
               {...register('websiteName')}
             />
             {errors.websiteName && (
-              <p className="text-xs text-rose-500 mt-1">{String(errors.websiteName?.message || '')}</p>
+              <p className="text-xs text-rose-500 mt-1">
+                {String(errors.websiteName?.message || '')}
+              </p>
             )}
           </div>
 
@@ -235,7 +237,9 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
               {...register('primaryUrl')}
             />
             {errors.primaryUrl && (
-              <p className="text-xs text-rose-500 mt-1">{String(errors.primaryUrl?.message || '')}</p>
+              <p className="text-xs text-rose-500 mt-1">
+                {String(errors.primaryUrl?.message || '')}
+              </p>
             )}
           </div>
         </div>
@@ -292,7 +296,9 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
             {...register('description')}
           />
           {errors.description && (
-            <p className="text-xs text-rose-500 mt-1">{String(errors.description?.message || '')}</p>
+            <p className="text-xs text-rose-500 mt-1">
+              {String(errors.description?.message || '')}
+            </p>
           )}
         </div>
 

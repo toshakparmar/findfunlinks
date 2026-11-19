@@ -54,7 +54,10 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
               onClick={() => {
                 onClose();
                 if (typeof window !== 'undefined' && (window as any).va) {
-                  (window as any).va('event', { name: 'cta_register_click', data: { source: 'mobile_menu' } });
+                  (window as any).va('event', {
+                    name: 'cta_register_click',
+                    data: { source: 'mobile_menu' },
+                  });
                 }
               }}
               className="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl text-xs font-semibold bg-[var(--primary,#2563EB)] hover:bg-[var(--primary-hover,#1D4ED8)] text-white shadow-sm transition-colors"

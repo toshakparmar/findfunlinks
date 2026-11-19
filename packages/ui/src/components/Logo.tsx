@@ -42,7 +42,11 @@ export const Logo: React.FC<LogoProps> = ({
           r="42"
           stroke={isDark ? '#3B82F6' : isLight ? '#0B57D9' : undefined}
           fill={isDark ? '#0B132B' : isLight ? '#FFFFFF' : undefined}
-          className={isAuto ? 'stroke-[#0B57D9] dark:stroke-[#3B82F6] fill-white dark:fill-[#0B132B]' : undefined}
+          className={
+            isAuto
+              ? 'stroke-[#0B57D9] dark:stroke-[#3B82F6] fill-white dark:fill-[#0B132B]'
+              : undefined
+          }
           strokeWidth="12"
         />
         <circle cx="49" cy="40" r="10" fill="#F59E0B" />
@@ -165,7 +169,11 @@ export const Logo: React.FC<LogoProps> = ({
           r="38"
           stroke={isDark ? '#3B82F6' : isLight ? '#0B57D9' : undefined}
           fill={isDark ? '#0B132B' : isLight ? '#FFFFFF' : undefined}
-          className={isAuto ? 'stroke-[#0B57D9] dark:stroke-[#3B82F6] fill-white dark:fill-[#0B132B]' : undefined}
+          className={
+            isAuto
+              ? 'stroke-[#0B57D9] dark:stroke-[#3B82F6] fill-white dark:fill-[#0B132B]'
+              : undefined
+          }
           strokeWidth="11"
         />
         <circle cx="44" cy="35" r="9" fill="#F59E0B" />
@@ -271,8 +279,8 @@ export const Logo: React.FC<LogoProps> = ({
           isDark
             ? 'fill-white'
             : isLight
-            ? 'fill-slate-900'
-            : 'fill-slate-900 dark:fill-white transition-colors'
+              ? 'fill-slate-900'
+              : 'fill-slate-900 dark:fill-white transition-colors'
         }
         letterSpacing="-1.5"
       >

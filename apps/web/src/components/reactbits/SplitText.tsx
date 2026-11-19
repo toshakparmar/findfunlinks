@@ -36,4 +36,3 @@ export function SplitText({ text, className = '', delay = 0.05 }: SplitTextProps
     </span>
   );
 }
-

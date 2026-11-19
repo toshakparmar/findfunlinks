@@ -84,10 +84,7 @@ export const SiteRow: React.FC<SiteRowProps> = ({
               }}
             />
           ) : (
-            <span
-              className="text-[10px] font-bold"
-              style={{ color: accentColor }}
-            >
+            <span className="text-[10px] font-bold" style={{ color: accentColor }}>
               {firstLetter}
             </span>
           )}
@@ -98,9 +95,7 @@ export const SiteRow: React.FC<SiteRowProps> = ({
           {isMirror ? (
             <>
               {label.replace(/\(mirror\)/i, '').trim()}{' '}
-              <span className="text-[11px] text-[var(--text-3,#6B7893)] font-normal">
-                (Mirror)
-              </span>
+              <span className="text-[11px] text-[var(--text-3,#6B7893)] font-normal">(Mirror)</span>
             </>
           ) : (
             label

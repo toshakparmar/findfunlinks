@@ -224,4 +224,3 @@ export function DiscoveryRails({ websites }: DiscoveryRailsProps) {
     </div>
   );
 }
-

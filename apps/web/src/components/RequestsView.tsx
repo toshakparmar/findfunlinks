@@ -26,7 +26,9 @@ export function RequestsView() {
   // Suggest Form State
   const [suggestName, setSuggestName] = useState('');
   const [suggestUrl, setSuggestUrl] = useState('');
-  const [suggestCategory, setSuggestCategory] = useState(CLIENT_18_CATEGORIES[0]?.slug || 'ott-platforms');
+  const [suggestCategory, setSuggestCategory] = useState(
+    CLIENT_18_CATEGORIES[0]?.slug || 'ott-platforms',
+  );
   const [suggestEmail, setSuggestEmail] = useState('');
   const [suggestNotes, setSuggestNotes] = useState('');
   const [suggestSubmitting, setSuggestSubmitting] = useState(false);
@@ -76,12 +78,17 @@ export function RequestsView() {
   return (
     <div className="w-full space-y-6">
       {/* 1. Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium">
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium"
+      >
         <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
           Home
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-[var(--line,#1A2442)]" />
-        <span className="text-slate-900 dark:text-white font-semibold">Website Requests & Curation</span>
+        <span className="text-slate-900 dark:text-white font-semibold">
+          Website Requests & Curation
+        </span>
       </nav>
 
       {/* 2. Page Header Banner (Matching Category Detail Header) */}
@@ -101,7 +108,8 @@ export function RequestsView() {
                 </span>
               </div>
               <p className="text-xs text-[var(--text-2,#A8B3C7)] mt-1 max-w-2xl">
-                Direct portal for website owners to list verified mirror links, and for visitors to suggest new entries or report broken domains.
+                Direct portal for website owners to list verified mirror links, and for visitors to
+                suggest new entries or report broken domains.
               </p>
             </div>
           </div>
@@ -110,7 +118,10 @@ export function RequestsView() {
             href="/register"
             onClick={() => {
               if (typeof window !== 'undefined' && (window as any).va) {
-                (window as any).va('event', { name: 'cta_register_click', data: { source: 'requests_header' } });
+                (window as any).va('event', {
+                  name: 'cta_register_click',
+                  data: { source: 'requests_header' },
+                });
               }
             }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-[12px] text-xs font-semibold bg-[var(--primary,#2563EB)] hover:bg-[var(--primary-hover,#1D4ED8)] text-white shadow-sm transition-colors shrink-0 self-start md:self-auto cursor-pointer"
@@ -153,9 +164,12 @@ export function RequestsView() {
                 <Globe className="w-3.5 h-3.5" />
               </div>
               <div>
-                <h3 className="text-xs font-semibold text-slate-900 dark:text-white">Unlimited Domains & Mirrors</h3>
+                <h3 className="text-xs font-semibold text-slate-900 dark:text-white">
+                  Unlimited Domains & Mirrors
+                </h3>
                 <p className="text-[11px] text-[var(--text-2,#A8B3C7)] mt-0.5 leading-relaxed">
-                  List your primary website, backup mirrors, and unblocked proxy URLs with zero domain restrictions.
+                  List your primary website, backup mirrors, and unblocked proxy URLs with zero
+                  domain restrictions.
                 </p>
               </div>
             </div>
@@ -165,9 +179,12 @@ export function RequestsView() {
                 <Activity className="w-3.5 h-3.5" />
               </div>
               <div>
-                <h3 className="text-xs font-semibold text-slate-900 dark:text-white">Automated Health Checks</h3>
+                <h3 className="text-xs font-semibold text-slate-900 dark:text-white">
+                  Automated Health Checks
+                </h3>
                 <p className="text-[11px] text-[var(--text-2,#A8B3C7)] mt-0.5 leading-relaxed">
-                  Our network monitors uptime every 5 minutes and routes visitors directly to fastest online mirrors.
+                  Our network monitors uptime every 5 minutes and routes visitors directly to
+                  fastest online mirrors.
                 </p>
               </div>
             </div>
@@ -177,9 +194,12 @@ export function RequestsView() {
                 <ShieldCheck className="w-3.5 h-3.5" />
               </div>
               <div>
-                <h3 className="text-xs font-semibold text-slate-900 dark:text-white">Verified Ownership Badge</h3>
+                <h3 className="text-xs font-semibold text-slate-900 dark:text-white">
+                  Verified Ownership Badge
+                </h3>
                 <p className="text-[11px] text-[var(--text-2,#A8B3C7)] mt-0.5 leading-relaxed">
-                  Gain official verified directory status and build audience trust with a dedicated Owner Console.
+                  Gain official verified directory status and build audience trust with a dedicated
+                  Owner Console.
                 </p>
               </div>
             </div>
@@ -191,7 +211,10 @@ export function RequestsView() {
               href="/register"
               onClick={() => {
                 if (typeof window !== 'undefined' && (window as any).va) {
-                  (window as any).va('event', { name: 'cta_register_click', data: { source: 'requests_hero' } });
+                  (window as any).va('event', {
+                    name: 'cta_register_click',
+                    data: { source: 'requests_hero' },
+                  });
                 }
               }}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[12px] text-xs font-semibold bg-[var(--primary,#2563EB)] hover:bg-[var(--primary-hover,#1D4ED8)] text-white shadow-sm transition-colors cursor-pointer"
@@ -250,7 +273,8 @@ export function RequestsView() {
                   </div>
                   <h3 className="text-sm font-bold text-white font-heading">Suggestion Received</h3>
                   <p className="text-xs text-[var(--text-2,#A8B3C7)] max-w-sm mx-auto leading-relaxed">
-                    Thank you for contributing. Our directory editors test and verify all links and mirrors before publishing.
+                    Thank you for contributing. Our directory editors test and verify all links and
+                    mirrors before publishing.
                   </p>
                   <button
                     type="button"
@@ -312,7 +336,8 @@ export function RequestsView() {
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold text-slate-900 dark:text-white">
-                        Your Email <span className="text-[var(--text-3,#6B7893)] font-normal">(optional)</span>
+                        Your Email{' '}
+                        <span className="text-[var(--text-3,#6B7893)] font-normal">(optional)</span>
                       </label>
                       <input
                         type="email"
@@ -326,7 +351,8 @@ export function RequestsView() {
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-slate-900 dark:text-white">
-                      Known Mirrors or Description <span className="text-[var(--text-3,#6B7893)] font-normal">(optional)</span>
+                      Known Mirrors or Description{' '}
+                      <span className="text-[var(--text-3,#6B7893)] font-normal">(optional)</span>
                     </label>
                     <textarea
                       rows={3}
@@ -356,103 +382,105 @@ export function RequestsView() {
                   </button>
                 </form>
               )
-            ) : (
-              reportSuccess ? (
-                <div className="text-center py-10 space-y-3">
-                  <div className="w-12 h-12 rounded-[12px] bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-sm font-bold text-white font-heading">Report Logged</h3>
-                  <p className="text-xs text-[var(--text-2,#A8B3C7)] max-w-sm mx-auto leading-relaxed">
-                    Thank you. Our automated health checkers and directory monitors will probe this domain and update the live mirror records.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setReportSuccess(false);
-                      setReportUrl('');
-                      setReportNotes('');
-                    }}
-                    className="inline-flex px-4 py-2 rounded-[10px] text-xs font-semibold bg-[var(--primary,#2563EB)] text-white cursor-pointer mt-1"
-                  >
-                    Report Another Link
-                  </button>
+            ) : reportSuccess ? (
+              <div className="text-center py-10 space-y-3">
+                <div className="w-12 h-12 rounded-[12px] bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-6 h-6" />
                 </div>
-              ) : (
-                <form onSubmit={handleReportSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-slate-900 dark:text-white">
-                        Broken Domain or Website <span className="text-[var(--hot,#EF4444)]">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={reportUrl}
-                        onChange={(e) => setReportUrl(e.target.value)}
-                        placeholder="e.g. mirror-1.domain.com"
-                        className="w-full bg-[var(--card-hover,#0E182F)] border border-[var(--line,#1A2442)] focus:border-[var(--hot,#EF4444)] rounded-[12px] px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-[var(--text-3,#6B7893)] outline-none transition-colors"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-slate-900 dark:text-white">
-                        Issue Type <span className="text-[var(--hot,#EF4444)]">*</span>
-                      </label>
-                      <CustomSelect
-                        value={reportReason}
-                        onChange={(val) => setReportReason(val)}
-                        options={issueOptions}
-                        size="md"
-                      />
-                    </div>
-                  </div>
-
+                <h3 className="text-sm font-bold text-white font-heading">Report Logged</h3>
+                <p className="text-xs text-[var(--text-2,#A8B3C7)] max-w-sm mx-auto leading-relaxed">
+                  Thank you. Our automated health checkers and directory monitors will probe this
+                  domain and update the live mirror records.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReportSuccess(false);
+                    setReportUrl('');
+                    setReportNotes('');
+                  }}
+                  className="inline-flex px-4 py-2 rounded-[10px] text-xs font-semibold bg-[var(--primary,#2563EB)] text-white cursor-pointer mt-1"
+                >
+                  Report Another Link
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleReportSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-slate-900 dark:text-white">
-                      Details / Error Encountered
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={reportNotes}
-                      onChange={(e) => setReportNotes(e.target.value)}
-                      placeholder="What error occurred? (e.g. Cloudflare error 522, ISP block page, domain expired)..."
-                      className="w-full bg-[var(--card-hover,#0E182F)] border border-[var(--line,#1A2442)] focus:border-[var(--hot,#EF4444)] rounded-[12px] px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-[var(--text-3,#6B7893)] outline-none transition-colors resize-none leading-relaxed"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-900 dark:text-white">
-                      Your Email <span className="text-[var(--text-3,#6B7893)] font-normal">(optional, for status follow-up)</span>
+                      Broken Domain or Website <span className="text-[var(--hot,#EF4444)]">*</span>
                     </label>
                     <input
-                      type="email"
-                      value={reportEmail}
-                      onChange={(e) => setReportEmail(e.target.value)}
-                      placeholder="you@example.com"
+                      type="text"
+                      required
+                      value={reportUrl}
+                      onChange={(e) => setReportUrl(e.target.value)}
+                      placeholder="e.g. mirror-1.domain.com"
                       className="w-full bg-[var(--card-hover,#0E182F)] border border-[var(--line,#1A2442)] focus:border-[var(--hot,#EF4444)] rounded-[12px] px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-[var(--text-3,#6B7893)] outline-none transition-colors"
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    disabled={reportSubmitting}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[12px] text-xs font-semibold bg-[var(--hot,#EF4444)] hover:bg-[var(--hot,#EF4444)]/90 text-white shadow-sm transition-colors cursor-pointer disabled:opacity-50"
-                  >
-                    {reportSubmitting ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        <span>Submitting...</span>
-                      </>
-                    ) : (
-                      <>
-                        <AlertTriangle className="w-3.5 h-3.5" />
-                        <span>Submit Broken Link Report</span>
-                      </>
-                    )}
-                  </button>
-                </form>
-              )
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-900 dark:text-white">
+                      Issue Type <span className="text-[var(--hot,#EF4444)]">*</span>
+                    </label>
+                    <CustomSelect
+                      value={reportReason}
+                      onChange={(val) => setReportReason(val)}
+                      options={issueOptions}
+                      size="md"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-900 dark:text-white">
+                    Details / Error Encountered
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={reportNotes}
+                    onChange={(e) => setReportNotes(e.target.value)}
+                    placeholder="What error occurred? (e.g. Cloudflare error 522, ISP block page, domain expired)..."
+                    className="w-full bg-[var(--card-hover,#0E182F)] border border-[var(--line,#1A2442)] focus:border-[var(--hot,#EF4444)] rounded-[12px] px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-[var(--text-3,#6B7893)] outline-none transition-colors resize-none leading-relaxed"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-900 dark:text-white">
+                    Your Email{' '}
+                    <span className="text-[var(--text-3,#6B7893)] font-normal">
+                      (optional, for status follow-up)
+                    </span>
+                  </label>
+                  <input
+                    type="email"
+                    value={reportEmail}
+                    onChange={(e) => setReportEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full bg-[var(--card-hover,#0E182F)] border border-[var(--line,#1A2442)] focus:border-[var(--hot,#EF4444)] rounded-[12px] px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-[var(--text-3,#6B7893)] outline-none transition-colors"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={reportSubmitting}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[12px] text-xs font-semibold bg-[var(--hot,#EF4444)] hover:bg-[var(--hot,#EF4444)]/90 text-white shadow-sm transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {reportSubmitting ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Submitting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      <span>Submit Broken Link Report</span>
+                    </>
+                  )}
+                </button>
+              </form>
             )}
           </div>
         </div>

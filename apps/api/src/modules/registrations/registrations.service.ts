@@ -247,7 +247,9 @@ export class RegistrationsService {
       request.status !== PrismaRegistrationStatus.CHANGES_REQUESTED &&
       request.status !== PrismaRegistrationStatus.PENDING
     ) {
-      throw new BadRequestException('This registration request cannot be modified in its current status.');
+      throw new BadRequestException(
+        'This registration request cannot be modified in its current status.',
+      );
     }
 
     const updated = await this.prisma.registrationRequest.update({
@@ -256,7 +258,8 @@ export class RegistrationsService {
         primaryUrl: input.primaryUrl ? input.primaryUrl.trim() : undefined,
         additionalDomains: input.additionalDomains ? input.additionalDomains : undefined,
         verificationMethod: input.verificationMethod ? input.verificationMethod : undefined,
-        verificationProof: input.verificationProof !== undefined ? input.verificationProof.trim() : undefined,
+        verificationProof:
+          input.verificationProof !== undefined ? input.verificationProof.trim() : undefined,
         description: input.description ? input.description.trim() : undefined,
         adminNote: input.adminNote !== undefined ? input.adminNote.trim() : undefined,
         status: PrismaRegistrationStatus.PENDING,

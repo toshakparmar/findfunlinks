@@ -35,23 +35,36 @@ export function NewView() {
   const allNewSites = useMemo<NewSiteItem[]>(() => {
     const list: NewSiteItem[] = [];
     const groups: ('today' | 'yesterday' | 'week' | 'month')[] = [
-      'today', 'today', 'yesterday', 'yesterday', 'yesterday',
-      'week', 'week', 'week', 'week', 'week',
-      'month', 'month', 'month', 'month', 'month'
+      'today',
+      'today',
+      'yesterday',
+      'yesterday',
+      'yesterday',
+      'week',
+      'week',
+      'week',
+      'week',
+      'week',
+      'month',
+      'month',
+      'month',
+      'month',
+      'month',
     ];
 
     let counter = 0;
     CLIENT_18_CATEGORIES.forEach((cat) => {
       cat.sites.slice(0, 3).forEach((site) => {
-        const group: 'today' | 'yesterday' | 'week' | 'month' = groups[counter % groups.length] || 'today';
+        const group: 'today' | 'yesterday' | 'week' | 'month' =
+          groups[counter % groups.length] || 'today';
         const addedLabel =
           group === 'today'
             ? 'Added Today'
             : group === 'yesterday'
-            ? 'Added Yesterday'
-            : group === 'week'
-            ? 'Added 4 days ago'
-            : 'Added 2 weeks ago';
+              ? 'Added Yesterday'
+              : group === 'week'
+                ? 'Added 4 days ago'
+                : 'Added 2 weeks ago';
 
         list.push({
           id: site.id,
@@ -78,7 +91,13 @@ export function NewView() {
   const filteredSites = useMemo(() => {
     return allNewSites.filter((site) => {
       if (timeRange === 'today' && site.addedTimeGroup !== 'today') return false;
-      if (timeRange === 'week' && (site.addedTimeGroup !== 'today' && site.addedTimeGroup !== 'yesterday' && site.addedTimeGroup !== 'week')) return false;
+      if (
+        timeRange === 'week' &&
+        site.addedTimeGroup !== 'today' &&
+        site.addedTimeGroup !== 'yesterday' &&
+        site.addedTimeGroup !== 'week'
+      )
+        return false;
       if (timeRange === 'month' && site.addedTimeGroup === 'month') return true;
 
       if (selectedCategory !== 'all' && site.categorySlug !== selectedCategory) return false;
@@ -103,13 +122,25 @@ export function NewView() {
     const thisMonth = filteredSites.filter((s) => s.addedTimeGroup === 'month');
 
     if (today.length > 0) {
-      groups.push({ title: 'Added Today', subtitle: 'Freshly listed and verified mirrors', items: today });
+      groups.push({
+        title: 'Added Today',
+        subtitle: 'Freshly listed and verified mirrors',
+        items: today,
+      });
     }
     if (yesterday.length > 0) {
-      groups.push({ title: 'Added Yesterday', subtitle: 'Newly approved directory entries', items: yesterday });
+      groups.push({
+        title: 'Added Yesterday',
+        subtitle: 'Newly approved directory entries',
+        items: yesterday,
+      });
     }
     if (thisWeek.length > 0) {
-      groups.push({ title: 'Earlier This Week', subtitle: 'Verified within the last 7 days', items: thisWeek });
+      groups.push({
+        title: 'Earlier This Week',
+        subtitle: 'Verified within the last 7 days',
+        items: thisWeek,
+      });
     }
     if (thisMonth.length > 0 && timeRange === 'all') {
       groups.push({ title: 'This Month', subtitle: 'Recent platform additions', items: thisMonth });
@@ -121,7 +152,10 @@ export function NewView() {
   return (
     <div className="w-full space-y-6">
       {/* 1. Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium">
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium"
+      >
         <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
           Home
         </Link>
@@ -146,7 +180,8 @@ export function NewView() {
                 </span>
               </div>
               <p className="text-xs text-[var(--text-2,#A8B3C7)] mt-1 max-w-2xl">
-                Freshly curated websites and newly verified mirror links added to the FindFunLinks directory.
+                Freshly curated websites and newly verified mirror links added to the FindFunLinks
+                directory.
               </p>
             </div>
           </div>
@@ -259,7 +294,9 @@ export function NewView() {
             >
               <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--line,#1A2442)] bg-[var(--card-hover,#0E182F)]/30">
                 <div>
-                  <h2 className="text-sm font-bold text-slate-900 dark:text-white font-heading">{group.title}</h2>
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-white font-heading">
+                    {group.title}
+                  </h2>
                   <p className="text-[11px] text-[var(--text-3,#6B7893)]">{group.subtitle}</p>
                 </div>
                 <span className="text-[11px] font-semibold text-slate-700 dark:text-[var(--text-2,#A8B3C7)] bg-slate-100 dark:bg-[var(--line,#1A2442)]/50 px-2 py-0.5 rounded-full border border-[var(--line,#1A2442)]">
@@ -322,7 +359,8 @@ export function NewView() {
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]" />
                       <span className="text-[10px] text-[var(--text-3,#6B7893)]">
-                        {site.domains?.length || 1} {site.domains?.length === 1 ? 'link' : 'mirrors'}
+                        {site.domains?.length || 1}{' '}
+                        {site.domains?.length === 1 ? 'link' : 'mirrors'}
                       </span>
                     </div>
                   </div>

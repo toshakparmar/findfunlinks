@@ -46,7 +46,9 @@ export class RegistrationsController {
   }
 
   @Get('status')
-  @ApiOperation({ summary: 'Check status of a registration request by Reference ID & Email (Public)' })
+  @ApiOperation({
+    summary: 'Check status of a registration request by Reference ID & Email (Public)',
+  })
   @ApiQuery({ name: 'ref', required: true, type: String })
   @ApiQuery({ name: 'email', required: true, type: String })
   async getStatus(@Query('ref') ref?: string, @Query('email') email?: string) {

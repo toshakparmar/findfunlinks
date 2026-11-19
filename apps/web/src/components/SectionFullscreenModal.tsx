@@ -38,7 +38,7 @@ export function SectionFullscreenModal({
       (w) =>
         w.name.toLowerCase().includes(search.toLowerCase()) ||
         w.description?.toLowerCase().includes(search.toLowerCase()) ||
-        w.tags?.some((t) => t.name.toLowerCase().includes(search.toLowerCase()))
+        w.tags?.some((t) => t.name.toLowerCase().includes(search.toLowerCase())),
     )
     .sort((a, b) => {
       if (sort === 'az') return a.name.localeCompare(b.name);
@@ -216,4 +216,3 @@ export function SectionFullscreenModal({
     </div>
   );
 }
-
