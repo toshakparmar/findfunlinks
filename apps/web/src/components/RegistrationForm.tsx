@@ -11,6 +11,7 @@ import {
   ContentRating,
 } from '@findfunlinks/contracts';
 import { CategoryTab } from './DirectoryGrid';
+import { CustomSelect } from './ui/CustomSelect';
 import { Globe, User, Plus, X, Loader2, CheckCircle2, Info, ArrowRight } from 'lucide-react';
 import type { Resolver } from 'react-hook-form';
 
@@ -229,17 +230,15 @@ export function RegistrationForm({ categories }: RegistrationFormProps) {
             >
               Primary Category *
             </label>
-            <select
+            <CustomSelect
               id="reg-category"
-              className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              {...register('categoryId')}
-            >
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+              value={watch('categoryId') || categories[0]?.id || ''}
+              onChange={(val) => setValue('categoryId', val, { shouldValidate: true })}
+              options={categories.map((c) => ({
+                value: c.id,
+                label: c.name,
+              }))}
+            />
             {errors.categoryId && (
               <p className="text-xs text-rose-500 mt-1">{errors.categoryId.message}</p>
             )}
@@ -252,14 +251,15 @@ export function RegistrationForm({ categories }: RegistrationFormProps) {
             >
               Content Rating *
             </label>
-            <select
+            <CustomSelect
               id="reg-content-rating"
-              className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              {...register('contentRating')}
-            >
-              <option value={ContentRating.ALL}>All Audiences (Family-Friendly)</option>
-              <option value={ContentRating.MATURE}>18+ Mature (Age-Gated)</option>
-            </select>
+              value={watch('contentRating') || ContentRating.ALL}
+              onChange={(val) => setValue('contentRating', val as any, { shouldValidate: true })}
+              options={[
+                { value: ContentRating.ALL, label: 'All Audiences (Family-Friendly)' },
+                { value: ContentRating.MATURE, label: '18+ Mature (Age-Gated)' },
+              ]}
+            />
             {errors.contentRating && (
               <p className="text-xs text-rose-500 mt-1">{errors.contentRating.message}</p>
             )}

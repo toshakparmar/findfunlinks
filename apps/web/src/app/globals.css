@@ -2,82 +2,147 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '../../../../packages/ui/styles/tokens.css';
+
 @layer base {
-  :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+  :root,
+  .dark {
+    /* Client Design: Dark Navy Primary (Default) */
+    --bg: #050A18;
+    --header: #070D1E;
+    --sidebar: #070D1E;
+    --card: #0A1226;
+    --card-hover: #0E182F;
+    --surface-1: #0A1226;
+    --surface-2: #0E182F;
+    --line: #1A2442;
+    --border: #1A2442;
+    --border-strong: rgba(59, 130, 246, 0.4);
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --text: #F1F5F9;
+    --text-muted: #A8B3C7;
+    --text-faint: #6B7893;
+    --text-2: #A8B3C7;
+    --text-3: #6B7893;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --primary: #2563EB;
+    --primary-fg: #FFFFFF;
+    --brand-link: #3B82F6;
+    --accent: #EAB308;
+    --hot: #EF4444;
 
-    /* Brand Primary Blue #0B57D9 */
-    --primary: 218 90% 45%;
-    --primary-foreground: 210 40% 98%;
+    --status-online: #22C55E;
+    --status-slow: #F59E0B;
+    --status-down: #EF4444;
 
-    /* Brand Accent Orange #F59E0B */
-    --secondary: 38 92% 50%;
-    --secondary-foreground: 222 47% 11%;
+    --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, Monaco, monospace;
+    --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 218 90% 45%;
-
-    --radius: 0.75rem;
+    /* Shadcn/UI tokens mapped to client theme */
+    --background: 224 67% 6%;
+    --foreground: 210 40% 96%;
+    --card-bg: 224 57% 9%;
+    --popover: 224 57% 9%;
+    --popover-foreground: 210 40% 96%;
+    --muted: 224 43% 18%;
+    --muted-foreground: 217 19% 72%;
+    --ring: 221 83% 53%;
+    --radius: 1rem;
   }
 
-  .dark {
-    --background: 240 10% 5%;
-    --foreground: 240 5% 96%;
+  .light {
+    --bg: #F3F6FC;
+    --header: #FFFFFF;
+    --sidebar: #FFFFFF;
+    --card: #FFFFFF;
+    --card-hover: #F8FAFC;
+    --surface-1: #FFFFFF;
+    --surface-2: #F1F5F9;
+    --line: #D9E1F0;
+    --border: #D9E1F0;
+    --border-strong: rgba(37, 99, 235, 0.4);
 
-    --card: 240 7% 9.5%;
-    --card-foreground: 240 5% 96%;
+    --text: #0B1220;
+    --text-muted: #475569;
+    --text-faint: #64748B;
+    --text-2: #475569;
+    --text-3: #64748B;
 
-    --popover: 240 7% 9.5%;
-    --popover-foreground: 240 5% 96%;
+    --primary: #2563EB;
+    --primary-fg: #FFFFFF;
+    --brand-link: #2563EB;
+    --accent: #CA8A04;
+    --hot: #DC2626;
 
-    --primary: 218 90% 55%;
-    --primary-foreground: 210 40% 98%;
+    --status-online: #16A34A;
+    --status-slow: #D97706;
+    --status-down: #DC2626;
 
-    --secondary: 38 92% 50%;
-    --secondary-foreground: 240 10% 5%;
-
-    --muted: 240 6% 14%;
-    --muted-foreground: 240 5% 65%;
-
-    --accent: 240 6% 15%;
-    --accent-foreground: 240 5% 96%;
-
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 240 5% 17%;
-    --input: 240 5% 17%;
-    --ring: 218 90% 55%;
+    --background: 220 54% 97%;
+    --foreground: 222 47% 9%;
+    --card-bg: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 9%;
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 16% 47%;
+    --ring: 221 83% 53%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    border-color: var(--border);
   }
 
-  /* Custom Sleek Dark Scrollbars */
+  html {
+    color-scheme: light dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  /* Micro tactile noise texture */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  /* Typography utilities */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Custom sleek scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -86,10 +151,61 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #27272a;
+    background: rgba(160, 150, 140, 0.25);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3f3f46;
+    background: rgba(160, 150, 140, 0.45);
   }
+}
+
+/* Subtle Shimmer effect for HOT badge & brand moments */
+@keyframes shiny-text {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shiny-text {
+  background-size: 200% 100%;
+  animation: shiny-text 4s linear infinite;
+}
+
+/* Flame flicker animation */
+@keyframes flame-flicker {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(0.96) rotate(-1deg);
+  }
+}
+
+.animate-flame {
+  animation: flame-flicker 2.2s ease-in-out infinite;
+}
+
+/* Online pulsing status dot */
+@keyframes radar-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.status-dot-pulse {
+  animation: radar-pulse 2.2s infinite;
 }

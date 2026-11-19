@@ -63,31 +63,66 @@ export interface CategoryWithWebsites extends Category {
 
 export interface RegistrationRequestDetails {
   id: string;
+  referenceId?: string | null;
   applicantName: string;
   applicantEmail: string;
   applicantPhone?: string | null;
+  applicantRole?: string | null;
   applicantCountry?: string | null;
   telegramOrDiscord?: string | null;
   websiteName: string;
   primaryUrl: string;
+  additionalDomains?: string[];
   description: string;
   categoryId: string;
   proposedTags: string[];
   logoUrl?: string | null;
   language: string;
   contentRating: string;
+  verificationMethod?: string | null;
+  verificationToken?: string | null;
+  verificationProof?: string | null;
+  adminNote?: string | null;
   status: string;
   reviewNote?: string | null;
   submittedAt: string;
+  reviewedAt?: string | null;
 }
 
 export class ApiClient {
   private readonly baseUrl: string;
   private readonly fetch: typeof fetch;
+  private token: string | null = null;
 
   constructor(options: ApiClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, '');
     this.fetch = options.fetchFn || fetch.bind(globalThis);
+  }
+
+  public setToken(token: string | null): void {
+    this.token = token;
+    if (typeof window !== 'undefined') {
+      try {
+        if (token) {
+          localStorage.setItem('ffl_access_token', token);
+        } else {
+          localStorage.removeItem('ffl_access_token');
+        }
+      } catch {
+        // Ignore localStorage errors (e.g. Incognito private mode quota)
+      }
+    }
+  }
+
+  public getToken(): string | null {
+    if (!this.token && typeof window !== 'undefined') {
+      try {
+        this.token = localStorage.getItem('ffl_access_token');
+      } catch {
+        // Ignore localStorage errors
+      }
+    }
+    return this.token;
   }
 
   private async request<T>(endpoint: string, init?: RequestInit): Promise<T> {
@@ -96,6 +131,11 @@ export class ApiClient {
 
     if (!headers.has('Content-Type') && !(init?.body instanceof FormData)) {
       headers.set('Content-Type', 'application/json');
+    }
+
+    const token = this.getToken();
+    if (token && !headers.has('Authorization')) {
+      headers.set('Authorization', `Bearer ${token}`);
     }
 
     const response = await this.fetch(url, {
@@ -131,15 +171,25 @@ export class ApiClient {
 
   // --- Auth Endpoints ---
   public auth = {
-    login: (input: LoginInput) =>
-      this.request<{ user: UserProfile }>('/api/v1/auth/login', {
+    login: async (input: LoginInput) => {
+      const res = await this.request<{ user: UserProfile; accessToken: string }>('/api/v1/auth/login', {
         method: 'POST',
         body: JSON.stringify(input),
-      }),
-    logout: () =>
-      this.request<{ message: string }>('/api/v1/auth/logout', {
-        method: 'POST',
-      }),
+      });
+      if (res?.accessToken) {
+        this.setToken(res.accessToken);
+      }
+      return res;
+    },
+    logout: async () => {
+      try {
+        return await this.request<{ message: string }>('/api/v1/auth/logout', {
+          method: 'POST',
+        });
+      } finally {
+        this.setToken(null);
+      }
+    },
     me: () => this.request<UserProfile>('/api/v1/auth/me'),
     getMe: () => this.request<UserProfile>('/api/v1/auth/me'),
     forgotPassword: (input: ForgotPasswordInput) =>
@@ -152,11 +202,16 @@ export class ApiClient {
         method: 'POST',
         body: JSON.stringify(input),
       }),
-    acceptInvite: (input: AcceptInviteInput) =>
-      this.request<{ user: UserProfile }>('/api/v1/auth/accept-invite', {
+    acceptInvite: async (input: AcceptInviteInput) => {
+      const res = await this.request<{ user: UserProfile; accessToken?: string }>('/api/v1/auth/accept-invite', {
         method: 'POST',
         body: JSON.stringify(input),
-      }),
+      });
+      if (res?.accessToken) {
+        this.setToken(res.accessToken);
+      }
+      return res;
+    },
     changePassword: (input: ChangePasswordInput) =>
       this.request<{ message: string }>('/api/v1/auth/change-password', {
         method: 'POST',
@@ -189,10 +244,31 @@ export class ApiClient {
       this.request<CategoryWithWebsites>(`/api/v1/categories/${slug}?page=${page}&limit=${limit}`),
     getTags: () => this.request<Tag[]>('/api/v1/tags'),
     submitRegistration: (input: SubmitRegistrationInput) =>
-      this.request<{ id: string; status: string; message: string }>('/api/v1/registrations', {
+      this.request<{
+        id: string;
+        referenceId: string;
+        status: string;
+        websiteName: string;
+        verificationToken?: string;
+        verificationMethod?: string;
+        submittedAt: string;
+        success?: boolean;
+      }>('/api/v1/registrations', {
         method: 'POST',
         body: JSON.stringify(input),
       }),
+    getRegistrationStatus: (ref: string, email: string) =>
+      this.request<RegistrationRequestDetails>(
+        `/api/v1/registrations/status?ref=${encodeURIComponent(ref)}&email=${encodeURIComponent(email)}`,
+      ),
+    resubmitRegistration: (input: ResubmitRegistrationInput) =>
+      this.request<{ success: boolean; message: string; referenceId: string; status: string }>(
+        '/api/v1/registrations/resubmit',
+        {
+          method: 'POST',
+          body: JSON.stringify(input),
+        },
+      ),
     getRegistrationByToken: (token: string) =>
       this.request<RegistrationRequestDetails>(
         `/api/v1/registrations/by-token?token=${encodeURIComponent(token)}`,
@@ -254,6 +330,8 @@ export class ApiClient {
   // --- Super Admin Endpoints ---
   public admin = {
     // Registrations
+    getPendingRegistrationsCount: () =>
+      this.request<{ count: number }>('/api/v1/registrations/pending-count'),
     getRegistrations: (query?: {
       page?: number;
       limit?: number;

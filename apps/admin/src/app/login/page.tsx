@@ -1,37 +1,48 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth-context';
 import { Logo } from '@findfunlinks/ui';
 import { ThemeToggle } from '../../components/ThemeToggle';
-import { Shield, Lock, Mail, Loader2, ArrowRight } from 'lucide-react';
+import { Shield, Lock, Mail, Loader2, ArrowRight, Eye, EyeOff, KeyRound } from 'lucide-react';
 
 export default function AdminLoginPage() {
-  const router = useRouter();
-  const { refreshUser } = useAuth();
+  const { setUser } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const fillDefaultCredentials = () => {
+    setEmail('admin@findfunlinks.com');
+    setPassword('SuperAdminSecretPass123!');
+    setErrorMessage(null);
+    toast.info('Filled default administrator credentials.');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!email.trim() || !password) {
+    if (!email.trim() || !password.trim()) {
       setErrorMessage('Please enter both email and password.');
       return;
     }
 
     try {
       setSubmitting(true);
-      await api.auth.login({ email: email.trim(), password });
+      const res = await api.auth.login({ email: email.trim(), password: password.trim() });
+      if (res?.accessToken) {
+        api.setToken(res.accessToken);
+      }
+      if (res?.user) {
+        setUser(res.user);
+      }
       toast.success('Authenticated successfully. Welcome back!');
-      await refreshUser();
-      router.push('/');
+      window.location.href = '/';
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Invalid credentials. Access denied.';
       setErrorMessage(msg);
@@ -95,24 +106,46 @@ export default function AdminLoginPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="login-password"
-                className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5"
-              >
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label
+                  htmlFor="login-password"
+                  className="block text-xs font-semibold text-foreground uppercase tracking-wider"
+                >
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={fillDefaultCredentials}
+                  className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline cursor-pointer"
+                >
+                  <KeyRound className="h-3 w-3" />
+                  <span>Fill default credentials</span>
+                </button>
+              </div>
               <div className="relative">
                 <Lock className="h-4 w-4 text-muted-foreground absolute left-3.5 top-3" />
                 <input
                   id="login-password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full rounded-xl border border-input bg-background pl-10 pr-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-xl border border-input bg-background pl-10 pr-10 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary font-mono"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
               </div>
             </div>
 

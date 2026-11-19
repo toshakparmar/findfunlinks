@@ -1,91 +1,86 @@
-# Architecture & Engineering Decision Records (ADR)
+# FindFunLinks — Architectural & Design Decisions Log
 
-## DEC-0001: Monorepo Architecture & Package Management
+This log records the operating decisions, assumptions, and design rationale as specified in Section 14 of the Client Design Implementation Master Prompt.
 
-- **Status:** Accepted
-- **Context:** FindFunLinks requires three frontend applications (`apps/web`, `apps/admin`, `apps/owner`) and a backend API (`apps/api`), sharing schemas, types, UI tokens, and an API client.
-- **Decision:** Use **pnpm workspaces** with **Turborepo** for caching, orchestrating parallel builds, and sharing dependencies.
-- **Consequences:** Isolated deployable applications with zero duplication of validation schemas, contracts, and design tokens.
+---
 
-## DEC-0002: Secure Credential Delivery via Expiring Invitation Tokens
+## Decision Log
 
-- **Status:** Accepted
-- **Context:** When a Super Admin approves a website owner registration, sending plaintext passwords via email presents a severe credential exposure vulnerability.
+### 1. Typography & Font Selection
+- **Status:** Adopted
+- **Decision:** Use **Poppins** (headings, logo wordmark, card titles, nav pills) and **Inter** (list items, site names, body, numbers) via Next.js Font (`display: swap`).
+- **Rationale:** Poppins provides the clean, geometric punch seen in the client reference titles ("OTT Platforms", "Movies"), while Inter offers optimal tabular alignment and legibility for the 15 numbered rows.
+
+### 2. Measured Color Sampling & Exact Values
+- **Status:** Measured & Adopted
+- **Decision:** Sampled pixel values directly from `docs/design-reference/desktop-home.jpg` and `mobile-home.jpg` using .NET bitmap analysis.
+- **Reference Values:**
+  - Page Background: `#050A18`
+  - Header & Sidebar Background: `#070D1E`
+  - Card Fill: `#0A1226`
+  - Card Hover: `#0E182F`
+  - Neutral Line: `#1A2442`
+  - Active Blue Pill: `#2563EB`
+  - Wordmark Link: `#3B82F6`
+
+### 3. Theme Toggle Placement
+- **Status:** Adopted (Feature Flagged)
+- **Decision:** 
+  - On desktop: Small circular icon button positioned adjacent to the search button in the top header.
+  - On mobile: Placed inside the hamburger drawer menu.
+  - Controlled by feature flag `theme.toggle.enabled` so it can be concealed if the client prefers dark-only deployment.
+
+### 4. Site Row Interaction & Multi-Domain Model
+- **Status:** Adopted
 - **Decision:**
-  1. Default: Generate a cryptographically secure, single-use, expiring (24-hour) "Set your password" token (`InviteToken`) sent to the applicant's verified email. First-time login forces the user to establish their own strong password (min 12 characters, Argon2id).
-  2. Fallback: Configurable flag `ALLOW_TEMP_PASSWORD_EMAIL=false` (default off). If explicitly enabled for operational override, a randomized temporary password can be generated, requiring immediate mandatory password rotation on first authentication (`mustChangePassword: true`).
-- **Consequences:** Mitigates email snooping and credential logging; aligns with OWASP ASVS Level 2 guidelines.
+  - **External Link Icon Click:** Directly opens the site's fastest verified active domain in a new tab (`rel="noopener noreferrer nofollow"`) with async click telemetry (`navigator.sendBeacon`).
+  - **Row Name / Item Click:** Opens the **Site Domains Drawer** (desktop side sheet / mobile bottom sheet) revealing all active mirrors, latency metrics, and copy/report tools.
+- **Rationale:** Keeps the client's visual design 100% pixel-identical (displaying only number, favicon, name, and external icon) while preserving the platform's multi-mirror business rules.
 
-## DEC-0003: Relationship Constraints (One Owner = One Website)
+### 5. Requests Page Architecture (`/requests`)
+- **Status:** Adopted
+- **Decision:** The `/requests` route hosts two structured tabs:
+  1. **"Register Website (Owner)"** — End-to-end applicant verification flow.
+  2. **"Suggest a Site (Public)"** — Lightweight visitor suggestion with URL, category, and CAPTCHA/honeypot moderation queue.
 
-- **Status:** Accepted
-- **Context:** Business logic specifies that a verified owner account manages exactly one website entity.
-- **Decision:** Enforce `ownerId` as a `UNIQUE` foreign key in the `Website` table at the database schema level (PostgreSQL) and enforce verification at the application service level. The Website Owner panel hides all "create new website" buttons, and the backend returns `409 Conflict` if an owner attempts to create a secondary website.
-- **Consequences:** Eliminates multi-tenant sprawl per owner account and simplifies permission and scoping logic (`OwnerScopeGuard`).
-
-## DEC-0004: Global Domain and Hostname Uniqueness
-
-- **Status:** Accepted
-- **Context:** Multiple websites may attempt to claim popular, vanity, or duplicate mirror domains (intentionally or maliciously).
-- **Decision:** Every domain registered is parsed into its canonical, lowercase, punycode-normalized hostname. The database enforces a `UNIQUE` constraint on `hostname`.
-- **Consequences:** No two websites can claim or hijack the same mirror domain.
-
-## DEC-0005: Authentication, Session Management, and Storage
-
-- **Status:** Accepted
-- **Context:** Panel authentication must be hardened against XSS and CSRF token theft.
+### 6. Responsive Breakpoint Rhythm
+- **Status:** Adopted
 - **Decision:**
-  - Password hashing with **Argon2id**.
-  - Short-lived Access Tokens (JWT, 15m) + Rotating Refresh Tokens (7–30 days) stored hashed in PostgreSQL.
-  - Cookies configured with `httpOnly: true`, `secure: true`, `SameSite: Lax` (or `Strict` for mutations), and isolated across subdomains.
-  - Refresh token reuse detection automatically revokes the entire compromised token family.
-- **Consequences:** High security resilience against script injection and session hijacking.
+  - `< 768px`: Single column card stack with 2-column numbered list (8 left, 7 right), mobile horizontal chips rail, fixed bottom navigation.
+  - `768px – 1023px`: 2-column card grid with mobile chrome.
+  - `1024px – 1919px`: 2-column card grid with desktop left sidebar and top navigation pills.
+  - `≥ 1920px`: 3-column expanded grid rhythm.
 
-## DEC-0006: Background Task Processing & SSRF-Protected Health Checking
+### 7. Sidebar Category Pinning
+- **Status:** Adopted
+- **Decision:** The left sidebar displays only pinned primary categories (`showInSidebar: true`), while the full directory of 18+ categories is reachable at `/categories` and through the home grid.
 
-- **Status:** Accepted
-- **Context:** The system must check domain health and uptime without blocking user requests or exposing internal networks to SSRF attacks.
-- **Decision:**
-  - Utilize **Redis + BullMQ** for background queues (email dispatch, periodic domain health checks).
-  - Implement SSRF-safe HTTP probes: resolve DNS, verify against private/link-local/loopback IP blocks (127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16, ::1, fc00::/7), enforce 5-second timeouts, and limit redirects to 3.
-- **Consequences:** Protects internal infrastructure from attacker-controlled domain scanning.
+---
 
-## DEC-0007: Original Design Identity & Token Derivation
+## Iteration 2: Root Cause Analysis for Navigation & State Bugs
 
-- **Status:** Accepted
-- **Context:** The brand logo is provided by the owner (blue magnifying glass with sun and flame mark, wordmark "FindFunLinks").
-- **Decision:**
-  - Primary Blue: `#0B57D9`
-  - Accent Sunny Orange: `#F59E0B`
-  - Hot Flame Accent: `#EA580C`
-  - Derived neutral scales for light and dark modes with WCAG AA compliance.
-  - Standardized Tailwind CSS preset and CSS variables in `packages/ui` and `@findfunlinks/config`.
-- **Consequences:** Consistent, original, and accessible aesthetic across all apps.
+### Bug b — "View More → →" Duplicated Arrow & Click Response
+- **Root Cause:** In `CategoryCard.tsx`, the prop `label="View More →"` contained a literal text arrow while `ViewMoreButton.tsx` simultaneously appended a Lucide `<ArrowRight />` icon, printing two arrows (`View More → →`). In addition, the button lacked an immediate transition/spinner feedback state, and the destination page `/category/[slug]` was an outdated legacy component without the client design language.
+- **Fix:** Remove the literal arrow from `label`, maintain a single Lucide `ArrowRight` icon with hover sweep, and add an inline loading spinner during route transition.
 
-## DEC-0008: Dual Queue Dispatcher (BullMQ with In-Process Fallback)
+### Bug c — Sidebar Selection Trapped in Local State (Half-Width Card, URL Stays `/`)
+- **Root Cause:** In `MainLayout.tsx` and `Sidebar.tsx`, category clicks were intercepted with `onClick={() => setSelectedCategory(slug)}` instead of standard Next.js `<Link href="/category/[slug]">`. This kept the URL at `/` while client state filtered the homepage's 2-column grid to only 1 category, leaving the right half of the grid empty.
+- **Fix:** Eliminate local/context `selectedCategory` state. The URL is the single source of truth. Sidebar items and mobile chips are `<Link href="/category/[slug]">` and "All Links" is `<Link href="/">`. Navigating to `/category/[slug]` renders a dedicated full-width category view with 3 columns of sites on desktop.
 
-- **Status:** Accepted
-- **Context:** While production and Docker deployments utilize Redis with BullMQ for background job scheduling (domain health checks and emails), local Windows development environments or lightweight staging nodes may operate without a Redis daemon.
-- **Decision:** Implement a unified `QueueService` abstraction. When `REDIS_HOST` or `REDIS_URL` is available and connected, BullMQ workers process queues. When Redis is absent or offline, an in-process asynchronous task queue executes jobs without crashing or blocking the NestJS runtime.
-- **Consequences:** Developers can test and run the full API and test suites reliably without external container dependencies.
+### Bug e — Home / All Links Fails to Restore Grid
+- **Root Cause:** Because the user was already at path `/` when filtering categories via client state, clicking `<Link href="/">` (Home or All Links) was a no-op in Next.js router. Because state was decoupled from the URL, `selectedCategory` was never reset.
+- **Fix:** Deriving active navigation state purely from `usePathname()` via `getActive(pathname)` guarantees that `/` always renders the complete 18-category grid, and Back/Forward navigation functions naturally.
 
-## DEC-0009: Next.js Standalone Containerization for Minimal Attack Surface
+---
 
-- **Status:** Accepted
-- **Context:** Monorepos contain extensive devDependencies and thousands of files that dramatically inflate Docker image sizes (often > 1.5 GB per app) and introduce vulnerabilities.
-- **Decision:** Configure `output: 'standalone'` in Next.js configurations (`apps/web`, `apps/admin`, `apps/owner`). In Docker multi-stage builds, copy only the compiled `.next/standalone` bundle and static assets into an unprivileged Alpine runner container.
-- **Consequences:** Reduces production container sizes from 1.5GB to < 180MB, reduces memory footprint, strips dev tooling from production images, and runs as an unprivileged non-root user (`nextjs:nodejs`).
+## Iteration 2: Phase 2 Architecture Decisions
 
-## DEC-0010: Nginx Ingress Reverse Proxy with Subdomain-Isolated Security Headers
+### 8. Header Tab /new (Hot/New) Label & Alias
+- **Status:** Adopted
+- **Decision:** Keep the header nav label as 'New' (constant `NAV_NEW_LABEL = 'New'`) matching the approved design layout, with a permanent 301 redirect from `/hot` to `/new` in `next.config.mjs`.
+- **Rationale:** Preserves pixel-exact fidelity with the client's approved reference image while supporting users who remember or bookmark `/hot`.
 
-- **Status:** Accepted
-- **Context:** The platform hosts three web clients and one API service on distinct domains/subdomains (`findfunlinks.com`, `admin.findfunlinks.com`, `owner.findfunlinks.com`).
-- **Decision:** Deploy Nginx as the single ingress edge controller. Public pages allow `SAMEORIGIN` framing where appropriate, whereas administrative consoles strictly enforce `frame-ancestors 'none'` and `X-Frame-Options: DENY`. Strict rate limiting zones are applied to API authentication endpoints (`5r/m`) and general queries (`30r/s`).
-- **Consequences:** Enforces defense-in-depth against clickjacking, credential stuffing, and volumetric DoS attacks at the network boundary.
-
-## DEC-0011: Sequential Monorepo Builds (--concurrency=1) for Constrained Environments
-
-- **Status:** Accepted
-- **Context:** Turborepo by default compiles multiple Next.js 15 applications concurrently. Under Windows environments or CI runners with constrained V8 young generation memory, simultaneous webpack/turbopack builds trigger V8 `JavaScript heap out of memory` crashes (Exit code 134).
-- **Decision:** Enforce `--concurrency=1` during monorepo builds (`pnpm turbo run build --concurrency=1`).
-- **Consequences:** Completely eliminates out-of-memory crashes while maintaining build cache reusability.
+### 9. Persistent Shell & Route Enter Animations
+- **Status:** Adopted
+- **Decision:** The global `MainLayout` shell (Header, Sidebar, Footer, Mobile Navigation) persists across route changes without unmounting or flashing. A dedicated `apps/web/src/app/template.tsx` animates incoming route children with a subtle fade and 8px rise (`opacity: 0 -> 1`, `translateY: 8px -> 0`).
+- **Rationale:** Ensures seamless single-page application feel, instant tab switches, and preserved sidebar scroll position.

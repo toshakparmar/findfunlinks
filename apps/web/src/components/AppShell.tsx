@@ -31,7 +31,7 @@ export function AppShell({ children, categories }: AppShellProps) {
         onClose={() => setSidebarOpen(false)}
         categories={categories}
         activeCategorySlug={selectedCategory}
-        onSelectCategory={(slug) => setSelectedCategory(slug)}
+        onSelectCategory={(slug) => setSelectedCategory(slug || 'all')}
         viewMode={viewMode}
         onToggleViewMode={setViewMode}
         onOpenReportModal={() => setReportModalOpen(true)}

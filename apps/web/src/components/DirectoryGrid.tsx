@@ -3,7 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import { DirectoryCard, WebsiteCardData } from './DirectoryCard';
 import { ContentRating } from '@findfunlinks/contracts';
-import { Folder, ArrowUpDown, Search, Shield, Layers } from 'lucide-react';
+import { Folder, Search, Shield, Layers } from 'lucide-react';
+import { CustomSelect } from './ui/CustomSelect';
 
 export interface CategoryTab {
   id: string;
@@ -168,18 +169,17 @@ export function DirectoryGrid({ initialCategories, websites, searchQuery }: Dire
           </button>
 
           {/* Sort Dropdown */}
-          <div className="flex items-center gap-1.5">
-            <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
-            <span className="text-muted-foreground">Sort:</span>
-            <select
+          <div className="flex items-center gap-1.5 w-44">
+            <CustomSelect
+              size="sm"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'popular' | 'newest' | 'alphabetical')}
-              className="bg-card border border-border rounded-lg px-2.5 py-1 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-              <option value="popular">Most Popular</option>
-              <option value="alphabetical">A-Z</option>
-              <option value="newest">Newest Added</option>
-            </select>
+              onChange={(val) => setSortBy(val as any)}
+              options={[
+                { value: 'popular', label: 'Most Popular' },
+                { value: 'alphabetical', label: 'A – Z' },
+                { value: 'newest', label: 'Newest Added' },
+              ]}
+            />
           </div>
         </div>
       </div>

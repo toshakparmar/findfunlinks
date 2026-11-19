@@ -6,6 +6,15 @@ const nextConfig = {
     workerThreads: false,
     cpus: 1,
   },
+  async redirects() {
+    return [
+      {
+        source: '/hot',
+        destination: '/new',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

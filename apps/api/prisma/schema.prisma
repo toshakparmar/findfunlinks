@@ -191,19 +191,26 @@ model Tag {
 
 model RegistrationRequest {
   id                 String             @id @default(uuid())
+  referenceId        String?            @unique
   applicantName      String
   applicantEmail     String
   applicantPhone     String?
-  applicantCountry   String
+  applicantRole      String             @default("OWNER")
+  applicantCountry   String             @default("Global")
   telegramOrDiscord  String?
   websiteName        String
   primaryUrl         String
+  additionalDomains  String[]           @default([])
   description        String
   categoryId         String
   proposedTags       String[]           @default([])
   logoUrl            String?
   language           String             @default("en")
   contentRating      ContentRating      @default(ALL)
+  verificationMethod String             @default("DNS_TXT")
+  verificationToken  String?
+  verificationProof  String?
+  adminNote          String?
   status             RegistrationStatus @default(PENDING)
   reviewerId         String?
   reviewer           User?              @relation("RequestReviewer", fields: [reviewerId], references: [id])
@@ -220,6 +227,7 @@ model RegistrationRequest {
   @@index([status])
   @@index([applicantEmail])
   @@index([primaryUrl])
+  @@index([referenceId])
 }
 
 model Website {

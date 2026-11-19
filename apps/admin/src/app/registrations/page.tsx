@@ -6,7 +6,19 @@ import { toast } from 'sonner';
 import { api, type RegistrationRequestDetails } from '../../lib/api';
 import { StatusBadge } from '../../components/StatusBadge';
 import { formatTimeAgo } from '../../lib/utils';
-import { Search, Check, X, RotateCcw, ExternalLink, Globe, User, Loader2, Eye } from 'lucide-react';
+import {
+  Search,
+  Check,
+  X,
+  RotateCcw,
+  ExternalLink,
+  Globe,
+  User,
+  Loader2,
+  Eye,
+  Radio,
+  Shield,
+} from 'lucide-react';
 
 function RegistrationsContent() {
   const searchParams = useSearchParams();
@@ -183,7 +195,14 @@ function RegistrationsContent() {
                 {registrations.map((reg) => (
                   <tr key={reg.id} className="hover:bg-muted/40 transition-colors">
                     <td className="py-3.5 px-4 font-semibold text-foreground">
-                      <div className="flex items-center gap-2">{reg.websiteName}</div>
+                      <div className="flex items-center gap-2">
+                        <span>{reg.websiteName}</span>
+                        {reg.referenceId && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-primary/10 text-primary border border-primary/20">
+                            {reg.referenceId}
+                          </span>
+                        )}
+                      </div>
                       <a
                         href={reg.primaryUrl}
                         target="_blank"
@@ -196,7 +215,14 @@ function RegistrationsContent() {
                     </td>
 
                     <td className="py-3.5 px-4 text-muted-foreground">
-                      <div className="font-medium text-foreground">{reg.applicantName}</div>
+                      <div className="font-medium text-foreground flex items-center gap-1.5">
+                        <span>{reg.applicantName}</span>
+                        {reg.applicantRole && (
+                          <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.2 rounded">
+                            {reg.applicantRole}
+                          </span>
+                        )}
+                      </div>
                       <div className="text-[11px]">{reg.applicantEmail}</div>
                       {reg.applicantCountry && (
                         <span className="text-[10px] text-muted-foreground/70">
@@ -338,12 +364,65 @@ function RegistrationsContent() {
                     </div>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Telegram/Discord:</span>
-                    <div className="text-foreground">
-                      {selectedItem.telegramOrDiscord || 'None'}
+                    <span className="text-muted-foreground">Role:</span>
+                    <div className="font-semibold text-foreground">
+                      {selectedItem.applicantRole || 'Owner'}
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Mirrors / Additional Domains */}
+              {Array.isArray(selectedItem.additionalDomains) && selectedItem.additionalDomains.length > 0 && (
+                <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-2">
+                  <div className="flex items-center gap-1.5 font-bold text-foreground text-sm">
+                    <Radio className="h-4 w-4 text-accent" />
+                    <span>Additional Mirrors ({selectedItem.additionalDomains.length})</span>
+                  </div>
+                  <div className="space-y-1">
+                    {selectedItem.additionalDomains.map((m: string, i: number) => (
+                      <div key={i} className="font-mono text-xs text-primary bg-background p-2 rounded border border-border/40">
+                        {m}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Ownership Verification Proof */}
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-2">
+                <div className="flex items-center gap-1.5 font-bold text-foreground text-sm">
+                  <Shield className="h-4 w-4 text-status-online" />
+                  <span>Ownership Verification</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <span className="text-muted-foreground">Method:</span>
+                    <div className="font-semibold text-foreground">{selectedItem.verificationMethod || 'DNS_TXT'}</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Token:</span>
+                    <div className="font-mono text-foreground text-[11px] truncate">
+                      {selectedItem.verificationToken || 'N/A'}
+                    </div>
+                  </div>
+                </div>
+                {selectedItem.verificationProof && (
+                  <div>
+                    <span className="text-muted-foreground">Proof Details / Notes:</span>
+                    <p className="bg-background p-2 rounded border border-border/40 text-foreground font-mono text-[11px] mt-0.5">
+                      {selectedItem.verificationProof}
+                    </p>
+                  </div>
+                )}
+                {selectedItem.adminNote && (
+                  <div>
+                    <span className="text-muted-foreground">Applicant Note to Reviewers:</span>
+                    <p className="bg-background p-2 rounded border border-border/40 text-foreground text-xs mt-0.5">
+                      {selectedItem.adminNote}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

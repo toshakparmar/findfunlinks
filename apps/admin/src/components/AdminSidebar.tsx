@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@findfunlinks/ui';
+import { api } from '../lib/api';
 import {
   LayoutDashboard,
   ClipboardCheck,
@@ -20,10 +21,31 @@ import {
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const [pendingCount, setPendingCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    api.admin
+      .getPendingRegistrationsCount()
+      .then((res) => {
+        if (mounted && typeof res.count === 'number') {
+          setPendingCount(res.count);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, [pathname]);
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/registrations', label: 'Registration Queue', icon: ClipboardCheck },
+    {
+      href: '/registrations',
+      label: 'Owner Requests',
+      icon: ClipboardCheck,
+      badge: pendingCount && pendingCount > 0 ? pendingCount : null,
+    },
     { href: '/websites', label: 'Websites Directory', icon: Globe },
     { href: '/domains', label: 'Domains & Mirrors', icon: Radio },
     { href: '/categories', label: 'Categories', icon: FolderKanban },
@@ -56,14 +78,27 @@ export function AdminSidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                   isActive
                     ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
               >
-                <Icon className="h-4 w-4 shrink-0" />
-                <span className="truncate">{item.label}</span>
+                <div className="flex items-center gap-3 min-w-0">
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </div>
+                {item.badge && (
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                      isActive
+                        ? 'bg-white/20 text-white'
+                        : 'bg-primary/15 text-primary'
+                    }`}
+                  >
+                    {item.badge}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -77,3 +112,4 @@ export function AdminSidebar() {
     </aside>
   );
 }
+

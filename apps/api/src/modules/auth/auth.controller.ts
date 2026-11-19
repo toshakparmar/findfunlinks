@@ -46,8 +46,25 @@ export class AuthController {
     });
   }
 
+  private setAuthCookies(res: Response, refreshToken: string, accessToken: string) {
+    this.setRefreshCookie(res, refreshToken);
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 15 * 60 * 1000, // 15 mins matching access token lifetime
+    });
+  }
+
   private clearRefreshCookie(res: Response) {
     res.clearCookie(REFRESH_COOKIE_NAME, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    });
+    res.clearCookie('access_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -66,7 +83,7 @@ export class AuthController {
   ) {
     const validated = LoginSchema.parse(body);
     const result = await this.authService.login(validated, req);
-    this.setRefreshCookie(res, result.refreshToken);
+    this.setAuthCookies(res, result.refreshToken, result.accessToken);
     return {
       user: result.user,
       accessToken: result.accessToken,
@@ -83,7 +100,7 @@ export class AuthController {
   ) {
     const token = req.cookies?.[REFRESH_COOKIE_NAME] || bodyToken;
     const result = await this.authService.refreshTokens(token, req);
-    this.setRefreshCookie(res, result.refreshToken);
+    this.setAuthCookies(res, result.refreshToken, result.accessToken);
     return {
       accessToken: result.accessToken,
       user: result.user,

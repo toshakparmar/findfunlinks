@@ -57,3 +57,19 @@ export const ReportStatus = {
   DISMISSED: 'DISMISSED',
 } as const;
 export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus];
+
+export const ApplicantRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  DEVELOPER: 'DEVELOPER',
+  REPRESENTATIVE: 'REPRESENTATIVE',
+} as const;
+export type ApplicantRole = (typeof ApplicantRole)[keyof typeof ApplicantRole];
+
+export const VerificationMethod = {
+  DNS_TXT: 'DNS_TXT',
+  META_TAG: 'META_TAG',
+  DOMAIN_EMAIL: 'DOMAIN_EMAIL',
+  SOCIAL_PROFILE: 'SOCIAL_PROFILE',
+} as const;
+export type VerificationMethod = (typeof VerificationMethod)[keyof typeof VerificationMethod];

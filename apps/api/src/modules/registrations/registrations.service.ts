@@ -11,6 +11,7 @@ import {
   RegistrationSubmitInput,
   RegistrationStatus,
   ReviewRegistrationInput,
+  ResubmitRegistrationInput,
 } from '@findfunlinks/contracts';
 import {
   RegistrationStatus as PrismaRegistrationStatus,
@@ -52,6 +53,16 @@ export class RegistrationsService {
 
   private hashToken(token: string): string {
     return createHash('sha256').update(token).digest('hex');
+  }
+
+  private generateReferenceId(): string {
+    const year = new Date().getFullYear();
+    const randomNum = Math.floor(100000 + Math.random() * 900000);
+    return `FFL-${year}-${randomNum}`;
+  }
+
+  private generateVerificationToken(): string {
+    return `ffl-verify-${randomBytes(8).toString('hex')}`;
   }
 
   // ---------------------------------------------------------------------------
@@ -106,60 +117,181 @@ export class RegistrationsService {
       throw new BadRequestException('Selected category does not exist');
     }
 
+    // 5. Generate unique reference ID
+    let referenceId = this.generateReferenceId();
+    let collision = await this.prisma.registrationRequest.findUnique({ where: { referenceId } });
+    while (collision) {
+      referenceId = this.generateReferenceId();
+      collision = await this.prisma.registrationRequest.findUnique({ where: { referenceId } });
+    }
+
+    // 6. Generate verification token
+    const verificationToken = this.generateVerificationToken();
+
     const ip = req ? req.ip || null : null;
     const userAgent = req ? req.get('user-agent') || null : null;
 
-    return this.prisma.registrationRequest.create({
+    const created = await this.prisma.registrationRequest.create({
       data: {
+        referenceId,
         applicantName: input.applicantName.trim(),
         applicantEmail: normalizedEmail,
         applicantPhone: input.applicantPhone?.trim() || null,
+        applicantRole: input.applicantRole || 'OWNER',
         applicantCountry: (input as any).applicantCountry || input.country || 'Global',
         telegramOrDiscord: input.telegramOrDiscord?.trim() || null,
         websiteName: input.websiteName.trim(),
         primaryUrl: input.primaryUrl.trim(),
+        additionalDomains: input.additionalDomains || [],
         description: input.description.trim(),
         categoryId: input.categoryId,
         proposedTags: input.proposedTags || [],
         logoUrl: input.logoUrl || null,
         language: input.language || 'en',
         contentRating: input.contentRating || 'ALL',
+        verificationMethod: input.verificationMethod || 'DNS_TXT',
+        verificationToken,
+        verificationProof: input.verificationProof?.trim() || null,
+        adminNote: input.adminNote?.trim() || null,
         status: PrismaRegistrationStatus.PENDING,
         ip,
         userAgent,
       },
     });
-  }
 
-  async getRegistrationForEdit(token: string) {
-    const tokenHash = this.hashToken(token);
-    const tokenRecord = await this.prisma.token.findFirst({
-      where: {
-        tokenHash,
-        type: TokenType.PASSWORD_RESET, // Re-used for edit token
-        usedAt: null,
-        expiresAt: { gt: new Date() },
-      },
-    });
-
-    if (!tokenRecord) {
-      throw new BadRequestException('Invalid or expired application edit token');
-    }
-
-    const request = await this.prisma.registrationRequest.findUnique({
-      where: { id: tokenRecord.userId }, // Stores registrationId in userId column for edit tokens
-    });
-
-    if (!request || request.status !== PrismaRegistrationStatus.CHANGES_REQUESTED) {
-      throw new BadRequestException('This registration request is not eligible for edits');
+    // 7. Dispatch confirmation email (non-blocking)
+    try {
+      await this.mailService.sendRegistrationConfirmationEmail(
+        normalizedEmail,
+        input.applicantName.trim(),
+        input.websiteName.trim(),
+        referenceId,
+        input.verificationMethod || 'DNS_TXT',
+        verificationToken,
+      );
+    } catch {
+      // Logged in mail service
     }
 
     return {
-      registration: request,
+      success: true,
+      referenceId: created.referenceId,
+      id: created.id,
+      websiteName: created.websiteName,
+      status: created.status,
+      verificationToken: created.verificationToken,
+      verificationMethod: created.verificationMethod,
+      submittedAt: created.submittedAt,
     };
   }
 
-  async updateRegistrationWithToken(token: string, updates: Partial<RegistrationSubmitInput>) {
+  async getStatus(ref: string, email: string) {
+    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedRef = ref.toUpperCase().trim();
+
+    const request = await this.prisma.registrationRequest.findFirst({
+      where: {
+        referenceId: { equals: normalizedRef, mode: 'insensitive' },
+        applicantEmail: { equals: normalizedEmail, mode: 'insensitive' },
+      },
+      include: {
+        reviewer: {
+          select: { name: true, email: true },
+        },
+      },
+    });
+
+    if (!request) {
+      throw new NotFoundException('No registration request found for this Reference ID and Email.');
+    }
+
+    return {
+      referenceId: request.referenceId,
+      id: request.id,
+      websiteName: request.websiteName,
+      primaryUrl: request.primaryUrl,
+      additionalDomains: request.additionalDomains,
+      applicantName: request.applicantName,
+      applicantRole: request.applicantRole,
+      status: request.status,
+      description: request.description,
+      submittedAt: request.submittedAt,
+      reviewedAt: request.reviewedAt,
+      reviewNote: request.reviewNote,
+      verificationMethod: request.verificationMethod,
+      verificationToken: request.verificationToken,
+      verificationProof: request.verificationProof,
+      categoryId: request.categoryId,
+    };
+  }
+
+  async resubmit(input: ResubmitRegistrationInput, req?: Request) {
+    if (!input.email || !input.ref) {
+      throw new BadRequestException('Both Reference ID ("ref") and Email ("email") are required.');
+    }
+    const normalizedEmail = input.email.toLowerCase().trim();
+    const normalizedRef = input.ref.toUpperCase().trim();
+
+    const request = await this.prisma.registrationRequest.findFirst({
+      where: {
+        referenceId: { equals: normalizedRef, mode: 'insensitive' },
+        applicantEmail: { equals: normalizedEmail, mode: 'insensitive' },
+      },
+    });
+
+    if (!request) {
+      throw new NotFoundException('Registration request not found.');
+    }
+
+    if (
+      request.status !== PrismaRegistrationStatus.CHANGES_REQUESTED &&
+      request.status !== PrismaRegistrationStatus.PENDING
+    ) {
+      throw new BadRequestException('This registration request cannot be modified in its current status.');
+    }
+
+    const updated = await this.prisma.registrationRequest.update({
+      where: { id: request.id },
+      data: {
+        primaryUrl: input.primaryUrl ? input.primaryUrl.trim() : undefined,
+        additionalDomains: input.additionalDomains ? input.additionalDomains : undefined,
+        verificationMethod: input.verificationMethod ? input.verificationMethod : undefined,
+        verificationProof: input.verificationProof !== undefined ? input.verificationProof.trim() : undefined,
+        description: input.description ? input.description.trim() : undefined,
+        adminNote: input.adminNote !== undefined ? input.adminNote.trim() : undefined,
+        status: PrismaRegistrationStatus.PENDING,
+        updatedAt: new Date(),
+      },
+    });
+
+    if (req) {
+      await this.auditService.log({
+        action: 'REGISTRATION_RESUBMITTED',
+        entityType: 'RegistrationRequest',
+        entityId: request.id,
+        after: { referenceId: updated.referenceId, status: updated.status },
+        req,
+      });
+    }
+
+    return {
+      success: true,
+      message: 'Application updated successfully and returned to review queue.',
+      referenceId: updated.referenceId,
+      status: updated.status,
+    };
+  }
+
+  async getPendingCount(): Promise<{ count: number }> {
+    const count = await this.prisma.registrationRequest.count({
+      where: {
+        status: PrismaRegistrationStatus.PENDING,
+      },
+    });
+    return { count };
+  }
+
+  async getRegistrationForEdit(token: string) {
     const tokenHash = this.hashToken(token);
     const tokenRecord = await this.prisma.token.findFirst({
       where: {
@@ -182,17 +314,50 @@ export class RegistrationsService {
       throw new BadRequestException('This registration request is not eligible for edits');
     }
 
+    return {
+      registration: request,
+    };
+  }
+
+  async updateRegistrationWithToken(token: string, body: Partial<RegistrationSubmitInput>) {
+    const tokenHash = this.hashToken(token);
+    const tokenRecord = await this.prisma.token.findFirst({
+      where: {
+        tokenHash,
+        type: TokenType.PASSWORD_RESET,
+        usedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+    });
+
+    if (!tokenRecord) {
+      throw new BadRequestException('Invalid or expired token');
+    }
+
+    const request = await this.prisma.registrationRequest.findUnique({
+      where: { id: tokenRecord.userId },
+    });
+
+    if (!request || request.status !== PrismaRegistrationStatus.CHANGES_REQUESTED) {
+      throw new BadRequestException('Request is not in a modifiable state');
+    }
+
     const [updatedRequest] = await this.prisma.$transaction([
       this.prisma.registrationRequest.update({
         where: { id: request.id },
         data: {
-          websiteName: updates.websiteName ? updates.websiteName.trim() : request.websiteName,
-          primaryUrl: updates.primaryUrl ? updates.primaryUrl.trim() : request.primaryUrl,
-          description: updates.description ? updates.description.trim() : request.description,
-          categoryId: updates.categoryId || request.categoryId,
-          proposedTags: updates.proposedTags || request.proposedTags,
-          logoUrl: updates.logoUrl !== undefined ? updates.logoUrl : request.logoUrl,
+          websiteName: body.websiteName ? body.websiteName.trim() : undefined,
+          primaryUrl: body.primaryUrl ? body.primaryUrl.trim() : undefined,
+          additionalDomains: body.additionalDomains ? body.additionalDomains : undefined,
+          description: body.description ? body.description.trim() : undefined,
+          categoryId: body.categoryId || undefined,
+          proposedTags: body.proposedTags || undefined,
+          logoUrl: body.logoUrl || undefined,
+          verificationMethod: body.verificationMethod || undefined,
+          verificationProof: body.verificationProof ? body.verificationProof.trim() : undefined,
+          adminNote: body.adminNote ? body.adminNote.trim() : undefined,
           status: PrismaRegistrationStatus.PENDING,
+          reviewNote: null,
         },
       }),
       this.prisma.token.update({
@@ -220,6 +385,7 @@ export class RegistrationsService {
     }
     if (search) {
       where.OR = [
+        { referenceId: { contains: search, mode: 'insensitive' } },
         { websiteName: { contains: search, mode: 'insensitive' } },
         { applicantEmail: { contains: search, mode: 'insensitive' } },
         { applicantName: { contains: search, mode: 'insensitive' } },
@@ -343,12 +509,11 @@ export class RegistrationsService {
     const tokenHash = this.hashToken(rawInviteToken);
     const inviteExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    // Execute atomic transaction for user, website, domain, invite token, and request update
+    // Execute atomic transaction for user, website, domains, invite token, and request update
     const result = await this.prisma.$transaction(async (tx) => {
       // 1. User
       let userId: string;
       if (!existingUser) {
-        // High-entropy placeholder password until the user sets their password via 24h invite link
         const tempPasswordHash = await argon2.hash(randomBytes(32).toString('hex'));
         const newUser = await tx.user.create({
           data: {
@@ -398,8 +563,8 @@ export class RegistrationsService {
         }
       }
 
-      // 4. Initial Domain
-      const domain = await tx.domain.create({
+      // 4. Primary Domain
+      const primaryDomain = await tx.domain.create({
         data: {
           websiteId: website.id,
           hostname,
@@ -411,6 +576,32 @@ export class RegistrationsService {
           addedById: reviewerId,
         },
       });
+
+      // 4b. Additional Mirrors
+      if (reg.additionalDomains && Array.isArray(reg.additionalDomains)) {
+        for (const mirrorUrl of reg.additionalDomains) {
+          try {
+            const mirrorHostname = this.normalizeHostname(mirrorUrl);
+            const exists = await tx.domain.findUnique({ where: { hostname: mirrorHostname } });
+            if (!exists) {
+              await tx.domain.create({
+                data: {
+                  websiteId: website.id,
+                  hostname: mirrorHostname,
+                  url: mirrorUrl,
+                  label: 'Mirror Domain',
+                  type: DomainType.MIRROR,
+                  status: DomainStatus.ACTIVE,
+                  isPublic: true,
+                  addedById: reviewerId,
+                },
+              });
+            }
+          } catch {
+            // Ignore format issues on secondary mirrors
+          }
+        }
+      }
 
       // 5. Expiring single-use invite token
       await tx.token.create({
@@ -437,7 +628,7 @@ export class RegistrationsService {
       return {
         userId,
         website,
-        domain,
+        domain: primaryDomain,
         registration: updatedReg,
       };
     });
@@ -448,16 +639,18 @@ export class RegistrationsService {
       action: 'REGISTRATION_APPROVED',
       entityType: 'RegistrationRequest',
       entityId: reg.id,
+      before: { status: reg.status },
       after: {
-        websiteId: result.website.id,
-        userId: result.userId,
-        domainId: result.domain.id,
+        status: PrismaRegistrationStatus.APPROVED,
+        resultingUserId: result.userId,
+        resultingWebsiteId: result.website.id,
       },
       req,
     });
 
-    // 8. Send activation email with 24-hour setup link
-    const inviteUrl = `${process.env.OWNER_PANEL_URL || 'http://localhost:3002'}/auth/accept-invite?token=${rawInviteToken}`;
+    // 8. Send transactional invite email with 24h setup link
+    const ownerPanelUrl = process.env.OWNER_PANEL_URL || 'http://localhost:3002';
+    const inviteUrl = `${ownerPanelUrl}/setup-password?token=${rawInviteToken}`;
     await this.mailService.sendInviteEmail(
       reg.applicantEmail,
       reg.applicantName,
@@ -466,20 +659,19 @@ export class RegistrationsService {
     );
 
     return {
-      message: 'Registration request successfully approved. Website and owner account created.',
-      website: result.website,
-      domain: result.domain,
+      message: 'Registration request approved. Owner account and directory entries created.',
       userId: result.userId,
-      rawInviteToken, // For testing environments
+      websiteId: result.website.id,
+      slug: result.website.slug,
+      inviteUrl,
     };
   }
 
   async reject(id: string, reviewerId: string, input: ReviewRegistrationInput, req?: Request) {
-    if (!input.reviewNote || input.reviewNote.trim().length === 0) {
-      throw new BadRequestException('A reason for rejection must be provided to the applicant.');
-    }
+    const reg = await this.prisma.registrationRequest.findUnique({
+      where: { id },
+    });
 
-    const reg = await this.prisma.registrationRequest.findUnique({ where: { id } });
     if (!reg) {
       throw new NotFoundException(`Registration request "${id}" not found`);
     }
@@ -489,7 +681,7 @@ export class RegistrationsService {
       reg.status !== PrismaRegistrationStatus.CHANGES_REQUESTED
     ) {
       throw new BadRequestException(
-        `Cannot reject request with status "${reg.status}". Only PENDING or CHANGES_REQUESTED can be rejected.`,
+        `Cannot reject request with status "${reg.status}". It may have already been processed.`,
       );
     }
 
@@ -498,7 +690,7 @@ export class RegistrationsService {
       data: {
         status: PrismaRegistrationStatus.REJECTED,
         reviewerId,
-        reviewNote: input.reviewNote.trim(),
+        reviewNote: input.reviewNote || 'Application does not meet directory listing standards.',
         reviewedAt: new Date(),
       },
     });
@@ -507,8 +699,9 @@ export class RegistrationsService {
       actorId: reviewerId,
       action: 'REGISTRATION_REJECTED',
       entityType: 'RegistrationRequest',
-      entityId: id,
-      after: { reason: input.reviewNote },
+      entityId: reg.id,
+      before: { status: reg.status },
+      after: { status: PrismaRegistrationStatus.REJECTED, reviewNote: updated.reviewNote },
       req,
     });
 
@@ -516,7 +709,7 @@ export class RegistrationsService {
       reg.applicantEmail,
       reg.applicantName,
       reg.websiteName,
-      input.reviewNote,
+      updated.reviewNote || 'Application does not meet our curation standards.',
     );
 
     return {
@@ -531,29 +724,27 @@ export class RegistrationsService {
     input: ReviewRegistrationInput,
     req?: Request,
   ) {
-    if (!input.reviewNote || input.reviewNote.trim().length === 0) {
-      throw new BadRequestException('Notes explaining the requested changes are required.');
-    }
+    const reg = await this.prisma.registrationRequest.findUnique({
+      where: { id },
+    });
 
-    const reg = await this.prisma.registrationRequest.findUnique({ where: { id } });
     if (!reg) {
       throw new NotFoundException(`Registration request "${id}" not found`);
     }
 
     if (reg.status !== PrismaRegistrationStatus.PENDING) {
       throw new BadRequestException(
-        `Cannot request changes on request with status "${reg.status}". Only PENDING requests can be updated.`,
+        `Changes can only be requested for PENDING applications (current status: ${reg.status})`,
       );
     }
 
-    const rawEditToken = randomBytes(32).toString('hex');
-    const tokenHash = this.hashToken(rawEditToken);
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days to update
+    const rawToken = randomBytes(32).toString('hex');
+    const tokenHash = this.hashToken(rawToken);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
-    // Create edit token (using system admin id as owner of the token entry, and store reg.id)
     await this.prisma.token.create({
       data: {
-        userId: reviewerId,
+        userId: reg.id,
         tokenHash,
         type: TokenType.PASSWORD_RESET,
         expiresAt,
@@ -565,7 +756,7 @@ export class RegistrationsService {
       data: {
         status: PrismaRegistrationStatus.CHANGES_REQUESTED,
         reviewerId,
-        reviewNote: input.reviewNote.trim(),
+        reviewNote: input.reviewNote || 'Additional verification information requested.',
         reviewedAt: new Date(),
       },
     });
@@ -574,24 +765,25 @@ export class RegistrationsService {
       actorId: reviewerId,
       action: 'REGISTRATION_CHANGES_REQUESTED',
       entityType: 'RegistrationRequest',
-      entityId: id,
-      after: { note: input.reviewNote },
+      entityId: reg.id,
+      before: { status: reg.status },
+      after: { status: PrismaRegistrationStatus.CHANGES_REQUESTED, reviewNote: updated.reviewNote },
       req,
     });
 
-    const editUrl = `${process.env.WEB_URL || 'http://localhost:3000'}/register/edit?token=${rawEditToken}`;
+    const webUrl = process.env.WEB_URL || 'http://localhost:3000';
+    const statusUrl = `${webUrl}/register/status?ref=${reg.referenceId}&email=${encodeURIComponent(reg.applicantEmail)}`;
     await this.mailService.sendChangesRequestedEmail(
       reg.applicantEmail,
       reg.applicantName,
       reg.websiteName,
-      input.reviewNote,
-      editUrl,
+      updated.reviewNote || 'Please verify domain ownership or provide updated link details.',
+      statusUrl,
     );
 
     return {
-      message: 'Changes requested from applicant and edit link dispatched.',
+      message: 'Changes requested and notification sent to applicant.',
       registration: updated,
-      rawEditToken, // For testing environments
     };
   }
 }

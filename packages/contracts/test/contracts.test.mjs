@@ -5,11 +5,16 @@ import {
   SafeUrlRegex,
   HostnameRegex,
   SubmitRegistrationSchema,
+  RegistrationStatusCheckSchema,
+  isSafePublicUrl,
+  isNonDisposableEmail,
   BulkCreateDomainsSchema,
   UserStatus,
   RoleType,
   DomainStatus,
   WebsiteStatus,
+  ApplicantRole,
+  VerificationMethod,
 } from '../dist/index.js';
 
 describe('Contracts & Validation Unit Tests', () => {
@@ -47,6 +52,25 @@ describe('Contracts & Validation Unit Tests', () => {
       assert.equal(HostnameRegex.test('sub.mirror.example.org'), true);
       assert.equal(HostnameRegex.test('invalid..hostname'), false);
     });
+
+    test('isSafePublicUrl blocks private networks & SSRF vectors', () => {
+      assert.equal(isSafePublicUrl('https://findfunlinks.com'), true);
+      assert.equal(isSafePublicUrl('https://mygame.io/play'), true);
+      assert.equal(isSafePublicUrl('http://localhost:3000'), false);
+      assert.equal(isSafePublicUrl('http://127.0.0.1:8080'), false);
+      assert.equal(isSafePublicUrl('http://0.0.0.0'), false);
+      assert.equal(isSafePublicUrl('http://10.0.0.5'), false);
+      assert.equal(isSafePublicUrl('http://192.168.1.100'), false);
+      assert.equal(isSafePublicUrl('http://172.16.0.1'), false);
+      assert.equal(isSafePublicUrl('http://user:pass@findfunlinks.com'), false);
+    });
+
+    test('isNonDisposableEmail rejects throwaway mail services', () => {
+      assert.equal(isNonDisposableEmail('webmaster@coolgame.com'), true);
+      assert.equal(isNonDisposableEmail('spammer@mailinator.com'), false);
+      assert.equal(isNonDisposableEmail('bot@tempmail.com'), false);
+      assert.equal(isNonDisposableEmail('trash@10minutemail.com'), false);
+    });
   });
 
   describe('Registration Form Schema', () => {
@@ -54,13 +78,15 @@ describe('Contracts & Validation Unit Tests', () => {
       const validSubmission = {
         applicantName: 'Alice Developer',
         applicantEmail: 'alice@example.com',
-        applicantCountry: 'United States',
+        applicantRole: 'OWNER',
         websiteName: 'Awesome Portal',
         primaryUrl: 'https://awesomeportal.example.com',
+        additionalDomains: ['https://mirror1.awesomeportal.example.com'],
         description: 'This is a detailed description of the awesome web portal for tests.',
         categoryId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-        proposedTags: ['fun', 'utility'],
-        language: 'en',
+        verificationMethod: 'DNS_TXT',
+        verificationProof: 'Configured at Cloudflare',
+        termsAccepted: true,
       };
       const result = SubmitRegistrationSchema.safeParse(validSubmission);
       assert.equal(result.success, true);
@@ -70,15 +96,37 @@ describe('Contracts & Validation Unit Tests', () => {
       const spamSubmission = {
         applicantName: 'Spam Bot',
         applicantEmail: 'spambot@example.com',
-        applicantCountry: 'Nowhere',
         websiteName: 'Spam Website',
         primaryUrl: 'https://spam.example.com',
         description: 'Spam description that meets the minimum length requirement easily.',
         categoryId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+        termsAccepted: true,
         honeypot: 'gotcha',
       };
       const result = SubmitRegistrationSchema.safeParse(spamSubmission);
       assert.equal(result.success, false);
+    });
+
+    test('rejects submission without terms agreement', () => {
+      const missingTerms = {
+        applicantName: 'Bob Builder',
+        applicantEmail: 'bob@example.com',
+        websiteName: 'Bob World',
+        primaryUrl: 'https://bobworld.example.com',
+        description: 'A website for building cool web components and games online.',
+        categoryId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+        termsAccepted: false,
+      };
+      const result = SubmitRegistrationSchema.safeParse(missingTerms);
+      assert.equal(result.success, false);
+    });
+
+    test('validates status check input schema', () => {
+      const valid = { ref: 'FFL-2026-000123', email: 'owner@site.com' };
+      assert.equal(RegistrationStatusCheckSchema.safeParse(valid).success, true);
+
+      const invalid = { ref: '', email: 'not-an-email' };
+      assert.equal(RegistrationStatusCheckSchema.safeParse(invalid).success, false);
     });
   });
 
@@ -98,8 +146,8 @@ describe('Contracts & Validation Unit Tests', () => {
       assert.equal(RoleType.SUPER_ADMIN, 'SUPER_ADMIN');
       assert.equal(RoleType.WEBSITE_OWNER, 'WEBSITE_OWNER');
       assert.equal(DomainStatus.ACTIVE, 'ACTIVE');
-      assert.equal(WebsiteStatus.ACTIVE, 'ACTIVE');
+      assert.equal(ApplicantRole.OWNER, 'OWNER');
+      assert.equal(VerificationMethod.DNS_TXT, 'DNS_TXT');
     });
   });
 });
-

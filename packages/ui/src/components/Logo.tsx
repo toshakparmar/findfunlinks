@@ -14,6 +14,8 @@ export const Logo: React.FC<LogoProps> = ({
   ...props
 }) => {
   const isDark = variant === 'dark';
+  const isLight = variant === 'light';
+  const isAuto = variant === 'auto';
 
   if (iconOnly) {
     return (
@@ -28,7 +30,8 @@ export const Logo: React.FC<LogoProps> = ({
       >
         <path
           d="M28 82L10 100C7 103 7 108 10 111L11 112C14 115 19 115 22 112L40 94"
-          stroke={isDark ? '#2563EB' : '#0B57D9'}
+          stroke={isDark ? '#2563EB' : isLight ? '#0B57D9' : undefined}
+          className={isAuto ? 'stroke-[#0B57D9] dark:stroke-[#2563EB]' : undefined}
           strokeWidth="12"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -37,9 +40,10 @@ export const Logo: React.FC<LogoProps> = ({
           cx="62"
           cy="52"
           r="42"
-          stroke={isDark ? '#3B82F6' : '#0B57D9'}
+          stroke={isDark ? '#3B82F6' : isLight ? '#0B57D9' : undefined}
+          fill={isDark ? '#0B132B' : isLight ? '#FFFFFF' : undefined}
+          className={isAuto ? 'stroke-[#0B57D9] dark:stroke-[#3B82F6] fill-white dark:fill-[#0B132B]' : undefined}
           strokeWidth="12"
-          fill={isDark ? '#0B132B' : '#FFFFFF'}
         />
         <circle cx="49" cy="40" r="10" fill="#F59E0B" />
         <line
@@ -149,7 +153,8 @@ export const Logo: React.FC<LogoProps> = ({
       <g transform="translate(10, 10)">
         <path
           d="M26 74L8 92C5 95 5 100 8 103L9 104C12 107 17 107 20 104L38 86"
-          stroke={isDark ? '#2563EB' : '#0B57D9'}
+          stroke={isDark ? '#2563EB' : isLight ? '#0B57D9' : undefined}
+          className={isAuto ? 'stroke-[#0B57D9] dark:stroke-[#2563EB]' : undefined}
           strokeWidth="12"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -158,9 +163,10 @@ export const Logo: React.FC<LogoProps> = ({
           cx="56"
           cy="46"
           r="38"
-          stroke={isDark ? '#3B82F6' : '#0B57D9'}
+          stroke={isDark ? '#3B82F6' : isLight ? '#0B57D9' : undefined}
+          fill={isDark ? '#0B132B' : isLight ? '#FFFFFF' : undefined}
+          className={isAuto ? 'stroke-[#0B57D9] dark:stroke-[#3B82F6] fill-white dark:fill-[#0B132B]' : undefined}
           strokeWidth="11"
-          fill={isDark ? '#0B132B' : '#FFFFFF'}
         />
         <circle cx="44" cy="35" r="9" fill="#F59E0B" />
         <line
@@ -257,14 +263,20 @@ export const Logo: React.FC<LogoProps> = ({
       <text
         x="130"
         y="78"
-        fontFamily="system-ui, -apple-system, sans-serif"
+        fontFamily="var(--font-heading, 'Poppins', system-ui, sans-serif)"
         fontSize="64"
         fontWeight="800"
-        fill={isDark ? '#FFFFFF' : '#0B57D9'}
+        fill={isDark ? '#FFFFFF' : isLight ? '#0B1220' : undefined}
+        className={
+          isDark
+            ? 'fill-white'
+            : isLight
+            ? 'fill-slate-900'
+            : 'fill-slate-900 dark:fill-white transition-colors'
+        }
         letterSpacing="-1.5"
       >
-        Find<tspan fill={isDark ? '#3B82F6' : '#0B57D9'}>Fun</tspan>
-        <tspan fill={isDark ? '#FFFFFF' : '#0B57D9'}>Links</tspan>
+        FindFun<tspan fill="#3B82F6">Links</tspan>
       </text>
     </svg>
   );

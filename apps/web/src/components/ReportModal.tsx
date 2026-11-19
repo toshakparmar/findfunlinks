@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { api } from '../lib/api';
 import { ReportReason } from '@findfunlinks/contracts';
 import { AlertCircle, X, Loader2, CheckCircle2 } from 'lucide-react';
+import { CustomSelect } from './ui/CustomSelect';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -105,23 +106,23 @@ export function ReportModal({
             <div>
               <label
                 htmlFor="report-reason"
-                className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5"
+                className="block text-xs font-semibold text-white uppercase tracking-wider mb-1.5"
               >
                 Issue Category
               </label>
-              <select
+              <CustomSelect
                 id="report-reason"
                 value={reason}
-                onChange={(e) => setReason(e.target.value as ReportReason)}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="BROKEN_LINK">Dead / Broken Mirror Link</option>
-                <option value="MALICIOUS_PHISHING">Malware, Phishing, or Scam</option>
-                <option value="INAPPROPRIATE_CONTENT">Inappropriate / Explicit Content</option>
-                <option value="INCORRECT_METADATA">Incorrect Information or Metadata</option>
-                <option value="DMCA_COPYRIGHT">Copyright / DMCA Takedown</option>
-                <option value="OTHER">Other Issue</option>
-              </select>
+                onChange={(val) => setReason(val as ReportReason)}
+                options={[
+                  { value: 'BROKEN_LINK', label: 'Dead / Broken Mirror Link' },
+                  { value: 'MALICIOUS_PHISHING', label: 'Malware, Phishing, or Scam' },
+                  { value: 'INAPPROPRIATE_CONTENT', label: 'Inappropriate / Explicit Content' },
+                  { value: 'INCORRECT_METADATA', label: 'Incorrect Information or Metadata' },
+                  { value: 'DMCA_COPYRIGHT', label: 'Copyright / DMCA Takedown' },
+                  { value: 'OTHER', label: 'Other Issue' },
+                ]}
+              />
             </div>
 
             <div>

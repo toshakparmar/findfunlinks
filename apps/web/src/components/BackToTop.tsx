@@ -1,19 +1,24 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { ChevronUp } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ArrowUp } from 'lucide-react';
 
 export function BackToTop() {
-  const [visible, setVisible] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 300) {
-        setVisible(true);
-      } else {
-        setVisible(false);
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const currentScroll = window.scrollY;
+
+      if (totalScroll > 0) {
+        setScrollProgress((currentScroll / totalScroll) * 100);
       }
+
+      setIsVisible(currentScroll > 300);
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -22,16 +27,47 @@ export function BackToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (!visible) return null;
+  if (!isVisible) return null;
+
+  // SVG circle calculations for 40px circle with r=16
+  const radius = 16;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (scrollProgress / 100) * circumference;
 
   return (
-    <button
-      type="button"
-      onClick={scrollToTop}
-      className="fixed bottom-5 right-5 z-40 p-2.5 rounded-lg bg-[#181820] hover:bg-brand-blue-600 border border-[#2b2b36] hover:border-brand-blue-500 text-neutral-300 hover:text-white shadow-lg transition-all active:scale-95 group"
-      aria-label="Scroll to top"
-    >
-      <ChevronUp className="w-5 h-5 transition-transform group-hover:-translate-y-0.5" />
-    </button>
+    <div className="fixed bottom-6 right-6 z-40">
+      <button
+        type="button"
+        onClick={scrollToTop}
+        className="relative w-11 h-11 rounded-full bg-surface-1 border border-token/20 shadow-warm-lg flex items-center justify-center text-token hover:text-primary transition-all hover:scale-105 active:scale-95 group focus:outline-none"
+        aria-label="Scroll back to top"
+      >
+        {/* Circular Progress Ring */}
+        <svg className="w-full h-full -rotate-90 pointer-events-none absolute inset-0" viewBox="0 0 40 40">
+          <circle
+            cx="20"
+            cy="20"
+            r={radius}
+            fill="transparent"
+            stroke="var(--border)"
+            strokeWidth="2.5"
+          />
+          <circle
+            cx="20"
+            cy="20"
+            r={radius}
+            fill="transparent"
+            stroke="var(--primary)"
+            strokeWidth="2.5"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            className="transition-all duration-150"
+          />
+        </svg>
+
+        <ArrowUp className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
+      </button>
+    </div>
   );
 }

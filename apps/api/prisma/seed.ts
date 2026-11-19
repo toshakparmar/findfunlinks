@@ -230,8 +230,12 @@ async function main() {
   await prisma.user.upsert({
     where: { email: adminEmail.toLowerCase() },
     update: {
+      passwordHash,
       roleId: superAdminRole.id,
       status: UserStatus.ACTIVE,
+      failedLoginCount: 0,
+      lockedUntil: null,
+      deletedAt: null,
     },
     create: {
       email: adminEmail.toLowerCase(),

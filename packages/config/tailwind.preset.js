@@ -11,48 +11,49 @@ module.exports = {
     },
     extend: {
       colors: {
-        // Brand palette derived directly from logo
+        // Client Design Surfaces
+        surface: {
+          bg: 'var(--bg)',
+          header: 'var(--header)',
+          sidebar: 'var(--sidebar)',
+          card: 'var(--card)',
+          'card-hover': 'var(--card-hover)',
+          line: 'var(--line)',
+        },
+        // Client Design Typography
+        content: {
+          primary: 'var(--text)',
+          secondary: 'var(--text-2)',
+          muted: 'var(--text-3)',
+        },
+        // Brand palette derived directly from client logo & active pills
         brand: {
           blue: {
-            DEFAULT: '#0B57D9',
+            DEFAULT: '#2563EB',
             50: '#eff6ff',
             100: '#dbeafe',
             200: '#bfdbfe',
             300: '#93c5fd',
             400: '#60a5fa',
             500: '#3b82f6',
-            600: '#0B57D9', // Primary brand color
+            600: '#2563EB',
             700: '#1d4ed8',
             800: '#1e40af',
             900: '#1e3a8a',
             950: '#0f172a',
           },
-          orange: {
-            DEFAULT: '#F59E0B',
-            50: '#fffbeb',
-            100: '#fef3c7',
-            200: '#fde68a',
-            300: '#fcd34d',
-            400: '#fbbf24',
-            500: '#F59E0B', // Accent sunny orange
-            600: '#d97706',
-            700: '#b45309',
-            800: '#92400e',
-            900: '#78350f',
-          },
-          flame: {
-            DEFAULT: '#EA580C',
-            50: '#fff7ed',
-            100: '#ffedd5',
-            200: '#fed7aa',
-            300: '#fdba74',
-            400: '#fb923c',
-            500: '#f97316',
-            600: '#EA580C', // Hot flame accent
-            700: '#c2410c',
-            800: '#9a3412',
-            900: '#7c2d12',
-          },
+          link: '#3B82F6',
+        },
+        // Category Accents
+        cat: {
+          purple: 'var(--accent-purple)',
+          blue: 'var(--accent-blue)',
+          gold: 'var(--accent-gold)',
+          red: 'var(--accent-red)',
+          green: 'var(--accent-green)',
+          cyan: 'var(--accent-cyan)',
+          orange: 'var(--accent-orange)',
+          pink: 'var(--accent-pink)',
         },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

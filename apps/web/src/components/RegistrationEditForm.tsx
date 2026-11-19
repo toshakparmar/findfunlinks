@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useForm, type Resolver } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { api } from '../lib/api';
@@ -12,6 +12,7 @@ import {
   ContentRating,
 } from '@findfunlinks/contracts';
 import { CategoryTab } from './DirectoryGrid';
+import { CustomSelect } from './ui/CustomSelect';
 import { Globe, User, AlertCircle, Plus, X, Loader2, CheckCircle2, ArrowRight } from 'lucide-react';
 
 interface RegistrationEditFormProps {
@@ -35,13 +36,11 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
     watch,
     reset,
     formState: { errors },
-  } = useForm<ResubmitRegistrationInput>({
-    resolver: zodResolver(
-      ResubmitRegistrationSchema,
-    ) as unknown as Resolver<ResubmitRegistrationInput>,
+  } = useForm<any>({
+    resolver: zodResolver(ResubmitRegistrationSchema) as any,
   });
 
-  const proposedTags = watch('proposedTags') || [];
+  const proposedTags: string[] = (watch('proposedTags') as string[]) || [];
 
   useEffect(() => {
     if (!token) {
@@ -218,7 +217,7 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
               {...register('websiteName')}
             />
             {errors.websiteName && (
-              <p className="text-xs text-rose-500 mt-1">{errors.websiteName.message}</p>
+              <p className="text-xs text-rose-500 mt-1">{String(errors.websiteName?.message || '')}</p>
             )}
           </div>
 
@@ -236,7 +235,7 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
               {...register('primaryUrl')}
             />
             {errors.primaryUrl && (
-              <p className="text-xs text-rose-500 mt-1">{errors.primaryUrl.message}</p>
+              <p className="text-xs text-rose-500 mt-1">{String(errors.primaryUrl?.message || '')}</p>
             )}
           </div>
         </div>
@@ -249,17 +248,15 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
             >
               Primary Category *
             </label>
-            <select
+            <CustomSelect
               id="edit-category"
-              className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              {...register('categoryId')}
-            >
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+              value={watch('categoryId') || categories[0]?.id || ''}
+              onChange={(val) => setValue('categoryId', val, { shouldValidate: true })}
+              options={categories.map((c) => ({
+                value: c.id,
+                label: c.name,
+              }))}
+            />
           </div>
 
           <div>
@@ -269,14 +266,15 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
             >
               Content Rating *
             </label>
-            <select
+            <CustomSelect
               id="edit-content-rating"
-              className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              {...register('contentRating')}
-            >
-              <option value={ContentRating.ALL}>All Audiences (Family-Friendly)</option>
-              <option value={ContentRating.MATURE}>18+ Mature (Age-Gated)</option>
-            </select>
+              value={watch('contentRating') || ContentRating.ALL}
+              onChange={(val) => setValue('contentRating', val as any, { shouldValidate: true })}
+              options={[
+                { value: ContentRating.ALL, label: 'All Audiences (Family-Friendly)' },
+                { value: ContentRating.MATURE, label: '18+ Mature (Age-Gated)' },
+              ]}
+            />
           </div>
         </div>
 
@@ -294,7 +292,7 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
             {...register('description')}
           />
           {errors.description && (
-            <p className="text-xs text-rose-500 mt-1">{errors.description.message}</p>
+            <p className="text-xs text-rose-500 mt-1">{String(errors.description?.message || '')}</p>
           )}
         </div>
 

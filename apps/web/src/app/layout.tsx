@@ -48,7 +48,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className="min-h-screen bg-[#0a0a0c] font-sans text-neutral-100 antialiased selection:bg-brand-blue-600/30 selection:text-white">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        />
+      </head>
+      <body className="min-h-screen bg-page font-sans text-token antialiased selection:bg-primary/20 selection:text-primary">
         <Providers>
           <MainLayout>{children}</MainLayout>
         </Providers>

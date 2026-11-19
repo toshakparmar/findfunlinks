@@ -79,6 +79,48 @@ export class MailService {
     }
   }
 
+  async sendRegistrationConfirmationEmail(
+    to: string,
+    applicantName: string,
+    websiteName: string,
+    referenceId: string,
+    verificationMethod: string,
+    verificationToken: string,
+  ) {
+    const webUrl = process.env.WEB_URL || 'http://localhost:3000';
+    const statusUrl = `${webUrl}/register/status?ref=${referenceId}&email=${encodeURIComponent(to)}`;
+    const subject = `Application Received: ${websiteName} (${referenceId})`;
+    const text = `Hello ${applicantName},\n\nWe have received your website owner registration for "${websiteName}".\n\nYour Reference ID: ${referenceId}\nEstimated Review Time: 2–3 business days\nVerification Method: ${verificationMethod}\nVerification Token: ${verificationToken}\n\nYou can track your application status at any time using this link:\n${statusUrl}\n\nBest regards,\nThe FindFunLinks Team`;
+
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 8px;">
+        <h2 style="color: #0B57D9; margin-bottom: 16px;">Application Received</h2>
+        <p>Hello <strong>${applicantName}</strong>,</p>
+        <p>Thank you for submitting <strong>"${websiteName}"</strong> to FindFunLinks. Our curation team has received your registration request.</p>
+        <div style="background-color: #f3f4f6; border-radius: 8px; padding: 16px; margin: 20px 0;">
+          <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Reference ID:</strong> <span style="font-family: monospace; font-size: 16px; color: #0B57D9; font-weight: bold;">${referenceId}</span></p>
+          <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Estimated Review:</strong> 2–3 business days</p>
+          <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Verification Method:</strong> ${verificationMethod}</p>
+          <p style="margin: 0; font-size: 14px;"><strong>Verification Token:</strong> <code style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${verificationToken}</code></p>
+        </div>
+        <p>You can check your status at any time with your Reference ID and email:</p>
+        <div style="margin: 24px 0; text-align: center;">
+          <a href="${statusUrl}" style="background-color: #0B57D9; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">Track Application Status</a>
+        </div>
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">FindFunLinks &bull; Live working mirrors & fun websites directory.</p>
+      </div>
+    `;
+
+    return this.sendMail({
+      to,
+      subject,
+      template: 'REGISTRATION_CONFIRMATION',
+      text,
+      html,
+    });
+  }
+
   async sendInviteEmail(to: string, applicantName: string, websiteName: string, inviteUrl: string) {
     const subject = `Welcome to FindFunLinks! Set up your account for ${websiteName}`;
     const text = `Hello ${applicantName},\n\nCongratulations! Your website "${websiteName}" has been approved for FindFunLinks.\n\nPlease activate your Website Owner account and set your password using this secure single-use link (valid for 24 hours):\n${inviteUrl}\n\nOnce set up, you can log in to your Website Owner panel to add mirrors, manage domains, and review link health.\n\nBest regards,\nThe FindFunLinks Team`;

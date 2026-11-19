@@ -1,0 +1,175 @@
+/**
+ * FindFunLinks — Design System Tokens
+ * Source of truth for Web, Admin, and Owner apps
+ */
+
+:root,
+:root[data-theme="dark"],
+.dark {
+  /* Surfaces */
+  --bg: #050A18;
+  --header: #070D1E;
+  --sidebar: #070D1E;
+  --card: #0A1226;
+  --card-hover: #0E182F;
+  --line: #1A2442;
+
+  /* Typography Colors */
+  --text: #F1F5F9;
+  --text-2: #A8B3C7;
+  --text-3: #6B7893;
+
+  /* Brand */
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --brand-link: #3B82F6;
+  --focus-ring: rgba(59, 130, 246, 0.6);
+
+  /* Status */
+  --ok: #22C55E;
+  --warn: #F59E0B;
+  --bad: #EF4444;
+
+  /* Category Accents (8 core keys mapped to 18 cards) */
+  --accent-purple: #8B5CF6;
+  --accent-blue: #3B82F6;
+  --accent-gold: #EAB308;
+  --accent-red: #EF4444;
+  --accent-green: #14B8A6;
+  --accent-cyan: #06B6D4;
+  --accent-orange: #F97316;
+  --accent-pink: #EC4899;
+
+  /* Specific Card Aliases */
+  --accent-ott: var(--accent-purple);
+  --accent-movies: var(--accent-blue);
+  --accent-shows: var(--accent-gold);
+  --accent-anime: var(--accent-red);
+  --accent-sports: #2563EB;
+  --accent-livetv: #7C3AED;
+  --accent-music: #9333EA;
+  --accent-games: #14B8A6;
+  --accent-software: #06B6D4;
+  --accent-tools: #F59E0B;
+  --accent-docs: #6366F1;
+  --accent-edu: #22C55E;
+  --accent-ebooks: #10B981;
+  --accent-comics: #0EA5E9;
+  --accent-podcasts: #F97316;
+  --accent-theatre: #A855F7;
+  --accent-kids: #FACC15;
+  --accent-others: #64748B;
+
+  /* Fonts */
+  --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Radii */
+  --radius-card: 16px;
+  --radius-pill: 12px;
+  --radius-button: 10px;
+  --radius-full: 9999px;
+}
+
+:root[data-theme="light"],
+.light {
+  /* Surfaces */
+  --bg: #F3F6FC;
+  --header: #FFFFFF;
+  --sidebar: #FFFFFF;
+  --card: #FFFFFF;
+  --card-hover: #F8FAFC;
+  --line: #D9E1F0;
+
+  /* Typography Colors */
+  --text: #0B1220;
+  --text-2: #475569;
+  --text-3: #64748B;
+
+  /* Brand */
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --brand-link: #2563EB;
+  --focus-ring: rgba(37, 99, 235, 0.4);
+
+  /* Status */
+  --ok: #16A34A;
+  --warn: #D97706;
+  --bad: #DC2626;
+
+  /* Category Accents (600 shades for light AA contrast) */
+  --accent-purple: #7C3AED;
+  --accent-blue: #2563EB;
+  --accent-gold: #CA8A04;
+  --accent-red: #DC2626;
+  --accent-green: #0D9488;
+  --accent-cyan: #0891B2;
+  --accent-orange: #EA580C;
+  --accent-pink: #DB2777;
+
+  --accent-ott: var(--accent-purple);
+  --accent-movies: var(--accent-blue);
+  --accent-shows: var(--accent-gold);
+  --accent-anime: var(--accent-red);
+  --accent-sports: #1D4ED8;
+  --accent-livetv: #6D28D9;
+  --accent-music: #7E22CE;
+  --accent-games: #0F766E;
+  --accent-software: #0E7490;
+  --accent-tools: #B45309;
+  --accent-docs: #4F46E5;
+  --accent-edu: #15803D;
+  --accent-ebooks: #047857;
+  --accent-comics: #0369A1;
+  --accent-podcasts: #C2410C;
+  --accent-theatre: #9333EA;
+  --accent-kids: #A16207;
+  --accent-others: #475569;
+}
+
+/* Accent Card System */
+.cat-card {
+  background: var(--card);
+  border: 1.5px solid color-mix(in srgb, var(--accent, var(--primary)) 85%, transparent);
+  border-radius: var(--radius-card);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, var(--primary)) 18%, transparent),
+              0 0 28px -8px color-mix(in srgb, var(--accent, var(--primary)) 45%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cat-card:hover {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, var(--primary)) 28%, transparent),
+              0 0 32px -4px color-mix(in srgb, var(--accent, var(--primary)) 55%, transparent);
+}
+
+.cat-card__header {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent, var(--primary)) 16%, var(--card)), var(--card));
+  border-top-left-radius: calc(var(--radius-card) - 1.5px);
+  border-top-right-radius: calc(var(--radius-card) - 1.5px);
+}
+
+.cat-card__chip {
+  background: color-mix(in srgb, var(--accent, var(--primary)) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, var(--primary)) 55%, transparent);
+  color: var(--accent, var(--primary));
+  border-radius: 10px;
+}
+
+.cat-card__count {
+  background: rgba(10, 18, 38, 0.85);
+  border: 1px solid var(--line);
+  color: var(--text-2);
+  border-radius: var(--radius-full);
+}
+
+.view-more-btn {
+  background: var(--card);
+  border: 1.5px solid var(--accent, var(--primary));
+  color: #FFFFFF;
+  border-radius: var(--radius-button);
+  transition: all 0.2s ease;
+}
+
+.view-more-btn:hover {
+  background: color-mix(in srgb, var(--accent, var(--primary)) 25%, var(--card));
+}

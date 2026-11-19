@@ -10,6 +10,7 @@ import {
   Req,
   DefaultValuePipe,
   ParseIntPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { RegistrationsService } from './registrations.service';
@@ -23,6 +24,8 @@ import {
   RegistrationStatus,
   ReviewRegistrationSchema,
   ReviewRegistrationInput,
+  ResubmitRegistrationSchema,
+  ResubmitRegistrationInput,
 } from '@findfunlinks/contracts';
 import { Request } from 'express';
 
@@ -40,6 +43,24 @@ export class RegistrationsController {
   async submit(@Body() body: RegistrationSubmitInput, @Req() req: Request) {
     const validated = RegistrationSubmitSchema.parse(body);
     return this.registrationsService.submitRegistration(validated, req);
+  }
+
+  @Get('status')
+  @ApiOperation({ summary: 'Check status of a registration request by Reference ID & Email (Public)' })
+  @ApiQuery({ name: 'ref', required: true, type: String })
+  @ApiQuery({ name: 'email', required: true, type: String })
+  async getStatus(@Query('ref') ref?: string, @Query('email') email?: string) {
+    if (!ref || !email) {
+      throw new BadRequestException('Both Reference ID ("ref") and Email ("email") are required.');
+    }
+    return this.registrationsService.getStatus(ref, email);
+  }
+
+  @Post('resubmit')
+  @ApiOperation({ summary: 'Resubmit modified registration info after CHANGES_REQUESTED (Public)' })
+  async resubmit(@Body() body: ResubmitRegistrationInput, @Req() req: Request) {
+    const validated = ResubmitRegistrationSchema.parse(body);
+    return this.registrationsService.resubmit(validated, req);
   }
 
   @Get('edit/:token')
@@ -64,6 +85,15 @@ export class RegistrationsController {
   // ---------------------------------------------------------------------------
   // Admin Endpoints
   // ---------------------------------------------------------------------------
+
+  @Get('pending-count')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('registration.view')
+  @ApiOperation({ summary: 'Get total pending registrations count (Admin)' })
+  async getPendingCount() {
+    return this.registrationsService.getPendingCount();
+  }
 
   @Get()
   @ApiBearerAuth()
@@ -98,7 +128,7 @@ export class RegistrationsController {
   @RequirePermissions('registration.approve')
   @ApiOperation({
     summary:
-      'Approve application: creates Owner account, Website, initial Domain, and emails invite link (Admin)',
+      'Approve application: creates Owner account, Website, initial Domains, and emails invite link (Admin)',
   })
   async approve(
     @Param('id') id: string,
