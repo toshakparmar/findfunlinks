@@ -1,4 +1,12 @@
-import { PrismaClient, RoleType, UserStatus } from '@prisma/client';
+import {
+  PrismaClient,
+  RoleType,
+  UserStatus,
+  WebsiteStatus,
+  ContentRating,
+  DomainType,
+  DomainStatus,
+} from '@prisma/client';
 import * as argon2 from 'argon2';
 
 const prisma = new PrismaClient();
@@ -266,6 +274,123 @@ async function main() {
       where: { slug: tag.slug },
       update: { name: tag.name },
       create: tag,
+    });
+  }
+
+  // 7. Seed Demo Website Owner User
+  const ownerEmail = process.env.DEMO_OWNER_EMAIL || 'owner@findfunlinks.com';
+  const ownerPassword = process.env.DEMO_OWNER_PASSWORD || 'OwnerSecurePassword2026!';
+  console.log(`👉 Seeding Demo Owner user (${ownerEmail})...`);
+
+  const ownerPasswordHash = await argon2.hash(ownerPassword);
+  const ownerUser = await prisma.user.upsert({
+    where: { email: ownerEmail.toLowerCase() },
+    update: {
+      passwordHash: ownerPasswordHash,
+      roleId: ownerRole.id,
+      status: UserStatus.ACTIVE,
+      failedLoginCount: 0,
+      lockedUntil: null,
+      deletedAt: null,
+    },
+    create: {
+      email: ownerEmail.toLowerCase(),
+      name: 'Verified Website Owner',
+      passwordHash: ownerPasswordHash,
+      status: UserStatus.ACTIVE,
+      roleId: ownerRole.id,
+      mustChangePassword: false,
+    },
+  });
+
+  // 8. Seed Demo Website for Owner
+  console.log('👉 Seeding demo website for owner...');
+  const firstCategory = await prisma.category.findFirstOrThrow();
+  const demoWebsite = await prisma.website.upsert({
+    where: { slug: 'funlinks-showcase' },
+    update: {
+      ownerId: ownerUser.id,
+      status: WebsiteStatus.ACTIVE,
+      name: 'FunLinks Showcase Portal',
+      tagline: 'Premier curated directory for anime, games, and entertainment mirrors.',
+      description:
+        'The official showcase directory entry demonstrating live mirror routing, automatic health checks, and public analytics on FindFunLinks.',
+      contentRating: ContentRating.ALL,
+      categoryId: firstCategory.id,
+    },
+    create: {
+      slug: 'funlinks-showcase',
+      name: 'FunLinks Showcase Portal',
+      tagline: 'Premier curated directory for anime, games, and entertainment mirrors.',
+      description:
+        'The official showcase directory entry demonstrating live mirror routing, automatic health checks, and public analytics on FindFunLinks.',
+      contentRating: ContentRating.ALL,
+      status: WebsiteStatus.ACTIVE,
+      ownerId: ownerUser.id,
+      categoryId: firstCategory.id,
+      isFeatured: true,
+    },
+  });
+
+  // 9. Seed Demo Mirrors
+  console.log('👉 Seeding demo mirror domains...');
+  const demoDomains = [
+    {
+      hostname: 'showcase.findfunlinks.com',
+      url: 'https://showcase.findfunlinks.com',
+      type: DomainType.PRIMARY,
+      status: DomainStatus.ACTIVE,
+      isPublic: true,
+      lastResponseMs: 142,
+      lastCheckedAt: new Date(),
+    },
+    {
+      hostname: 'mirror-us.findfunlinks.com',
+      url: 'https://mirror-us.findfunlinks.com',
+      type: DomainType.MIRROR,
+      status: DomainStatus.ACTIVE,
+      isPublic: true,
+      lastResponseMs: 185,
+      lastCheckedAt: new Date(),
+    },
+    {
+      hostname: 'proxy-cdn.findfunlinks.net',
+      url: 'https://proxy-cdn.findfunlinks.net',
+      type: DomainType.PROXY,
+      status: DomainStatus.ACTIVE,
+      isPublic: true,
+      lastResponseMs: 95,
+      lastCheckedAt: new Date(),
+    },
+  ];
+
+  for (let i = 0; i < demoDomains.length; i++) {
+    const d = demoDomains[i]!;
+    await prisma.domain.upsert({
+      where: {
+        hostname: d.hostname,
+      },
+      update: {
+        url: d.url,
+        type: d.type,
+        status: d.status,
+        isPublic: d.isPublic,
+        lastResponseMs: d.lastResponseMs,
+        lastCheckedAt: d.lastCheckedAt,
+        sortOrder: i,
+        websiteId: demoWebsite.id,
+      },
+      create: {
+        hostname: d.hostname,
+        url: d.url,
+        type: d.type,
+        status: d.status,
+        isPublic: d.isPublic,
+        lastResponseMs: d.lastResponseMs,
+        lastCheckedAt: d.lastCheckedAt,
+        sortOrder: i,
+        websiteId: demoWebsite.id,
+      },
     });
   }
 
