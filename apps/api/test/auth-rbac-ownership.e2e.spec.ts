@@ -13,6 +13,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { AllExceptionsFilter } from '../src/common/filters/all-exceptions.filter';
 import { TransformResponseInterceptor } from '../src/common/interceptors/transform-response.interceptor';
 import { UserStatus, RoleType } from '@prisma/client';
+import { ensureTestData } from './test-helper';
 
 describe('Auth, RBAC & Ownership Security (E2E)', () => {
   let app: INestApplication;
@@ -49,10 +50,8 @@ describe('Auth, RBAC & Ownership Security (E2E)', () => {
     await app.init();
     prisma = app.get(PrismaService);
 
-    // Setup an additional Website Owner user for RBAC & IDOR testing
-    const ownerRole = await prisma.role.findUnique({
-      where: { name: 'Website Owner' },
-    });
+    // Ensure database base fixtures exist
+    const { ownerRole } = await ensureTestData(prisma);
 
     const ownerPasswordHash = await argon2.hash('OwnerSecurePassword2026!');
     ownerUser = await prisma.user.upsert({
@@ -68,7 +67,7 @@ describe('Auth, RBAC & Ownership Security (E2E)', () => {
         name: 'Test Owner',
         passwordHash: ownerPasswordHash,
         status: UserStatus.ACTIVE,
-        roleId: ownerRole!.id,
+        roleId: ownerRole.id,
       },
     });
   }, 30000);

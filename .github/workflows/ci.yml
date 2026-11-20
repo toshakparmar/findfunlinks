@@ -102,6 +102,7 @@ jobs:
         run: |
           pnpm --filter @findfunlinks/api db:generate
           pnpm --filter @findfunlinks/api db:migrate:deploy
+          pnpm --filter @findfunlinks/api db:seed
 
       - name: Run Test Suites
         env:

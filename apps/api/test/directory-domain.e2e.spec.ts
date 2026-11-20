@@ -12,6 +12,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { AllExceptionsFilter } from '../src/common/filters/all-exceptions.filter';
 import { TransformResponseInterceptor } from '../src/common/interceptors/transform-response.interceptor';
 import { HealthCheckService } from '../src/modules/health-check/health-check.service';
+import { ensureTestData } from './test-helper';
 
 describe('Phase 3: Directory Domain & Complete Workflow (E2E)', () => {
   let app: INestApplication;
@@ -58,6 +59,9 @@ describe('Phase 3: Directory Domain & Complete Workflow (E2E)', () => {
     await app.init();
     prisma = app.get(PrismaService);
     healthCheckService = app.get(HealthCheckService);
+
+    // Ensure database base fixtures exist
+    await ensureTestData(prisma);
 
     // Authenticate Super Admin
     const loginRes = await request(app.getHttpServer()).post('/api/v1/auth/login').send({
