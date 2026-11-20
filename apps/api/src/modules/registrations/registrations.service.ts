@@ -174,11 +174,11 @@ export class RegistrationsService {
     }
 
     return {
-      success: true,
       referenceId: created.referenceId,
       id: created.id,
       websiteName: created.websiteName,
       status: created.status,
+      applicantEmail: created.applicantEmail,
       verificationToken: created.verificationToken,
       verificationMethod: created.verificationMethod,
       submittedAt: created.submittedAt,
@@ -511,130 +511,135 @@ export class RegistrationsService {
     const rawInviteToken = randomBytes(32).toString('hex');
     const tokenHash = this.hashToken(rawInviteToken);
     const inviteExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const tempPasswordHash = !existingUser
+      ? await argon2.hash(randomBytes(32).toString('hex'))
+      : '';
 
     // Execute atomic transaction for user, website, domains, invite token, and request update
-    const result = await this.prisma.$transaction(async (tx) => {
-      // 1. User
-      let userId: string;
-      if (!existingUser) {
-        const tempPasswordHash = await argon2.hash(randomBytes(32).toString('hex'));
-        const newUser = await tx.user.create({
+    const result = await this.prisma.$transaction(
+      async (tx) => {
+        // 1. User
+        let userId: string;
+        if (!existingUser) {
+          const newUser = await tx.user.create({
+            data: {
+              email: reg.applicantEmail,
+              name: reg.applicantName,
+              passwordHash: tempPasswordHash,
+              status: UserStatus.INVITED,
+              mustChangePassword: false,
+              roleId: ownerRole.id,
+            },
+          });
+          userId = newUser.id;
+        } else {
+          userId = existingUser.id;
+        }
+
+        // 2. Website
+        const website = await tx.website.create({
           data: {
-            email: reg.applicantEmail,
-            name: reg.applicantName,
-            passwordHash: tempPasswordHash,
-            status: UserStatus.INVITED,
-            mustChangePassword: false,
-            roleId: ownerRole.id,
+            name: reg.websiteName,
+            slug: uniqueSlug,
+            description: reg.description,
+            categoryId: reg.categoryId,
+            ownerId: userId,
+            logoUrl: reg.logoUrl,
+            language: reg.language,
+            contentRating: reg.contentRating,
+            status: WebsiteStatus.ACTIVE,
           },
         });
-        userId = newUser.id;
-      } else {
-        userId = existingUser.id;
-      }
 
-      // 2. Website
-      const website = await tx.website.create({
-        data: {
-          name: reg.websiteName,
-          slug: uniqueSlug,
-          description: reg.description,
-          categoryId: reg.categoryId,
-          ownerId: userId,
-          logoUrl: reg.logoUrl,
-          language: reg.language,
-          contentRating: reg.contentRating,
-          status: WebsiteStatus.ACTIVE,
-        },
-      });
+        // 3. Connect Tags
+        if (reg.proposedTags && reg.proposedTags.length > 0) {
+          for (const tagName of reg.proposedTags) {
+            const tagSlug = this.slugify(tagName);
+            if (!tagSlug) continue;
 
-      // 3. Connect Tags
-      if (reg.proposedTags && reg.proposedTags.length > 0) {
-        for (const tagName of reg.proposedTags) {
-          const tagSlug = this.slugify(tagName);
-          if (!tagSlug) continue;
+            const tag = await tx.tag.upsert({
+              where: { slug: tagSlug },
+              update: {},
+              create: { name: tagName.trim(), slug: tagSlug },
+            });
 
-          const tag = await tx.tag.upsert({
-            where: { slug: tagSlug },
-            update: {},
-            create: { name: tagName.trim(), slug: tagSlug },
-          });
-
-          await tx.websiteTag.create({
-            data: { websiteId: website.id, tagId: tag.id },
-          });
-        }
-      }
-
-      // 4. Primary Domain
-      const primaryDomain = await tx.domain.create({
-        data: {
-          websiteId: website.id,
-          hostname,
-          url: reg.primaryUrl,
-          label: 'Primary Domain',
-          type: DomainType.PRIMARY,
-          status: DomainStatus.ACTIVE,
-          isPublic: true,
-          addedById: reviewerId,
-        },
-      });
-
-      // 4b. Additional Mirrors
-      if (reg.additionalDomains && Array.isArray(reg.additionalDomains)) {
-        for (const mirrorUrl of reg.additionalDomains) {
-          try {
-            const mirrorHostname = this.normalizeHostname(mirrorUrl);
-            const exists = await tx.domain.findUnique({ where: { hostname: mirrorHostname } });
-            if (!exists) {
-              await tx.domain.create({
-                data: {
-                  websiteId: website.id,
-                  hostname: mirrorHostname,
-                  url: mirrorUrl,
-                  label: 'Mirror Domain',
-                  type: DomainType.MIRROR,
-                  status: DomainStatus.ACTIVE,
-                  isPublic: true,
-                  addedById: reviewerId,
-                },
-              });
-            }
-          } catch {
-            // Ignore format issues on secondary mirrors
+            await tx.websiteTag.create({
+              data: { websiteId: website.id, tagId: tag.id },
+            });
           }
         }
-      }
 
-      // 5. Expiring single-use invite token
-      await tx.token.create({
-        data: {
+        // 4. Primary Domain
+        const primaryDomain = await tx.domain.create({
+          data: {
+            websiteId: website.id,
+            hostname,
+            url: reg.primaryUrl,
+            label: 'Primary Domain',
+            type: DomainType.PRIMARY,
+            status: DomainStatus.ACTIVE,
+            isPublic: true,
+            addedById: reviewerId,
+          },
+        });
+
+        // 4b. Additional Mirrors
+        if (reg.additionalDomains && Array.isArray(reg.additionalDomains)) {
+          for (const mirrorUrl of reg.additionalDomains) {
+            try {
+              const mirrorHostname = this.normalizeHostname(mirrorUrl);
+              const exists = await tx.domain.findUnique({ where: { hostname: mirrorHostname } });
+              if (!exists) {
+                await tx.domain.create({
+                  data: {
+                    websiteId: website.id,
+                    hostname: mirrorHostname,
+                    url: mirrorUrl,
+                    label: 'Mirror Domain',
+                    type: DomainType.MIRROR,
+                    status: DomainStatus.ACTIVE,
+                    isPublic: true,
+                    addedById: reviewerId,
+                  },
+                });
+              }
+            } catch {
+              // Ignore format issues on secondary mirrors
+            }
+          }
+        }
+
+        // 5. Expiring single-use invite token
+        await tx.token.create({
+          data: {
+            userId,
+            tokenHash,
+            type: TokenType.INVITE,
+            expiresAt: inviteExpiresAt,
+          },
+        });
+
+        // 6. Update Registration Request
+        const updatedReg = await tx.registrationRequest.update({
+          where: { id: reg.id },
+          data: {
+            status: PrismaRegistrationStatus.APPROVED,
+            reviewerId,
+            reviewedAt: new Date(),
+            resultingUserId: userId,
+            resultingWebsiteId: website.id,
+          },
+        });
+
+        return {
           userId,
-          tokenHash,
-          type: TokenType.INVITE,
-          expiresAt: inviteExpiresAt,
-        },
-      });
-
-      // 6. Update Registration Request
-      const updatedReg = await tx.registrationRequest.update({
-        where: { id: reg.id },
-        data: {
-          status: PrismaRegistrationStatus.APPROVED,
-          reviewerId,
-          reviewedAt: new Date(),
-          resultingUserId: userId,
-          resultingWebsiteId: website.id,
-        },
-      });
-
-      return {
-        userId,
-        website,
-        domain: primaryDomain,
-        registration: updatedReg,
-      };
-    });
+          website,
+          domain: primaryDomain,
+          registration: updatedReg,
+        };
+      },
+      { maxWait: 15000, timeout: 30000 },
+    );
 
     // 7. Audit log
     await this.auditService.log({
@@ -667,6 +672,9 @@ export class RegistrationsService {
       websiteId: result.website.id,
       slug: result.website.slug,
       inviteUrl,
+      website: result.website,
+      domain: result.domain,
+      rawInviteToken,
     };
   }
 

@@ -164,6 +164,7 @@ describe('Phase 3: Directory Domain & Complete Workflow (E2E)', () => {
           categoryId: starterCategoryId,
           proposedTags: ['Anime', 'Streaming', 'HD'],
           contentRating: 'ALL',
+          termsAccepted: true,
         });
 
       expect(res.status).toBe(201);
@@ -182,6 +183,7 @@ describe('Phase 3: Directory Domain & Complete Workflow (E2E)', () => {
         primaryUrl: 'https://different-url.com',
         description: 'Another website attempt description.',
         categoryId: starterCategoryId,
+        termsAccepted: true,
       });
 
       expect(res.status).toBe(409);
