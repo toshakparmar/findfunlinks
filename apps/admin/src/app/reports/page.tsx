@@ -3,18 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { StatusBadge } from '@/components/StatusBadge';
-import {
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  ExternalLink,
-  RefreshCw,
-  Search,
-  Eye,
-  Globe,
-  Clock,
-  Mail,
-} from 'lucide-react';
+import { AlertTriangle, RefreshCw, Search, Eye, Globe, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ReportItem {
@@ -99,165 +88,157 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-            Broken Links & Abuse Reports
+          <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">
+            Reports & Moderation
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Review user-submitted reports for broken domains, dead links, or misleading directory
-            items.
+          <p className="text-xs text-[#A8B3C7] mt-1">
+            Review user-submitted reports regarding broken links, malicious content, or policy
+            violations.
           </p>
         </div>
+
         <button
+          type="button"
           onClick={fetchReports}
-          disabled={loading}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-200"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors self-start sm:self-auto"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className="h-3.5 w-3.5" />
           Refresh
         </button>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-neutral-900 p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm">
-        {/* Status Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
-          {(['ALL', 'PENDING', 'RESOLVED', 'DISMISSED'] as const).map((tab) => (
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          {(['ALL', 'PENDING', 'RESOLVED', 'DISMISSED'] as const).map((st) => (
             <button
-              key={tab}
+              key={st}
+              type="button"
               onClick={() => {
-                setStatusFilter(tab);
+                setStatusFilter(st);
                 setPage(1);
               }}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
-                statusFilter === tab
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
+                statusFilter === st
+                  ? 'bg-[#2563EB] text-white shadow-sm'
+                  : 'border border-[#1A2442] bg-[#0A1226] text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]'
               }`}
             >
-              {tab === 'ALL' ? 'All Reports' : tab}
+              {st}
             </button>
           ))}
         </div>
 
-        {/* Search */}
-        <div className="relative w-full sm:w-64">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-neutral-400" />
+        <div className="relative min-w-[240px]">
+          <Search className="h-4 w-4 text-[#6B7893] absolute left-3 top-2.5" />
           <input
             type="text"
-            placeholder="Search reports..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Search reports..."
+            className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] pl-9 pr-3.5 py-2 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-colors"
           />
         </div>
       </div>
 
-      {/* Reports Table */}
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-neutral-600 dark:text-neutral-300">
-            <thead className="bg-neutral-50 dark:bg-neutral-800/60 text-xs uppercase text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800">
-              <tr>
-                <th className="py-3 px-4 font-semibold">Target Entity</th>
-                <th className="py-3 px-4 font-semibold">Reason</th>
-                <th className="py-3 px-4 font-semibold">Status</th>
-                <th className="py-3 px-4 font-semibold">Reported</th>
-                <th className="py-3 px-4 font-semibold text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
-              {loading ? (
-                <tr>
-                  <td colSpan={5} className="py-12 text-center text-neutral-400">
-                    <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-600" />
-                    Loading reports...
-                  </td>
+      {/* Table */}
+      <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] shadow-sm overflow-hidden">
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
+          </div>
+        ) : filteredReports.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-[#1A2442] bg-[#070D1E] text-[#A8B3C7]">
+                  <th className="py-3 px-4 font-semibold">Target Entity</th>
+                  <th className="py-3 px-4 font-semibold">Reason</th>
+                  <th className="py-3 px-4 font-semibold">Reporter</th>
+                  <th className="py-3 px-4 font-semibold">Status</th>
+                  <th className="py-3 px-4 font-semibold">Date</th>
+                  <th className="py-3 px-4 font-semibold text-right">Actions</th>
                 </tr>
-              ) : filteredReports.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-12 text-center text-neutral-400">
-                    <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-neutral-400" />
-                    No reports found matching your criteria.
-                  </td>
-                </tr>
-              ) : (
-                filteredReports.map((report) => (
-                  <tr
-                    key={report.id}
-                    className="hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40 transition-colors"
-                  >
-                    <td className="py-3 px-4">
-                      {report.domain ? (
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-neutral-900 dark:text-white flex items-center gap-1.5">
-                            <Globe className="w-3.5 h-3.5 text-blue-500" />
-                            {report.domain.hostname}
-                          </span>
-                          <span className="text-xs text-neutral-400">
-                            Website: {report.website?.name || 'N/A'}
-                          </span>
+              </thead>
+              <tbody className="divide-y divide-[#1A2442]/60">
+                {filteredReports.map((report) => (
+                  <tr key={report.id} className="hover:bg-[#0E182F] transition-colors">
+                    <td className="py-3.5 px-4 font-medium text-[#F1F5F9]">
+                      {report.website ? (
+                        <div className="flex items-center gap-1.5">
+                          <Globe className="h-3.5 w-3.5 text-[#3B82F6]" />
+                          <span>{report.website.name}</span>
                         </div>
-                      ) : report.website ? (
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-neutral-900 dark:text-white">
-                            {report.website.name}
-                          </span>
-                          <span className="text-xs text-neutral-400">Website report</span>
+                      ) : report.domain ? (
+                        <div className="font-mono text-[11px] text-[#A8B3C7]">
+                          {report.domain.hostname}
                         </div>
                       ) : (
-                        <span className="text-neutral-400 italic">General platform report</span>
+                        <span className="text-[#6B7893]">General Platform</span>
                       )}
                     </td>
-                    <td className="py-3 px-4">
-                      <span className="font-medium text-neutral-800 dark:text-neutral-200 block truncate max-w-xs">
-                        {report.reason}
-                      </span>
+
+                    <td className="py-3.5 px-4 text-[#F1F5F9] font-medium">
+                      <div className="truncate max-w-xs">{report.reason}</div>
                       {report.details && (
-                        <span className="text-xs text-neutral-400 line-clamp-1 max-w-xs">
+                        <div className="text-[11px] text-[#A8B3C7] truncate max-w-xs mt-0.5">
                           {report.details}
-                        </span>
+                        </div>
                       )}
                     </td>
-                    <td className="py-3 px-4">
+
+                    <td className="py-3.5 px-4 text-[#A8B3C7]">
+                      {report.reporterEmail || <span className="text-[#6B7893]">Anonymous</span>}
+                    </td>
+
+                    <td className="py-3.5 px-4">
                       <StatusBadge status={report.status} />
                     </td>
-                    <td className="py-3 px-4 text-xs text-neutral-500 whitespace-nowrap">
+
+                    <td className="py-3.5 px-4 text-[#A8B3C7]">
                       {new Date(report.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="py-3 px-4 text-right">
+
+                    <td className="py-3.5 px-4 text-right space-x-1.5">
                       <button
+                        type="button"
                         onClick={() => setSelectedReport(report)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                        className="px-2.5 py-1 rounded-lg bg-[#2563EB]/15 text-[#3B82F6] font-semibold hover:bg-[#2563EB] hover:text-white transition-colors border border-[#2563EB]/30 inline-flex items-center gap-1"
                       >
-                        <Eye className="w-3.5 h-3.5" />
+                        <Eye className="h-3 w-3" />
                         Inspect
                       </button>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="p-12 text-center text-xs text-[#A8B3C7]">
+            No reports found matching your criteria.
+          </div>
+        )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="p-4 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between text-xs text-neutral-500">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#1A2442] bg-[#070D1E] text-xs text-[#A8B3C7]">
             <span>
               Page {page} of {totalPages}
             </span>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="px-2.5 py-1 rounded border border-neutral-300 dark:border-neutral-700 disabled:opacity-40"
+                className="px-2.5 py-1 rounded-lg border border-[#1A2442] bg-[#0A1226] text-[#F1F5F9] disabled:opacity-40 hover:bg-[#0E182F]"
               >
                 Previous
               </button>
               <button
+                type="button"
                 disabled={page >= totalPages}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="px-2.5 py-1 rounded border border-neutral-300 dark:border-neutral-700 disabled:opacity-40"
+                onClick={() => setPage((p) => p + 1)}
+                className="px-2.5 py-1 rounded-lg border border-[#1A2442] bg-[#0A1226] text-[#F1F5F9] disabled:opacity-40 hover:bg-[#0E182F]"
               >
                 Next
               </button>
@@ -266,126 +247,77 @@ export default function ReportsPage() {
         )}
       </div>
 
-      {/* Inspect Report Modal */}
+      {/* Report Details Modal */}
       {selectedReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
-            <div className="p-6 space-y-4">
-              <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-amber-500" />
-                  <h3 className="font-semibold text-lg text-neutral-900 dark:text-white">
-                    Report Details
-                  </h3>
-                </div>
-                <StatusBadge status={selectedReport.status} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="rounded-3xl border border-[#1A2442] bg-[#0A1226] max-w-lg w-full p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#1A2442] pb-3">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-[#F59E0B]" />
+                <h2 className="text-base font-bold text-[#F1F5F9]">Report Details</h2>
               </div>
+              <button
+                type="button"
+                onClick={() => setSelectedReport(null)}
+                className="text-[#A8B3C7] hover:text-[#F1F5F9]"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
 
-              <div className="space-y-3 text-sm">
+            <div className="space-y-3 text-xs">
+              <div className="p-3.5 rounded-xl bg-[#070D1E] border border-[#1A2442] space-y-2">
                 <div>
-                  <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider block">
-                    Reason
-                  </label>
-                  <p className="font-medium text-neutral-900 dark:text-white mt-0.5">
-                    {selectedReport.reason}
-                  </p>
+                  <span className="text-[#A8B3C7]">Reason:</span>
+                  <div className="font-bold text-[#F1F5F9] mt-0.5">{selectedReport.reason}</div>
                 </div>
-
                 {selectedReport.details && (
                   <div>
-                    <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider block">
-                      Additional Details
-                    </label>
-                    <p className="text-neutral-700 dark:text-neutral-300 mt-0.5 bg-neutral-50 dark:bg-neutral-800/60 p-3 rounded-lg border border-neutral-200 dark:border-neutral-800 text-xs">
+                    <span className="text-[#A8B3C7]">Full Explanation:</span>
+                    <p className="text-[#F1F5F9] mt-0.5 leading-relaxed bg-[#050A18] p-2.5 rounded-lg border border-[#1A2442]">
                       {selectedReport.details}
                     </p>
                   </div>
                 )}
+              </div>
 
-                {selectedReport.domain && (
-                  <div>
-                    <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider block">
-                      Reported Mirror / Domain
-                    </label>
-                    <div className="mt-1 flex items-center justify-between p-2.5 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg border border-neutral-200 dark:border-neutral-800">
-                      <div>
-                        <span className="font-medium text-neutral-900 dark:text-white text-xs block">
-                          {selectedReport.domain.hostname}
-                        </span>
-                        <span className="text-[11px] text-neutral-400">
-                          Status: {selectedReport.domain.status}
-                        </span>
-                      </div>
-                      <a
-                        href={selectedReport.domain.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
-                      >
-                        Visit <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
+              <div className="grid grid-cols-2 gap-2 p-3.5 rounded-xl bg-[#070D1E] border border-[#1A2442]">
+                <div>
+                  <span className="text-[#A8B3C7]">Reporter:</span>
+                  <div className="font-mono text-[#F1F5F9] mt-0.5">
+                    {selectedReport.reporterEmail || 'Anonymous'}
                   </div>
-                )}
-
-                {selectedReport.website && (
-                  <div>
-                    <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider block">
-                      Website
-                    </label>
-                    <p className="font-medium text-neutral-800 dark:text-neutral-200 text-xs mt-0.5">
-                      {selectedReport.website.name} ({selectedReport.website.slug})
-                    </p>
+                </div>
+                <div>
+                  <span className="text-[#A8B3C7]">Current Status:</span>
+                  <div className="mt-0.5">
+                    <StatusBadge status={selectedReport.status} />
                   </div>
-                )}
-
-                {selectedReport.reporterEmail && (
-                  <div>
-                    <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider block">
-                      Reporter Contact
-                    </label>
-                    <div className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">
-                      <Mail className="w-3.5 h-3.5" />
-                      {selectedReport.reporterEmail}
-                    </div>
-                  </div>
-                )}
-
-                <div className="text-xs text-neutral-400 flex items-center gap-1 pt-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  Submitted on {new Date(selectedReport.createdAt).toLocaleString()}
                 </div>
               </div>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-2 pt-4 border-t border-neutral-100 dark:border-neutral-800">
-                <button
-                  onClick={() => setSelectedReport(null)}
-                  className="px-4 py-2 text-xs font-medium rounded-lg text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                >
-                  Close
-                </button>
-                {selectedReport.status === 'PENDING' && (
-                  <>
-                    <button
-                      disabled={updatingId === selectedReport.id}
-                      onClick={() => handleUpdateStatus(selectedReport.id, 'DISMISSED')}
-                      className="inline-flex items-center gap-1 px-3 py-2 text-xs font-semibold rounded-lg bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-700"
-                    >
-                      <XCircle className="w-3.5 h-3.5 text-neutral-500" />
-                      Dismiss
-                    </button>
-                    <button
-                      disabled={updatingId === selectedReport.id}
-                      onClick={() => handleUpdateStatus(selectedReport.id, 'RESOLVED')}
-                      className="inline-flex items-center gap-1 px-3 py-2 text-xs font-semibold rounded-lg bg-green-600 text-white hover:bg-green-700 shadow-sm"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      Mark Resolved
-                    </button>
-                  </>
-                )}
-              </div>
+            <div className="flex justify-end gap-2 pt-3 border-t border-[#1A2442]">
+              {selectedReport.status === 'PENDING' && (
+                <>
+                  <button
+                    type="button"
+                    disabled={updatingId === selectedReport.id}
+                    onClick={() => handleUpdateStatus(selectedReport.id, 'DISMISSED')}
+                    className="px-3.5 py-1.5 rounded-xl border border-[#1A2442] bg-[#070D1E] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]"
+                  >
+                    Dismiss Report
+                  </button>
+                  <button
+                    type="button"
+                    disabled={updatingId === selectedReport.id}
+                    onClick={() => handleUpdateStatus(selectedReport.id, 'RESOLVED')}
+                    className="px-4 py-1.5 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-white text-xs font-bold transition-all shadow-md shadow-[#22C55E]/20"
+                  >
+                    Mark Resolved
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

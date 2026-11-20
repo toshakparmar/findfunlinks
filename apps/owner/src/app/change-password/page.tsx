@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth-context';
-import { Key, Lock, CheckCircle2, Loader2 } from 'lucide-react';
+import { Key, Lock, Loader2, ShieldAlert, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ChangePasswordPage() {
@@ -17,6 +17,7 @@ export default function ChangePasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Validation
   const hasMinLength = newPassword.length >= 12;
   const hasUpper = /[A-Z]/.test(newPassword);
   const hasLower = /[a-z]/.test(newPassword);
@@ -35,7 +36,7 @@ export default function ChangePasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid) {
-      toast.error('Please fulfill all password requirements.');
+      toast.error('Please meet all password requirements.');
       return;
     }
 
@@ -48,9 +49,9 @@ export default function ChangePasswordPage() {
       });
       await refreshProfile();
       toast.success('Your password has been successfully updated!');
-      router.push('/');
+      router.replace('/');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to update password.';
+      const message = err instanceof Error ? err.message : 'Failed to change password.';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -58,10 +59,12 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-neutral-50 via-white to-neutral-100 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
-      <div className="w-full max-w-md">
-        <div className="bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200 dark:border-neutral-800 p-8 shadow-xl space-y-6">
-          <div className="text-center space-y-2">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#050A18] relative overflow-hidden select-none">
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#2563EB]/10 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="bg-[#0A1226]/90 backdrop-blur-xl rounded-3xl border border-[#1A2442] p-8 shadow-2xl space-y-6">
+          <div className="text-center space-y-3">
             <div className="relative w-12 h-12 mx-auto">
               <Image
                 src="/logo-mark.svg"
@@ -71,114 +74,132 @@ export default function ChangePasswordPage() {
                 priority
               />
             </div>
-            <h1 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight">
-              Password Update Required
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F59E0B]/15 text-[#F59E0B] border border-[#F59E0B]/30 text-xs font-bold uppercase tracking-wider">
+              <ShieldAlert className="h-3.5 w-3.5" />
+              <span>Password Update Required</span>
+            </div>
+            <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">
+              Update Your Password
             </h1>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              For your account security, you must set a new password before accessing your website
-              owner dashboard.
+            <p className="text-xs text-[#A8B3C7]">
+              For platform safety, you must set a permanent password before continuing to the owner
+              dashboard.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1">
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-[#F1F5F9] uppercase tracking-wider">
                 Current / Temporary Password
               </label>
               <div className="relative">
-                <Key className="w-4 h-4 absolute left-3.5 top-3 text-neutral-400" />
+                <Key className="w-4 h-4 absolute left-3.5 top-3 text-[#6B7893]" />
                 <input
                   type="password"
                   required
-                  placeholder="Enter current password"
+                  placeholder="••••••••••••"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-[#1A2442] bg-[#050A18] text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-colors"
                 />
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-[#F1F5F9] uppercase tracking-wider">
                 New Password
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 absolute left-3.5 top-3 text-neutral-400" />
+                <Lock className="w-4 h-4 absolute left-3.5 top-3 text-[#6B7893]" />
                 <input
                   type="password"
                   required
-                  placeholder="At least 12 characters"
+                  placeholder="••••••••••••"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-[#1A2442] bg-[#050A18] text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-colors"
                 />
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-[#F1F5F9] uppercase tracking-wider">
                 Confirm New Password
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 absolute left-3.5 top-3 text-neutral-400" />
+                <Lock className="w-4 h-4 absolute left-3.5 top-3 text-[#6B7893]" />
                 <input
                   type="password"
                   required
-                  placeholder="Re-type new password"
+                  placeholder="••••••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-[#1A2442] bg-[#050A18] text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-colors"
                 />
               </div>
             </div>
 
             {/* Checklist */}
-            <div className="p-3 bg-neutral-50 dark:bg-neutral-800/60 rounded-xl border border-neutral-200 dark:border-neutral-800 text-[11px] space-y-1">
-              <span className="font-semibold text-neutral-600 dark:text-neutral-400 block mb-1">
-                Password Requirements:
-              </span>
-              <div className="grid grid-cols-2 gap-1 text-neutral-500 dark:text-neutral-400">
-                <span
-                  className={
-                    hasMinLength ? 'text-emerald-600 dark:text-emerald-400 font-medium' : ''
-                  }
+            <div className="p-3.5 rounded-xl bg-[#070D1E] border border-[#1A2442] space-y-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#A8B3C7]">
+                Password Requirements
+              </p>
+              <div className="grid grid-cols-2 gap-1.5 text-[11px]">
+                <div
+                  className={`flex items-center gap-1.5 ${
+                    hasMinLength ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                  }`}
                 >
-                  ✓ 12+ characters
-                </span>
-                <span
-                  className={hasUpper ? 'text-emerald-600 dark:text-emerald-400 font-medium' : ''}
+                  {hasMinLength ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>12+ characters</span>
+                </div>
+                <div
+                  className={`flex items-center gap-1.5 ${
+                    hasUpper ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                  }`}
                 >
-                  ✓ Uppercase letter
-                </span>
-                <span
-                  className={hasLower ? 'text-emerald-600 dark:text-emerald-400 font-medium' : ''}
+                  {hasUpper ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>Uppercase letter</span>
+                </div>
+                <div
+                  className={`flex items-center gap-1.5 ${
+                    hasLower ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                  }`}
                 >
-                  ✓ Lowercase letter
-                </span>
-                <span
-                  className={hasNumber ? 'text-emerald-600 dark:text-emerald-400 font-medium' : ''}
+                  {hasLower ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>Lowercase letter</span>
+                </div>
+                <div
+                  className={`flex items-center gap-1.5 ${
+                    hasNumber ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                  }`}
                 >
-                  ✓ Number (0-9)
-                </span>
-                <span
-                  className={hasSymbol ? 'text-emerald-600 dark:text-emerald-400 font-medium' : ''}
+                  {hasNumber ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>Number digit</span>
+                </div>
+                <div
+                  className={`flex items-center gap-1.5 ${
+                    hasSymbol ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                  }`}
                 >
-                  ✓ Special character
-                </span>
-                <span
-                  className={
-                    passwordsMatch ? 'text-emerald-600 dark:text-emerald-400 font-medium' : ''
-                  }
+                  {hasSymbol ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>Special symbol</span>
+                </div>
+                <div
+                  className={`flex items-center gap-1.5 ${
+                    passwordsMatch ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                  }`}
                 >
-                  ✓ Passwords match
-                </span>
+                  {passwordsMatch ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>Passwords match</span>
+                </div>
               </div>
             </div>
 
             <button
               type="submit"
-              disabled={!isFormValid || loading}
-              className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled={loading || !isFormValid}
+              className="w-full py-2.5 px-4 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs shadow-md shadow-[#2563EB]/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -186,10 +207,7 @@ export default function ChangePasswordPage() {
                   Updating Password...
                 </>
               ) : (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  Save Password & Proceed
-                </>
+                'Update & Enter Dashboard'
               )}
             </button>
           </form>

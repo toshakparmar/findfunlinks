@@ -19,25 +19,26 @@ export function StatCard({
   variant = 'default',
 }: StatCardProps) {
   const variantStyles = {
-    default: 'text-blue-600 bg-blue-50 dark:bg-blue-950/50',
-    success: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50',
-    warning: 'text-amber-600 bg-amber-50 dark:bg-amber-950/50',
-    danger: 'text-rose-600 bg-rose-50 dark:bg-rose-950/50',
+    default: 'text-[#3B82F6] bg-[#2563EB]/15 border-[#2563EB]/30',
+    success: 'text-[#22C55E] bg-[#22C55E]/15 border-[#22C55E]/30',
+    warning: 'text-[#F59E0B] bg-[#F59E0B]/15 border-[#F59E0B]/30',
+    danger: 'text-[#EF4444] bg-[#EF4444]/15 border-[#EF4444]/30',
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 shadow-sm">
+    <div className="bg-[#0A1226] rounded-2xl border border-[#1A2442] p-5 shadow-sm space-y-3 hover:bg-[#0E182F] transition-colors">
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-            {title}
-          </p>
-          <p className="text-2xl font-bold text-neutral-900 dark:text-white mt-1">{value}</p>
-          {subtitle && <p className="text-xs text-neutral-400 mt-1">{subtitle}</p>}
+        <span className="text-[11px] font-semibold text-[#A8B3C7] uppercase tracking-wider">
+          {title}
+        </span>
+        <div className={`p-2.5 rounded-xl border ${variantStyles[variant]}`}>
+          <Icon className="w-4 h-4" />
         </div>
-        <div className={`p-3 rounded-xl ${variantStyles[variant]}`}>
-          <Icon className="w-5 h-5" />
-        </div>
+      </div>
+
+      <div>
+        <p className="text-2xl font-black text-[#F1F5F9]">{value}</p>
+        {subtitle && <p className="text-xs text-[#A8B3C7] mt-1">{subtitle}</p>}
       </div>
     </div>
   );

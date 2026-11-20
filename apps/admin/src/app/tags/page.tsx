@@ -62,64 +62,72 @@ export default function TagsAdminPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-foreground">Tags Management</h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            Curate functional discovery tags across all directory listings.
+          <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">Directory Tags</h1>
+          <p className="text-xs text-[#A8B3C7] mt-1">
+            Global taxonomy tags used by website owners and visitors for granular filtering.
           </p>
         </div>
 
         <button
           type="button"
           onClick={fetchTags}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-card text-xs font-semibold hover:bg-muted transition-colors self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors self-start sm:self-auto"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           Refresh
         </button>
       </div>
 
-      {/* Create Tag Bar */}
-      <form onSubmit={handleCreate} className="flex gap-2 max-w-md">
-        <input
-          type="text"
-          value={newTagName}
-          onChange={(e) => setNewTagName(e.target.value)}
-          placeholder="New tag name (e.g. Emulator, No Ads, PWA)..."
-          className="flex-1 rounded-xl border border-input bg-background px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-        />
+      {/* Create New Tag */}
+      <form
+        onSubmit={handleCreate}
+        className="flex items-center gap-2 max-w-md rounded-2xl border border-[#1A2442] bg-[#0A1226] p-2"
+      >
+        <div className="relative flex-1">
+          <TagIcon className="h-4 w-4 text-[#6B7893] absolute left-3 top-2.5" />
+          <input
+            type="text"
+            value={newTagName}
+            onChange={(e) => setNewTagName(e.target.value)}
+            placeholder="Add new tag (e.g. streaming, ad-free)..."
+            className="w-full bg-transparent pl-9 pr-3 py-1.5 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none"
+          />
+        </div>
         <button
           type="submit"
           disabled={creating || !newTagName.trim()}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors disabled:opacity-50"
+          className="px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all disabled:opacity-50 inline-flex items-center gap-1 shadow-sm"
         >
           {creating ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
           ) : (
             <Plus className="h-3.5 w-3.5" />
           )}
-          Add Tag
+          <span>Add</span>
         </button>
       </form>
 
-      {/* Tags Grid */}
-      <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm">
+      {/* Tags List */}
+      <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] p-6 shadow-sm">
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="flex justify-center py-10">
+            <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
           </div>
         ) : tags.length > 0 ? (
           <div className="flex flex-wrap gap-2.5">
             {tags.map((tag) => (
               <div
                 key={tag.id}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border/80 bg-muted/40 hover:bg-muted text-xs font-semibold text-foreground transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#070D1E] text-xs font-medium text-[#F1F5F9] hover:border-[#2563EB]/40 transition-colors group"
               >
-                <TagIcon className="h-3.5 w-3.5 text-primary" />
                 <span>#{tag.name}</span>
+                {tag.websiteCount !== undefined && (
+                  <span className="text-[10px] text-[#A8B3C7]">({tag.websiteCount})</span>
+                )}
                 <button
                   type="button"
                   onClick={() => handleDelete(tag)}
-                  className="text-muted-foreground hover:text-rose-500 transition-colors ml-1"
+                  className="text-[#6B7893] hover:text-[#EF4444] transition-colors ml-1"
                   title="Delete Tag"
                 >
                   <Trash2 className="h-3 w-3" />
@@ -128,8 +136,8 @@ export default function TagsAdminPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 text-xs text-muted-foreground">
-            No tags found. Add one above.
+          <div className="text-center py-10 text-xs text-[#A8B3C7]">
+            No tags created yet. Use the field above to add common website tags.
           </div>
         )}
       </div>

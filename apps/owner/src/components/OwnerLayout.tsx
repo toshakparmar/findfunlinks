@@ -28,24 +28,24 @@ export function OwnerLayout({ children }: { children: React.ReactNode }) {
   }, [user, isAuthPage]);
 
   if (isAuthPage) {
-    return <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950">{children}</main>;
+    return <main className="min-h-screen bg-[#050A18] text-[#F1F5F9]">{children}</main>;
   }
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-950">
+      <div className="min-h-screen flex items-center justify-center bg-[#050A18] text-[#F1F5F9]">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          <p className="text-xs text-neutral-500">Loading your workspace...</p>
+          <Loader2 className="w-8 h-8 animate-spin text-[#3B82F6]" />
+          <p className="text-xs text-[#A8B3C7]">Loading your workspace...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+    <div className="min-h-screen flex bg-[#050A18] text-[#F1F5F9]">
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block sticky top-0 h-screen">
         <OwnerSidebar publicSlug={website?.slug} />
       </div>
 
@@ -53,10 +53,10 @@ export function OwnerLayout({ children }: { children: React.ReactNode }) {
       {mobileOpen && (
         <div className="fixed inset-0 z-50 flex lg:hidden">
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="relative z-10 w-64 h-full bg-white dark:bg-neutral-900 shadow-2xl">
+          <div className="relative z-10 w-64 h-full bg-[#070D1E] shadow-2xl border-r border-[#1A2442]">
             <OwnerSidebar onCloseMobile={() => setMobileOpen(false)} publicSlug={website?.slug} />
           </div>
         </div>
@@ -69,7 +69,9 @@ export function OwnerLayout({ children }: { children: React.ReactNode }) {
           websiteName={website?.name}
           websiteStatus={website?.status}
         />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+          {children}
+        </main>
       </div>
     </div>
   );

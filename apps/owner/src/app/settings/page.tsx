@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth-context';
-import { Key, User, CheckCircle2, Loader2 } from 'lucide-react';
+import { Key, User, Loader2, ShieldCheck, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function OwnerSettingsPage() {
@@ -58,126 +58,183 @@ export default function OwnerSettingsPage() {
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-          Account Security & Settings
+        <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">
+          Security & Account Settings
         </h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">
-          Manage your owner credentials, password, and security preferences.
+        <p className="text-xs text-[#A8B3C7] mt-1">
+          Manage your owner operator account credentials, security preferences, and active role
+          permissions.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Profile Card */}
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-800 pb-3">
-            <User className="w-5 h-5 text-blue-600" />
-            <h2 className="text-base font-bold text-neutral-900 dark:text-white">
-              Website Owner Profile
-            </h2>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Left Column: Account Profile Summary */}
+        <div className="space-y-6">
+          <div className="bg-[#0A1226] rounded-2xl border border-[#1A2442] p-5 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 border-b border-[#1A2442] pb-3">
+              <User className="w-4 h-4 text-[#3B82F6]" />
+              <h2 className="font-bold text-sm text-[#F1F5F9]">Account Profile</h2>
+            </div>
 
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center gap-3 p-3 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-800">
-              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-sm uppercase">
-                {user?.name ? user.name[0] : 'O'}
-              </div>
-              <div className="min-w-0">
-                <span className="font-bold text-neutral-900 dark:text-white block text-sm">
-                  {user?.name}
+            <div className="space-y-3 text-xs">
+              <div>
+                <span className="text-[#A8B3C7] block text-[11px] uppercase">Full Name</span>
+                <span className="font-semibold text-[#F1F5F9] block mt-0.5">
+                  {user?.name || 'Owner'}
                 </span>
-                <span className="text-xs text-neutral-400 block truncate">{user?.email}</span>
               </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider block">
-                Account Status
-              </label>
-              <span className="inline-flex items-center gap-1.5 mt-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Verified Website Owner
-              </span>
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider block">
-                Security Policy
-              </label>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                Your account is protected with Argon2id password hashing and rotating encrypted
-                refresh tokens.
-              </p>
+              <div>
+                <span className="text-[#A8B3C7] block text-[11px] uppercase">Email Address</span>
+                <span className="font-mono text-[#F1F5F9] block mt-0.5">
+                  {user?.email || 'N/A'}
+                </span>
+              </div>
+              <div>
+                <span className="text-[#A8B3C7] block text-[11px] uppercase">
+                  Role Authorization
+                </span>
+                <div className="mt-1">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30">
+                    <ShieldCheck className="w-3 h-3" />
+                    Website Owner
+                  </span>
+                </div>
+              </div>
+              <div>
+                <span className="text-[#A8B3C7] block text-[11px] uppercase">Account Status</span>
+                <div className="mt-1 flex items-center gap-1.5 text-[#22C55E] font-semibold">
+                  <span className="w-2 h-2 rounded-full bg-[#22C55E]" />
+                  Active & Verified
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Change Password Card */}
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-800 pb-3">
-            <Key className="w-5 h-5 text-blue-600" />
-            <h2 className="text-base font-bold text-neutral-900 dark:text-white">
-              Change Account Password
-            </h2>
+        {/* Right Column: Update Password Form */}
+        <div className="md:col-span-2">
+          <div className="bg-[#0A1226] rounded-2xl border border-[#1A2442] p-6 shadow-sm space-y-5">
+            <div className="flex items-center gap-2 border-b border-[#1A2442] pb-3">
+              <Key className="w-4 h-4 text-[#F59E0B]" />
+              <h2 className="font-bold text-sm text-[#F1F5F9]">Change Security Password</h2>
+            </div>
+
+            <form onSubmit={handlePasswordSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••••••"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-[#1A2442] bg-[#050A18] text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••••••"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-[#1A2442] bg-[#050A18] text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-[#1A2442] bg-[#050A18] text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              {/* Password Checklist */}
+              <div className="p-3.5 rounded-xl bg-[#070D1E] border border-[#1A2442] space-y-1.5">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#A8B3C7]">
+                  Password Policy
+                </p>
+                <div className="grid grid-cols-2 gap-1.5 text-[11px]">
+                  <div
+                    className={`flex items-center gap-1.5 ${
+                      hasMinLength ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                    }`}
+                  >
+                    {hasMinLength ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                    <span>12+ characters</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 ${
+                      hasUpper ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                    }`}
+                  >
+                    {hasUpper ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                    <span>Uppercase letter</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 ${
+                      hasLower ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                    }`}
+                  >
+                    {hasLower ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                    <span>Lowercase letter</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 ${
+                      hasNumber ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                    }`}
+                  >
+                    {hasNumber ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                    <span>Number digit</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 ${
+                      hasSymbol ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                    }`}
+                  >
+                    {hasSymbol ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                    <span>Special symbol</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 ${
+                      passwordsMatch ? 'text-[#22C55E]' : 'text-[#6B7893]'
+                    }`}
+                  >
+                    {passwordsMatch ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                    <span>Passwords match</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button
+                  type="submit"
+                  disabled={savingPassword || !isPasswordValid}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs shadow-md shadow-[#2563EB]/25 transition-all disabled:opacity-50"
+                >
+                  {savingPassword ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Key className="w-4 h-4" />
+                  )}
+                  <span>Update Password</span>
+                </button>
+              </div>
+            </form>
           </div>
-
-          <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                Current Password
-              </label>
-              <input
-                type="password"
-                required
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                New Password (12+ chars, mixed case, number, symbol)
-              </label>
-              <input
-                type="password"
-                required
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                Confirm New Password
-              </label>
-              <input
-                type="password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={!isPasswordValid || savingPassword}
-              className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {savingPassword ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  Updating...
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Update Password
-                </>
-              )}
-            </button>
-          </form>
         </div>
       </div>
     </div>

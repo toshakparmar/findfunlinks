@@ -3,17 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { StatusBadge } from '@/components/StatusBadge';
-import {
-  Users,
-  Shield,
-  ShieldCheck,
-  Search,
-  RefreshCw,
-  Lock,
-  Unlock,
-  Key,
-  Mail,
-} from 'lucide-react';
+import { Users, Shield, ShieldCheck, Search, RefreshCw, Lock, Unlock, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface UserRecord {
@@ -101,12 +91,14 @@ export default function UsersPage() {
   }, [activeTab, fetchUsers, fetchRoles]);
 
   const handleToggleStatus = async (user: UserRecord) => {
-    const nextStatus = user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+    const newStatus = user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
     setActionLoadingId(user.id);
     try {
-      await api.admin.setUserStatus(user.id, nextStatus);
-      toast.success(`User status updated to ${nextStatus.toLowerCase()}`);
-      setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, status: nextStatus } : u)));
+      await api.admin.setUserStatus(user.id, newStatus);
+      toast.success(`User marked as ${newStatus.toLowerCase()}`);
+      setUsers((prev) =>
+        prev.map((u) => (u.id === user.id ? { ...u, status: newStatus as any } : u)),
+      );
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to update user status';
       toast.error(message);
@@ -120,254 +112,224 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-            User Accounts & RBAC
+          <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">
+            Users & Access Control
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Manage administrative operators, registered website owners, and view system role
-            privileges.
+          <p className="text-xs text-[#A8B3C7] mt-1">
+            Manage Super Admin and Website Owner platform credentials, RBAC roles, and login access.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl">
-            <button
-              onClick={() => setActiveTab('USERS')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-                activeTab === 'USERS'
-                  ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              Users ({users.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('ROLES')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-                activeTab === 'ROLES'
-                  ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
-              }`}
-            >
-              <Shield className="w-3.5 h-3.5" />
-              Roles & Permissions
-            </button>
-          </div>
-        </div>
+
+        <button
+          type="button"
+          onClick={() => (activeTab === 'USERS' ? fetchUsers() : fetchRoles())}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors self-start sm:self-auto"
+        >
+          <RefreshCw className="h-3.5 w-3.5" />
+          Refresh
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex items-center gap-2 border-b border-[#1A2442] pb-3">
+        <button
+          type="button"
+          onClick={() => setActiveTab('USERS')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            activeTab === 'USERS'
+              ? 'bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/25'
+              : 'border border-[#1A2442] bg-[#0A1226] text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]'
+          }`}
+        >
+          <Users className="h-4 w-4" />
+          Users Directory
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('ROLES')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            activeTab === 'ROLES'
+              ? 'bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/25'
+              : 'border border-[#1A2442] bg-[#0A1226] text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]'
+          }`}
+        >
+          <Shield className="h-4 w-4" />
+          Roles & Permissions
+        </button>
       </div>
 
       {activeTab === 'USERS' ? (
         <>
-          {/* Search bar */}
-          <div className="flex items-center justify-between gap-4 bg-white dark:bg-neutral-900 p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm">
-            <div className="relative flex-1 max-w-md">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-neutral-400" />
-              <input
-                type="text"
-                placeholder="Search by name or email..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && fetchUsers()}
-                className="w-full pl-9 pr-3 py-1.5 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button
-              onClick={fetchUsers}
-              disabled={loading}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
+          {/* Search */}
+          <div className="relative max-w-md">
+            <Search className="h-4 w-4 text-[#6B7893] absolute left-3 top-2.5" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search user by name or email..."
+              className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] pl-9 pr-3.5 py-2 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-colors"
+            />
           </div>
 
-          {/* Users Table */}
-          <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-neutral-600 dark:text-neutral-300">
-                <thead className="bg-neutral-50 dark:bg-neutral-800/60 text-xs uppercase text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800">
-                  <tr>
-                    <th className="py-3 px-4 font-semibold">User</th>
-                    <th className="py-3 px-4 font-semibold">Role</th>
-                    <th className="py-3 px-4 font-semibold">Associated Website</th>
-                    <th className="py-3 px-4 font-semibold">Status</th>
-                    <th className="py-3 px-4 font-semibold">Last Login</th>
-                    <th className="py-3 px-4 font-semibold text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
-                  {loading ? (
-                    <tr>
-                      <td colSpan={6} className="py-12 text-center text-neutral-400">
-                        <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-600" />
-                        Loading users...
-                      </td>
-                    </tr>
-                  ) : users.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="py-12 text-center text-neutral-400">
-                        No users found.
-                      </td>
-                    </tr>
-                  ) : (
-                    users.map((user) => (
-                      <tr
-                        key={user.id}
-                        className="hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40 transition-colors"
-                      >
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs uppercase">
-                              {user.name ? user.name[0] : 'U'}
-                            </div>
-                            <div>
-                              <span className="font-semibold text-neutral-900 dark:text-white block text-sm">
-                                {user.name}
-                              </span>
-                              <span className="text-xs text-neutral-400 flex items-center gap-1">
-                                <Mail className="w-3 h-3" />
-                                {user.email}
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              user.role?.type === 'SUPER_ADMIN'
-                                ? 'bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
-                                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300'
-                            }`}
-                          >
-                            <Shield className="w-3 h-3" />
-                            {user.role?.name || 'User'}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          {user.website ? (
-                            <span className="text-xs font-medium text-neutral-900 dark:text-white">
-                              {user.website.name}
-                            </span>
-                          ) : (
-                            <span className="text-xs text-neutral-400 italic">None</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4">
-                          <StatusBadge status={user.status} />
-                        </td>
-                        <td className="py-3 px-4 text-xs text-neutral-400 whitespace-nowrap">
-                          {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : 'Never'}
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          {user.role?.type !== 'SUPER_ADMIN' && (
-                            <button
-                              disabled={actionLoadingId === user.id}
-                              onClick={() => handleToggleStatus(user)}
-                              className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                                user.status === 'ACTIVE'
-                                  ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-900/50'
-                                  : 'bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-900/50'
+          {/* Table */}
+          <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] shadow-sm overflow-hidden">
+            {loading ? (
+              <div className="flex justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
+              </div>
+            ) : users.length > 0 ? (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-[#1A2442] bg-[#070D1E] text-[#A8B3C7]">
+                        <th className="py-3 px-4 font-semibold">User</th>
+                        <th className="py-3 px-4 font-semibold">Role</th>
+                        <th className="py-3 px-4 font-semibold">Managed Website</th>
+                        <th className="py-3 px-4 font-semibold">Status</th>
+                        <th className="py-3 px-4 font-semibold">Joined</th>
+                        <th className="py-3 px-4 font-semibold text-right">Access Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#1A2442]/60">
+                      {users.map((u) => (
+                        <tr key={u.id} className="hover:bg-[#0E182F] transition-colors">
+                          <td className="py-3.5 px-4">
+                            <div className="font-semibold text-[#F1F5F9]">{u.name}</div>
+                            <div className="text-[11px] font-mono text-[#A8B3C7]">{u.email}</div>
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <span
+                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
+                                u.role?.type === 'SUPER_ADMIN'
+                                  ? 'bg-[#2563EB]/15 text-[#3B82F6] border-[#2563EB]/30'
+                                  : 'bg-[#1A2442] text-[#A8B3C7] border-[#1A2442]'
                               }`}
                             >
-                              {user.status === 'ACTIVE' ? (
-                                <>
-                                  <Lock className="w-3 h-3" /> Suspend
-                                </>
-                              ) : (
-                                <>
-                                  <Unlock className="w-3 h-3" /> Activate
-                                </>
-                              )}
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                              <Shield className="h-3 w-3" />
+                              {u.role?.name || 'Owner'}
+                            </span>
+                          </td>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="p-4 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between text-xs text-neutral-500">
-                <span>
-                  Page {page} of {totalPages}
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    className="px-2.5 py-1 rounded border border-neutral-300 dark:border-neutral-700 disabled:opacity-40"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    className="px-2.5 py-1 rounded border border-neutral-300 dark:border-neutral-700 disabled:opacity-40"
-                  >
-                    Next
-                  </button>
+                          <td className="py-3.5 px-4 text-[#A8B3C7]">
+                            {u.website ? (
+                              <span className="font-semibold text-[#F1F5F9]">{u.website.name}</span>
+                            ) : (
+                              <span className="text-[#6B7893]">—</span>
+                            )}
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <StatusBadge status={u.status} />
+                          </td>
+
+                          <td className="py-3.5 px-4 text-[#A8B3C7]">
+                            {new Date(u.createdAt).toLocaleDateString()}
+                          </td>
+
+                          <td className="py-3.5 px-4 text-right">
+                            {u.role?.type !== 'SUPER_ADMIN' && (
+                              <button
+                                type="button"
+                                disabled={actionLoadingId === u.id}
+                                onClick={() => handleToggleStatus(u)}
+                                className={`p-1.5 rounded-lg border transition-colors inline-flex items-center gap-1 text-xs font-semibold ${
+                                  u.status === 'ACTIVE'
+                                    ? 'border-[#EF4444]/30 bg-[#EF4444]/15 text-[#EF4444] hover:bg-[#EF4444] hover:text-white'
+                                    : 'border-[#22C55E]/30 bg-[#22C55E]/15 text-[#22C55E] hover:bg-[#22C55E] hover:text-white'
+                                }`}
+                                title={u.status === 'ACTIVE' ? 'Suspend User' : 'Activate User'}
+                              >
+                                {u.status === 'ACTIVE' ? (
+                                  <Lock className="h-3.5 w-3.5" />
+                                ) : (
+                                  <Unlock className="h-3.5 w-3.5" />
+                                )}
+                                <span>{u.status === 'ACTIVE' ? 'Suspend' : 'Activate'}</span>
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
+
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-[#1A2442] bg-[#070D1E] text-xs text-[#A8B3C7]">
+                    <span>
+                      Page {page} of {totalPages}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={page <= 1}
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        className="px-2.5 py-1 rounded-lg border border-[#1A2442] bg-[#0A1226] text-[#F1F5F9] disabled:opacity-40 hover:bg-[#0E182F]"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        type="button"
+                        disabled={page >= totalPages}
+                        onClick={() => setPage((p) => p + 1)}
+                        className="px-2.5 py-1 rounded-lg border border-[#1A2442] bg-[#0A1226] text-[#F1F5F9] disabled:opacity-40 hover:bg-[#0E182F]"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="p-12 text-center text-xs text-[#A8B3C7]">
+                No users found matching your search.
               </div>
             )}
           </div>
         </>
       ) : (
-        /* Roles & Permissions Breakdown */
-        <div className="space-y-6">
+        /* Roles Grid */
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {loading ? (
-            <div className="py-12 text-center text-neutral-400 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800">
-              <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-600" />
-              Loading roles & permissions...
+            <div className="col-span-full py-20 flex justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {roles.map((role) => (
-                <div
-                  key={role.id}
-                  className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 shadow-sm space-y-4"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                        <ShieldCheck className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-neutral-900 dark:text-white">{role.name}</h3>
-                        <span className="text-xs text-neutral-400">
-                          Type: {role.type} • {role.permissions.length} permissions
-                        </span>
-                      </div>
-                    </div>
+            roles.map((r) => (
+              <div
+                key={r.id}
+                className="rounded-2xl border border-[#1A2442] bg-[#0A1226] p-5 shadow-sm space-y-4"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-5 w-5 text-[#3B82F6]" />
+                    <h2 className="font-bold text-sm text-[#F1F5F9]">{r.name}</h2>
                   </div>
-
-                  {role.description && (
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      {role.description}
-                    </p>
-                  )}
-
-                  <div>
-                    <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider block mb-2">
-                      Assigned Capabilities
-                    </label>
-                    <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto p-2 bg-neutral-50 dark:bg-neutral-800/40 rounded-lg border border-neutral-200 dark:border-neutral-800">
-                      {role.permissions.map((rp) => (
-                        <span
-                          key={rp.permission.id}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 shadow-2xs"
-                        >
-                          <Key className="w-2.5 h-2.5 text-blue-500" />
-                          {rp.permission.key}
-                        </span>
-                      ))}
-                    </div>
+                  <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#1A2442] text-[#A8B3C7]">
+                    {r.type}
+                  </span>
+                </div>
+                {r.description && <p className="text-xs text-[#A8B3C7]">{r.description}</p>}
+                <div>
+                  <span className="text-[11px] font-semibold text-[#A8B3C7] uppercase">
+                    Permissions ({r.permissions?.length || 0}):
+                  </span>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {r.permissions?.map((p, idx) => (
+                      <span
+                        key={idx}
+                        className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#070D1E] border border-[#1A2442] text-[#3B82F6]"
+                      >
+                        {p.permission?.key || 'all'}
+                      </span>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))
           )}
         </div>
       )}

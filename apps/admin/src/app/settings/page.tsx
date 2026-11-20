@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { Save, RefreshCw, Globe, Sliders, Zap } from 'lucide-react';
+import { Save, RefreshCw, Globe, Sliders, Zap, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface SettingsState {
@@ -69,7 +69,7 @@ export default function SettingsPage() {
     setSaving(true);
     try {
       await api.admin.updateSettings(settings as unknown as Record<string, unknown>);
-      toast.success('Platform settings successfully saved');
+      toast.success('Platform configuration saved successfully');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to save settings';
       toast.error(message);
@@ -83,108 +83,160 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-            Platform Configuration
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Configure directory metadata, registration intake policies, and mirror health probing
-            parameters.
+          <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">Platform Settings</h1>
+          <p className="text-xs text-[#A8B3C7] mt-1">
+            Global directory parameters, health-check automation frequencies, and operational
+            controls.
           </p>
         </div>
+
         <button
+          type="button"
           onClick={fetchSettings}
-          disabled={loading || saving}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-200"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors self-start sm:self-auto"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          Reload
+          <RefreshCw className="h-3.5 w-3.5" />
+          Refresh
         </button>
       </div>
 
       {loading ? (
-        <div className="py-20 text-center text-neutral-400 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-blue-600" />
-          Loading settings...
+        <div className="py-20 flex justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
         </div>
       ) : (
-        <form onSubmit={handleSave} className="space-y-6">
-          {/* General Settings */}
-          <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-neutral-100 dark:border-neutral-800">
-              <Globe className="w-5 h-5 text-blue-600" />
-              <h2 className="text-base font-bold text-neutral-900 dark:text-white">
-                General Branding & Directory Info
-              </h2>
+        <form onSubmit={handleSave} className="space-y-6 text-xs">
+          {/* General Information */}
+          <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] p-6 space-y-4 shadow-sm">
+            <div className="flex items-center gap-2 border-b border-[#1A2442] pb-3">
+              <Globe className="h-4 w-4 text-[#3B82F6]" />
+              <h2 className="font-bold text-sm text-[#F1F5F9]">Brand & Public Directory</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
                   Site Name
                 </label>
                 <input
                   type="text"
                   value={settings.site_name}
                   onChange={(e) => setSettings({ ...settings, site_name: e.target.value })}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs text-[#F1F5F9] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                  Directory Headline
-                </label>
-                <input
-                  type="text"
-                  value={settings.directory_title}
-                  onChange={(e) => setSettings({ ...settings, directory_title: e.target.value })}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                  Site Tagline / Meta Description
-                </label>
-                <input
-                  type="text"
-                  value={settings.site_tagline}
-                  onChange={(e) => setSettings({ ...settings, site_tagline: e.target.value })}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                  Platform Support Email
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                  Support Email
                 </label>
                 <input
                   type="email"
                   value={settings.support_email}
                   onChange={(e) => setSettings({ ...settings, support_email: e.target.value })}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs text-[#F1F5F9] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              <div className="col-span-full">
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                  Site Tagline
+                </label>
+                <input
+                  type="text"
+                  value={settings.site_tagline}
+                  onChange={(e) => setSettings({ ...settings, site_tagline: e.target.value })}
+                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs text-[#F1F5F9] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
                 />
               </div>
             </div>
           </div>
 
-          {/* Registrations & Limits */}
-          <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-neutral-100 dark:border-neutral-800">
-              <Sliders className="w-5 h-5 text-blue-600" />
-              <h2 className="text-base font-bold text-neutral-900 dark:text-white">
-                Registration & Directory Policies
+          {/* Health Check Engine */}
+          <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] p-6 space-y-4 shadow-sm">
+            <div className="flex items-center gap-2 border-b border-[#1A2442] pb-3">
+              <Zap className="h-4 w-4 text-[#22C55E]" />
+              <h2 className="font-bold text-sm text-[#F1F5F9]">
+                Health Check Engine & Mirrror Probes
               </h2>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                  Probe Interval (Hours)
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={72}
+                  value={settings.health_check_interval_hours}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      health_check_interval_hours: parseInt(e.target.value, 10) || 6,
+                    })
+                  }
+                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs text-[#F1F5F9] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                  Probe Timeout (ms)
+                </label>
+                <input
+                  type="number"
+                  min={1000}
+                  max={30000}
+                  step={500}
+                  value={settings.health_check_timeout_ms}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      health_check_timeout_ms: parseInt(e.target.value, 10) || 8000,
+                    })
+                  }
+                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs text-[#F1F5F9] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                  Max Mirrors Allowed Per Website
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={200}
+                  value={settings.max_domains_per_website}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      max_domains_per_website: parseInt(e.target.value, 10) || 50,
+                    })
+                  }
+                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs text-[#F1F5F9] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Operational Toggles */}
+          <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] p-6 space-y-4 shadow-sm">
+            <div className="flex items-center gap-2 border-b border-[#1A2442] pb-3">
+              <Sliders className="h-4 w-4 text-[#F59E0B]" />
+              <h2 className="font-bold text-sm text-[#F1F5F9]">Policy & Registration Flags</h2>
+            </div>
+
+            <div className="space-y-3">
+              <label className="flex items-center justify-between p-3 rounded-xl bg-[#070D1E] border border-[#1A2442] cursor-pointer hover:bg-[#0E182F] transition-colors">
                 <div>
-                  <span className="font-semibold text-sm text-neutral-900 dark:text-white block">
-                    Allow New Website Registrations
+                  <span className="font-semibold text-[#F1F5F9] block">
+                    Allow New Registrations
                   </span>
-                  <span className="text-xs text-neutral-500">
-                    If disabled, the public registration form displays an intake paused message.
+                  <span className="text-[11px] text-[#A8B3C7] block">
+                    Public applicants can submit websites to the review queue.
                   </span>
                 </div>
                 <input
@@ -193,17 +245,36 @@ export default function SettingsPage() {
                   onChange={(e) =>
                     setSettings({ ...settings, allow_registrations: e.target.checked })
                   }
-                  className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500"
+                  className="h-4 w-4 rounded accent-[#2563EB]"
                 />
-              </div>
+              </label>
 
-              <div className="flex items-center justify-between">
+              <label className="flex items-center justify-between p-3 rounded-xl bg-[#070D1E] border border-[#1A2442] cursor-pointer hover:bg-[#0E182F] transition-colors">
                 <div>
-                  <span className="font-semibold text-sm text-neutral-900 dark:text-white block">
-                    Filter Mature Content by Default
+                  <span className="font-semibold text-[#F1F5F9] block">
+                    Auto-Block Offline Mirrors
                   </span>
-                  <span className="text-xs text-neutral-500">
-                    Hides 18+ items on the public directory unless visitors opt-in.
+                  <span className="text-[11px] text-[#A8B3C7] block">
+                    Automatically mark domains as DOWN if consecutive probes time out.
+                  </span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={settings.auto_block_failing_mirrors}
+                  onChange={(e) =>
+                    setSettings({ ...settings, auto_block_failing_mirrors: e.target.checked })
+                  }
+                  className="h-4 w-4 rounded accent-[#2563EB]"
+                />
+              </label>
+
+              <label className="flex items-center justify-between p-3 rounded-xl bg-[#070D1E] border border-[#1A2442] cursor-pointer hover:bg-[#0E182F] transition-colors">
+                <div>
+                  <span className="font-semibold text-[#F1F5F9] block">
+                    Mature Content Filter Default
+                  </span>
+                  <span className="text-[11px] text-[#A8B3C7] block">
+                    Exclude 18+ content from directory home discovery rails for new users.
                   </span>
                 </div>
                 <input
@@ -215,96 +286,20 @@ export default function SettingsPage() {
                       filter_mature_content_by_default: e.target.checked,
                     })
                   }
-                  className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500"
+                  className="h-4 w-4 rounded accent-[#2563EB]"
                 />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="font-semibold text-sm text-neutral-900 dark:text-white block">
-                    Maintenance Mode
-                  </span>
-                  <span className="text-xs text-neutral-500 text-amber-600 dark:text-amber-400">
-                    Directs all public traffic to the maintenance splash page.
-                  </span>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={settings.maintenance_mode}
-                  onChange={(e) => setSettings({ ...settings, maintenance_mode: e.target.checked })}
-                  className="w-5 h-5 rounded text-red-600 focus:ring-red-500"
-                />
-              </div>
+              </label>
             </div>
           </div>
 
-          {/* Mirror Health Check Prober */}
-          <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-neutral-100 dark:border-neutral-800">
-              <Zap className="w-5 h-5 text-blue-600" />
-              <h2 className="text-base font-bold text-neutral-900 dark:text-white">
-                Mirror Health Probing Engine
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                  Health Check Interval (Hours)
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  max={72}
-                  value={settings.health_check_interval_hours}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      health_check_interval_hours: parseInt(e.target.value) || 6,
-                    })
-                  }
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                  Probe Timeout (Milliseconds)
-                </label>
-                <input
-                  type="number"
-                  min={1000}
-                  max={30000}
-                  step={500}
-                  value={settings.health_check_timeout_ms}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      health_check_timeout_ms: parseInt(e.target.value) || 8000,
-                    })
-                  }
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex items-center justify-end gap-3 pt-2">
+          <div className="flex justify-end pt-2">
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all shadow-md shadow-[#2563EB]/25 disabled:opacity-50"
             >
-              {saving ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" /> Saving Changes...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4" /> Save Configuration
-                </>
-              )}
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              <span>Save Configuration</span>
             </button>
           </div>
         </form>

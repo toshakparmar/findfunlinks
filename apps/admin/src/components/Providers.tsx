@@ -9,18 +9,20 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      defaultTheme="dark"
+      forcedTheme="dark"
+      enableSystem={false}
       disableTransitionOnChange
     >
       <AuthProvider>
         {children}
         <Toaster
           position="bottom-right"
+          theme="dark"
           richColors
           closeButton
           toastOptions={{
-            className: 'border font-sans',
+            className: 'border border-[#1A2442] bg-[#0A1226] text-[#F1F5F9] font-sans shadow-xl',
           }}
         />
       </AuthProvider>

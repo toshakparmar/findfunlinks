@@ -17,6 +17,7 @@ import {
   MousePointerClick,
   RefreshCw,
   Layers,
+  Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -67,20 +68,18 @@ export default function OwnerDashboardPage() {
   if (loading) {
     return (
       <div className="py-20 text-center space-y-3">
-        <RefreshCw className="w-8 h-8 animate-spin mx-auto text-blue-600" />
-        <p className="text-xs text-neutral-500">Loading your website dashboard...</p>
+        <RefreshCw className="w-8 h-8 animate-spin mx-auto text-[#3B82F6]" />
+        <p className="text-xs text-[#A8B3C7]">Loading your website dashboard...</p>
       </div>
     );
   }
 
   if (!website) {
     return (
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 text-center space-y-3">
-        <AlertTriangle className="w-10 h-10 text-amber-500 mx-auto" />
-        <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
-          No Registered Website Assigned
-        </h2>
-        <p className="text-xs text-neutral-500 max-w-md mx-auto">
+      <div className="bg-[#0A1226] rounded-3xl border border-[#1A2442] p-8 text-center space-y-3">
+        <AlertTriangle className="w-10 h-10 text-[#F59E0B] mx-auto" />
+        <h2 className="text-lg font-bold text-[#F1F5F9]">No Registered Website Assigned</h2>
+        <p className="text-xs text-[#A8B3C7] max-w-md mx-auto">
           Your account is currently not linked to a directory entry. If you recently applied, please
           allow time for Super Admin verification.
         </p>
@@ -91,10 +90,10 @@ export default function OwnerDashboardPage() {
   return (
     <div className="space-y-8">
       {/* Website Banner Header */}
-      <div className="bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200 dark:border-neutral-800 p-6 sm:p-8 shadow-sm">
+      <div className="bg-[#0A1226] rounded-3xl border border-[#1A2442] p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-bold text-xl text-blue-600 overflow-hidden relative flex-shrink-0">
+            <div className="w-16 h-16 rounded-2xl bg-[#2563EB]/15 border border-[#2563EB]/30 flex items-center justify-center font-bold text-xl text-[#3B82F6] overflow-hidden relative flex-shrink-0">
               {website.logoUrl ? (
                 <Image src={website.logoUrl} alt={website.name} fill className="object-cover" />
               ) : (
@@ -103,16 +102,16 @@ export default function OwnerDashboardPage() {
             </div>
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-2xl font-black text-neutral-900 dark:text-white">
+                <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">
                   {website.name}
                 </h1>
                 <StatusBadge status={website.status} />
               </div>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-xl">
+              <p className="text-xs text-[#A8B3C7] mt-1 max-w-xl">
                 {website.tagline || 'Curated directory entry on FindFunLinks.'}
               </p>
               {website.category && (
-                <span className="inline-block mt-2 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
+                <span className="inline-block mt-2 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#070D1E] border border-[#1A2442] text-[#F1F5F9]">
                   📁 {website.category.name}
                 </span>
               )}
@@ -122,7 +121,7 @@ export default function OwnerDashboardPage() {
           <div className="flex items-center gap-2.5 w-full sm:w-auto">
             <Link
               href="/domains"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-md transition-colors"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs shadow-md shadow-[#2563EB]/25 transition-all"
             >
               <Plus className="w-4 h-4" />
               Add Mirror Link
@@ -131,9 +130,9 @@ export default function OwnerDashboardPage() {
               href={`${publicWebUrl}/website/${website.slug}`}
               target="_blank"
               rel="noreferrer"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 font-semibold text-xs transition-colors"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-[#1A2442] bg-[#070D1E] text-[#F1F5F9] hover:bg-[#0E182F] font-semibold text-xs transition-colors"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
+              <ExternalLink className="w-3.5 h-3.5 text-[#3B82F6]" />
               Public View
             </a>
           </div>
@@ -173,22 +172,19 @@ export default function OwnerDashboardPage() {
       </div>
 
       {/* Live Mirrors Section */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
+      <div className="bg-[#0A1226] rounded-2xl border border-[#1A2442] shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-[#1A2442] flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-neutral-900 dark:text-white">
+            <h2 className="text-base font-bold text-[#F1F5F9]">
               Configured Mirror Domains ({domains.length})
             </h2>
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-[#A8B3C7] mt-0.5">
               Live link endpoints served to public visitors. When one domain is blocked, visitors
               seamlessly use alternative working mirrors.
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Link
-              href="/domains"
-              className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-            >
+            <Link href="/domains" className="text-xs font-semibold text-[#3B82F6] hover:underline">
               Manage all mirrors →
             </Link>
           </div>
@@ -196,13 +192,13 @@ export default function OwnerDashboardPage() {
 
         {domains.length === 0 ? (
           <div className="py-12 text-center space-y-3">
-            <Globe className="w-8 h-8 text-neutral-400 mx-auto" />
-            <p className="text-xs text-neutral-500">
+            <Globe className="w-8 h-8 text-[#6B7893] mx-auto" />
+            <p className="text-xs text-[#A8B3C7]">
               No mirror domains added yet. Add your primary URL or alternate links.
             </p>
             <Link
               href="/domains"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white font-semibold text-xs shadow-sm hover:bg-blue-700"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2563EB] text-white font-semibold text-xs shadow-sm hover:bg-[#1D4ED8]"
             >
               <Plus className="w-3.5 h-3.5" />
               Add First Mirror
@@ -210,8 +206,8 @@ export default function OwnerDashboardPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-neutral-600 dark:text-neutral-300">
-              <thead className="bg-neutral-50 dark:bg-neutral-800/60 text-xs uppercase text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800">
+            <table className="w-full text-left text-xs text-[#F1F5F9]">
+              <thead className="bg-[#070D1E] text-[11px] uppercase text-[#A8B3C7] border-b border-[#1A2442]">
                 <tr>
                   <th className="py-3 px-4 font-semibold">Hostname / URL</th>
                   <th className="py-3 px-4 font-semibold">Mirror Type</th>
@@ -221,66 +217,61 @@ export default function OwnerDashboardPage() {
                   <th className="py-3 px-4 font-semibold text-right">Health Check</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
+              <tbody className="divide-y divide-[#1A2442]/60">
                 {domains.slice(0, 6).map((domain) => (
-                  <tr
-                    key={domain.id}
-                    className="hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40 transition-colors"
-                  >
-                    <td className="py-3 px-4">
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-neutral-900 dark:text-white flex items-center gap-1.5 text-xs">
-                          <Globe className="w-3.5 h-3.5 text-blue-500" />
-                          {domain.hostname}
-                        </span>
-                        <a
-                          href={domain.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[11px] text-neutral-400 hover:text-blue-500 truncate max-w-xs block mt-0.5"
-                        >
-                          {domain.url}
-                        </a>
+                  <tr key={domain.id} className="hover:bg-[#0E182F] transition-colors">
+                    <td className="py-3 px-4 font-medium">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono">{domain.hostname}</span>
+                        {domain.type === 'PRIMARY' && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30">
+                            PRIMARY
+                          </span>
+                        )}
                       </div>
+                      <a
+                        href={domain.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11px] text-[#3B82F6] hover:underline flex items-center gap-1 mt-0.5 truncate max-w-xs font-mono"
+                      >
+                        {domain.url}
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
                     </td>
+
                     <td className="py-3 px-4">
                       <StatusBadge status={domain.type} type="domainType" />
                     </td>
+
                     <td className="py-3 px-4">
                       <StatusBadge status={domain.status} />
                     </td>
-                    <td className="py-3 px-4 text-xs font-mono text-neutral-500">
-                      {domain.lastResponseMs !== undefined && domain.lastResponseMs !== null ? (
-                        <span
-                          className={
-                            domain.lastResponseMs < 500
-                              ? 'text-emerald-600 font-semibold'
-                              : domain.lastResponseMs < 1500
-                                ? 'text-amber-600'
-                                : 'text-rose-600'
-                          }
-                        >
-                          {domain.lastResponseMs}ms
-                        </span>
+
+                    <td className="py-3 px-4 font-mono">
+                      {domain.lastResponseMs ? (
+                        <span className="text-[#22C55E]">{domain.lastResponseMs}ms</span>
                       ) : (
-                        '—'
+                        <span className="text-[#6B7893]">—</span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-xs text-neutral-400 whitespace-nowrap">
-                      {formatTimeAgo(domain.lastCheckedAt)}
+
+                    <td className="py-3 px-4 text-[#A8B3C7]">
+                      {domain.lastCheckedAt ? formatTimeAgo(domain.lastCheckedAt) : 'Never'}
                     </td>
+
                     <td className="py-3 px-4 text-right">
                       <button
                         onClick={() => handleProbeDomain(domain.id)}
                         disabled={probingId === domain.id}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50"
+                        className="p-1.5 rounded-lg border border-[#1A2442] bg-[#070D1E] text-[#A8B3C7] hover:text-[#3B82F6] hover:bg-[#0E182F] transition-colors disabled:opacity-50"
+                        title="Run health check"
                       >
-                        <Activity
-                          className={`w-3.5 h-3.5 ${
-                            probingId === domain.id ? 'animate-spin text-blue-500' : ''
-                          }`}
-                        />
-                        {probingId === domain.id ? 'Probing...' : 'Probe Live'}
+                        {probingId === domain.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-[#3B82F6]" />
+                        ) : (
+                          <Activity className="w-3.5 h-3.5" />
+                        )}
                       </button>
                     </td>
                   </tr>

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { api, type RegistrationRequestDetails } from '../lib/api';
 import { StatCard } from '../components/StatCard';
 import { StatusBadge } from '../components/StatusBadge';
-import { formatTimeAgo } from '../lib/utils';
 import {
   Globe,
   Radio,
@@ -15,6 +14,8 @@ import {
   ShieldCheck,
   CheckCircle2,
   Clock,
+  ExternalLink,
+  Loader2,
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -41,7 +42,6 @@ export default function AdminDashboardPage() {
         const totalSites = webRes?.total || 0;
         const openReports = repRes?.total || 0;
 
-        // Estimate active vs down domains from loaded websites
         let activeDoms = 0;
         let downDoms = 0;
         if (webRes && webRes.items) {
@@ -76,8 +76,10 @@ export default function AdminDashboardPage() {
       {/* Page Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-foreground">Platform Dashboard</h1>
-          <p className="text-xs text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#F1F5F9] tracking-tight">
+            Platform Dashboard
+          </h1>
+          <p className="text-xs text-[#A8B3C7] mt-1">
             Real-time overview of directory health, registration review pipeline, and reported
             issues.
           </p>
@@ -86,7 +88,7 @@ export default function AdminDashboardPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/registrations"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all shadow-md shadow-[#2563EB]/25"
           >
             <ClipboardCheck className="h-4 w-4" />
             Review Queue ({stats.pendingRegistrations})
@@ -100,90 +102,91 @@ export default function AdminDashboardPage() {
           title="Total Websites"
           value={stats.totalWebsites}
           icon={Globe}
-          description="Curated listings in directory"
+          description="Verified listings"
           color="blue"
         />
         <StatCard
-          title="Active Live Mirrors"
+          title="Active Mirror Domains"
           value={stats.activeDomains}
           icon={Radio}
-          description="Monitored working domains"
+          description="Ping checks operational"
           color="emerald"
         />
         <StatCard
           title="Pending Applications"
           value={stats.pendingRegistrations}
           icon={ClipboardCheck}
-          description="Awaiting admin approval"
+          description="Awaiting review"
           color="orange"
         />
         <StatCard
           title="Open Reports"
           value={stats.openReports}
           icon={Flag}
-          description="Broken links reported"
+          description="Community moderation"
           color="rose"
         />
       </div>
 
-      {/* Two Column Layout: Recent Registrations & Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Registrations Queue */}
-        <div className="lg:col-span-2 rounded-2xl border border-border/80 bg-card p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+      {/* Review Queue & Health Indicators */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Col: Pending Requests Quick View */}
+        <div className="lg:col-span-2 rounded-2xl border border-[#1A2442] bg-[#0A1226] p-6 space-y-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-primary" />
-              <h2 className="text-sm font-bold text-foreground">Recent Submissions</h2>
+              <Clock className="h-4 w-4 text-[#3B82F6]" />
+              <h2 className="text-sm font-bold text-[#F1F5F9]">Incoming Owner Registrations</h2>
             </div>
             <Link
               href="/registrations"
-              className="text-xs text-primary font-semibold hover:underline inline-flex items-center gap-1"
+              className="text-xs font-semibold text-[#3B82F6] hover:underline inline-flex items-center gap-1"
             >
-              View Full Queue <ArrowRight className="h-3 w-3" />
+              <span>View All</span>
+              <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
 
           {loading ? (
-            <div className="text-center py-10 text-xs text-muted-foreground">
-              Loading dashboard metrics...
+            <div className="flex justify-center py-10">
+              <Loader2 className="h-6 w-6 animate-spin text-[#3B82F6]" />
             </div>
           ) : recentRegistrations.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border/60 text-muted-foreground">
-                    <th className="py-2.5 font-semibold">Website</th>
-                    <th className="py-2.5 font-semibold">Applicant</th>
-                    <th className="py-2.5 font-semibold">Status</th>
-                    <th className="py-2.5 font-semibold">Submitted</th>
-                    <th className="py-2.5 font-semibold text-right">Action</th>
+                  <tr className="border-b border-[#1A2442] bg-[#070D1E] text-[#A8B3C7]">
+                    <th className="py-2.5 px-3 font-semibold rounded-l-lg">Website</th>
+                    <th className="py-2.5 px-3 font-semibold">Applicant</th>
+                    <th className="py-2.5 px-3 font-semibold">Status</th>
+                    <th className="py-2.5 px-3 font-semibold text-right rounded-r-lg">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/40">
+                <tbody className="divide-y divide-[#1A2442]/60">
                   {recentRegistrations.map((reg) => (
-                    <tr key={reg.id} className="hover:bg-muted/40 transition-colors">
-                      <td className="py-3 font-semibold text-foreground">
-                        <div>{reg.websiteName}</div>
-                        <div className="text-[11px] font-mono text-muted-foreground truncate max-w-[180px]">
+                    <tr key={reg.id} className="hover:bg-[#0E182F] transition-colors">
+                      <td className="py-3 px-3">
+                        <div className="font-semibold text-[#F1F5F9]">{reg.websiteName}</div>
+                        <a
+                          href={reg.primaryUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] font-mono text-[#3B82F6] hover:underline inline-flex items-center gap-1 truncate max-w-[200px]"
+                        >
                           {reg.primaryUrl}
-                        </div>
+                          <ExternalLink className="h-2.5 w-2.5" />
+                        </a>
                       </td>
-                      <td className="py-3 text-muted-foreground">
-                        <div>{reg.applicantName}</div>
-                        <div className="text-[11px] text-muted-foreground/80">
-                          {reg.applicantEmail}
-                        </div>
+                      <td className="py-3 px-3 text-[#A8B3C7]">
+                        <div className="text-[#F1F5F9] font-medium">{reg.applicantName}</div>
+                        <div className="text-[11px]">{reg.applicantEmail}</div>
                       </td>
-                      <td className="py-3">
+                      <td className="py-3 px-3">
                         <StatusBadge status={reg.status} />
                       </td>
-                      <td className="py-3 text-muted-foreground">
-                        {formatTimeAgo(reg.submittedAt)}
-                      </td>
-                      <td className="py-3 text-right">
+                      <td className="py-3 px-3 text-right">
                         <Link
                           href={`/registrations?id=${reg.id}`}
-                          className="px-2.5 py-1 rounded-lg bg-primary/10 text-primary font-semibold hover:bg-primary hover:text-primary-foreground transition-colors inline-block"
+                          className="px-2.5 py-1 rounded-lg bg-[#2563EB]/15 text-[#3B82F6] hover:bg-[#2563EB] hover:text-white transition-colors text-[11px] font-semibold inline-block border border-[#2563EB]/30"
                         >
                           Review
                         </Link>
@@ -194,59 +197,75 @@ export default function AdminDashboardPage() {
               </table>
             </div>
           ) : (
-            <div className="text-center py-10 space-y-2">
-              <CheckCircle2 className="h-8 w-8 text-emerald-500 mx-auto" />
-              <p className="text-xs text-muted-foreground">
-                No pending registration requests! All submissions reviewed.
-              </p>
+            <div className="text-center py-10 text-xs text-[#A8B3C7] space-y-1">
+              <CheckCircle2 className="h-8 w-8 text-[#22C55E] mx-auto mb-2" />
+              <p className="font-semibold text-[#F1F5F9]">All caught up!</p>
+              <p>No registration requests require operator verification right now.</p>
             </div>
           )}
         </div>
 
-        {/* Quick Operations & Security Summary */}
-        <div className="space-y-6">
-          <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm space-y-4">
-            <h2 className="text-sm font-bold text-foreground">Operations Quick Links</h2>
-            <div className="space-y-2 text-xs">
-              <Link
-                href="/registrations"
-                className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-background hover:bg-muted transition-colors font-medium"
-              >
-                <span>Approve Websites</span>
-                <span className="font-bold text-primary">{stats.pendingRegistrations} Pending</span>
-              </Link>
-              <Link
-                href="/reports"
-                className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-background hover:bg-muted transition-colors font-medium"
-              >
-                <span>Broken Link Reports</span>
-                <span className="font-bold text-rose-500">{stats.openReports} Open</span>
-              </Link>
-              <Link
-                href="/categories"
-                className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-background hover:bg-muted transition-colors font-medium"
-              >
-                <span>Manage Categories</span>
-                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
-              </Link>
-              <Link
-                href="/audit-logs"
-                className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-background hover:bg-muted transition-colors font-medium"
-              >
-                <span>View Security Audit Logs</span>
-                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
-              </Link>
-            </div>
+        {/* Right Col: Quick Moderation Controls */}
+        <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-[#22C55E]" />
+            <h2 className="text-sm font-bold text-[#F1F5F9]">Quick Management</h2>
           </div>
 
-          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 space-y-2 text-xs">
-            <div className="flex items-center gap-2 font-bold text-emerald-600 dark:text-emerald-400">
-              <ShieldCheck className="h-4 w-4" />
-              <span>Automated Health Engines Active</span>
+          <div className="space-y-2">
+            <Link
+              href="/websites"
+              className="flex items-center justify-between p-3 rounded-xl border border-[#1A2442] bg-[#070D1E] hover:bg-[#0E182F] hover:border-[#2563EB]/40 transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <Globe className="h-4 w-4 text-[#3B82F6]" />
+                <span className="text-xs font-semibold text-[#F1F5F9]">Moderate Websites</span>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 text-[#6B7893] group-hover:text-[#F1F5F9] transition-transform group-hover:translate-x-0.5" />
+            </Link>
+
+            <Link
+              href="/domains"
+              className="flex items-center justify-between p-3 rounded-xl border border-[#1A2442] bg-[#070D1E] hover:bg-[#0E182F] hover:border-[#2563EB]/40 transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <Radio className="h-4 w-4 text-[#22C55E]" />
+                <span className="text-xs font-semibold text-[#F1F5F9]">Domain Ping Inspector</span>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 text-[#6B7893] group-hover:text-[#F1F5F9] transition-transform group-hover:translate-x-0.5" />
+            </Link>
+
+            <Link
+              href="/reports"
+              className="flex items-center justify-between p-3 rounded-xl border border-[#1A2442] bg-[#070D1E] hover:bg-[#0E182F] hover:border-[#2563EB]/40 transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <Flag className="h-4 w-4 text-[#EF4444]" />
+                <span className="text-xs font-semibold text-[#F1F5F9]">
+                  Resolve Reports ({stats.openReports})
+                </span>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 text-[#6B7893] group-hover:text-[#F1F5F9] transition-transform group-hover:translate-x-0.5" />
+            </Link>
+
+            <Link
+              href="/categories"
+              className="flex items-center justify-between p-3 rounded-xl border border-[#1A2442] bg-[#070D1E] hover:bg-[#0E182F] hover:border-[#2563EB]/40 transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <ClipboardCheck className="h-4 w-4 text-[#F59E0B]" />
+                <span className="text-xs font-semibold text-[#F1F5F9]">Directory Taxonomy</span>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 text-[#6B7893] group-hover:text-[#F1F5F9] transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
+
+          <div className="p-3.5 rounded-xl border border-[#1A2442] bg-[#070D1E] space-y-1.5">
+            <div className="text-[11px] font-bold text-[#F1F5F9] uppercase tracking-wider">
+              Health Check Daemon
             </div>
-            <p className="text-muted-foreground leading-relaxed">
-              Domain monitoring workers are active with SSRF protection, IP address blacklisting,
-              and automatic failure tripping.
+            <p className="text-[11px] text-[#A8B3C7] leading-relaxed">
+              Automated HTTP status and latency probes run every 6 hours across all working mirrors.
             </p>
           </div>
         </div>

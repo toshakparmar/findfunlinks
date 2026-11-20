@@ -3,6 +3,7 @@ import preset from '@findfunlinks/config/tailwind.preset.js';
 
 const config: Config = {
   presets: [preset],
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -10,7 +11,17 @@ const config: Config = {
     '../../packages/ui/src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        page: 'var(--bg)',
+        surface: {
+          1: 'var(--surface-1)',
+          2: 'var(--surface-2)',
+          sidebar: 'var(--sidebar)',
+          header: 'var(--header)',
+        },
+      },
+    },
   },
   plugins: [],
 };

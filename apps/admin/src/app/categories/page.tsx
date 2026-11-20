@@ -115,9 +115,11 @@ export default function CategoriesAdminPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-foreground">Categories Management</h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            Organize the directory hierarchy and manage category display icons.
+          <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">
+            Directory Categories
+          </h1>
+          <p className="text-xs text-[#A8B3C7] mt-1">
+            Organize directory listings into discovery categories with tailored icons and metadata.
           </p>
         </div>
 
@@ -125,7 +127,7 @@ export default function CategoriesAdminPage() {
           <button
             type="button"
             onClick={fetchCategories}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-card text-xs font-semibold hover:bg-muted transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             Refresh
@@ -134,108 +136,99 @@ export default function CategoriesAdminPage() {
           <button
             type="button"
             onClick={handleOpenCreate}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all shadow-md shadow-[#2563EB]/25"
           >
             <Plus className="h-4 w-4" />
-            Create Category
+            Add Category
           </button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-2xl border border-border/80 bg-card shadow-sm overflow-hidden">
+      {/* Categories Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="col-span-full py-20 flex justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
           </div>
         ) : categories.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-border/60 bg-muted/30 text-muted-foreground">
-                  <th className="py-3 px-4 font-semibold">Name</th>
-                  <th className="py-3 px-4 font-semibold">Slug</th>
-                  <th className="py-3 px-4 font-semibold">Websites Count</th>
-                  <th className="py-3 px-4 font-semibold">Sort Order</th>
-                  <th className="py-3 px-4 font-semibold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/40">
-                {categories.map((cat) => (
-                  <tr key={cat.id} className="hover:bg-muted/40 transition-colors">
-                    <td className="py-3.5 px-4 font-semibold text-foreground">
-                      <div className="flex items-center gap-2">
-                        <FolderKanban className="h-4 w-4 text-primary" />
-                        <span>{cat.name}</span>
-                      </div>
-                      {cat.description && (
-                        <div className="text-[11px] text-muted-foreground truncate max-w-sm mt-0.5">
-                          {cat.description}
-                        </div>
-                      )}
-                    </td>
+          categories.map((cat) => (
+            <div
+              key={cat.id}
+              className="rounded-2xl border border-[#1A2442] bg-[#0A1226] p-5 shadow-sm space-y-3 flex flex-col justify-between hover:bg-[#0E182F] transition-colors"
+            >
+              <div>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2.5 rounded-xl bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30">
+                      <FolderKanban className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h2 className="font-bold text-[#F1F5F9] text-sm">{cat.name}</h2>
+                      <span className="font-mono text-[11px] text-[#3B82F6]">/{cat.slug}</span>
+                    </div>
+                  </div>
 
-                    <td className="py-3.5 px-4 font-mono text-muted-foreground">{cat.slug}</td>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#1A2442] text-[#A8B3C7]">
+                    {cat.websiteCount || 0} sites
+                  </span>
+                </div>
 
-                    <td className="py-3.5 px-4 font-bold text-foreground">
-                      {cat.websiteCount || 0} sites
-                    </td>
+                {cat.description && (
+                  <p className="text-xs text-[#A8B3C7] mt-3 line-clamp-2 leading-relaxed">
+                    {cat.description}
+                  </p>
+                )}
+              </div>
 
-                    <td className="py-3.5 px-4 text-muted-foreground font-mono">
-                      #{cat.sortOrder}
-                    </td>
-
-                    <td className="py-3.5 px-4 text-right space-x-1.5">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEdit(cat)}
-                        className="p-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                        title="Edit category"
-                      >
-                        <Edit className="h-3.5 w-3.5" />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(cat)}
-                        className="p-1.5 rounded-lg border border-border text-rose-600 hover:bg-rose-500/10 transition-colors"
-                        title="Delete category"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              <div className="pt-3 border-t border-[#1A2442] flex items-center justify-end gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleOpenEdit(cat)}
+                  className="px-2.5 py-1 rounded-lg border border-[#1A2442] bg-[#070D1E] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors inline-flex items-center gap-1"
+                >
+                  <Edit className="h-3 w-3" />
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(cat)}
+                  className="p-1 rounded-lg text-[#EF4444] hover:bg-[#EF4444]/20 transition-colors"
+                  title="Delete Category"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))
         ) : (
-          <div className="text-center py-16 text-xs text-muted-foreground">
-            No categories defined.
+          <div className="col-span-full p-12 text-center text-xs text-[#A8B3C7]">
+            No categories defined. Click "Add Category" to create one.
           </div>
         )}
       </div>
 
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <h2 className="text-sm font-bold text-foreground">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="rounded-3xl border border-[#1A2442] bg-[#0A1226] max-w-md w-full p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#1A2442] pb-3">
+              <h2 className="text-base font-bold text-[#F1F5F9]">
                 {editingCategory ? 'Edit Category' : 'Create Category'}
               </h2>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="p-1 text-muted-foreground hover:bg-muted rounded-lg"
+                className="text-[#A8B3C7] hover:text-[#F1F5F9]"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-3 text-xs">
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-foreground uppercase mb-1">Name *</label>
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                  Category Name *
+                </label>
                 <input
                   type="text"
                   required
@@ -247,51 +240,57 @@ export default function CategoriesAdminPage() {
                         e.target.value
                           .toLowerCase()
                           .replace(/[^a-z0-9]+/g, '-')
-                          .replace(/(^-|-$)/g, ''),
+                          .replace(/^-|-$/g, ''),
                       );
                     }
                   }}
-                  className="w-full rounded-xl border border-input bg-background p-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="e.g. Free Anime & Manga"
+                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground uppercase mb-1">Slug *</label>
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                  URL Slug *
+                </label>
                 <input
                   type="text"
                   required
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
-                  className="w-full rounded-xl border border-input bg-background p-2 font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="e.g. anime"
+                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs font-mono text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground uppercase mb-1">
+                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
                   Description
                 </label>
                 <textarea
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full rounded-xl border border-input bg-background p-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Short explanation for category cards..."
+                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-border/40">
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#1A2442]">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted"
+                  className="px-3 py-1.5 rounded-lg border border-[#1A2442] bg-[#070D1E] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-1.5 rounded-lg bg-primary text-primary-foreground font-bold hover:bg-primary/90 disabled:opacity-50"
+                  className="px-4 py-1.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all shadow-md shadow-[#2563EB]/25 disabled:opacity-50 inline-flex items-center gap-1.5"
                 >
-                  {submitting ? 'Saving...' : 'Save Category'}
+                  {submitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                  {editingCategory ? 'Save Changes' : 'Create Category'}
                 </button>
               </div>
             </form>
