@@ -42,6 +42,17 @@ export function OwnerLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#050A18] text-[#F1F5F9]">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-[#3B82F6]" />
+          <p className="text-xs text-[#A8B3C7]">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex bg-[#050A18] text-[#F1F5F9]">
       {/* Desktop Sidebar */}

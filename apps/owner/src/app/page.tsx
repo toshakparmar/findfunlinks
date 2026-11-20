@@ -30,12 +30,25 @@ export default function OwnerDashboardPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [siteRes, domRes] = await Promise.all([api.owner.getWebsite(), api.owner.getDomains()]);
-      setWebsite(siteRes);
-      setDomains(domRes);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to load website details.';
-      toast.error(message);
+      const [siteRes, domRes] = await Promise.allSettled([
+        api.owner.getWebsite(),
+        api.owner.getDomains(),
+      ]);
+
+      if (siteRes.status === 'fulfilled') {
+        setWebsite(siteRes.value);
+      } else {
+        setWebsite(null);
+      }
+
+      if (domRes.status === 'fulfilled') {
+        setDomains(domRes.value);
+      } else {
+        setDomains([]);
+      }
+    } catch {
+      setWebsite(null);
+      setDomains([]);
     } finally {
       setLoading(false);
     }
@@ -76,13 +89,36 @@ export default function OwnerDashboardPage() {
 
   if (!website) {
     return (
-      <div className="bg-[#0A1226] rounded-3xl border border-[#1A2442] p-8 text-center space-y-3">
-        <AlertTriangle className="w-10 h-10 text-[#F59E0B] mx-auto" />
-        <h2 className="text-lg font-bold text-[#F1F5F9]">No Registered Website Assigned</h2>
-        <p className="text-xs text-[#A8B3C7] max-w-md mx-auto">
-          Your account is currently not linked to a directory entry. If you recently applied, please
-          allow time for Super Admin verification.
-        </p>
+      <div className="bg-[#0A1226] rounded-3xl border border-[#1A2442] p-8 text-center space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-[#F59E0B]/15 border border-[#F59E0B]/30 flex items-center justify-center mx-auto text-[#F59E0B]">
+          <AlertTriangle className="w-7 h-7" />
+        </div>
+        <div className="space-y-1.5">
+          <h2 className="text-lg font-bold text-[#F1F5F9]">No Registered Website Assigned</h2>
+          <p className="text-xs text-[#A8B3C7] max-w-md mx-auto leading-relaxed">
+            Your account is currently not linked to a directory entry. If you recently applied,
+            please allow time for Super Admin verification, or submit a new registration from the
+            public directory.
+          </p>
+        </div>
+        <div className="pt-2 flex items-center justify-center gap-3">
+          <button
+            onClick={loadData}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#070D1E] border border-[#1A2442] text-xs font-semibold text-[#F1F5F9] hover:bg-[#0E182F] transition-colors"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-[#3B82F6]" />
+            Refresh
+          </button>
+          <a
+            href={`${publicWebUrl}/register`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-xs font-semibold text-white shadow-sm transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Submit Registration
+          </a>
+        </div>
       </div>
     );
   }

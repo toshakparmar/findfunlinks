@@ -8,7 +8,7 @@ import {
   type Category,
   type UpdateWebsiteInput,
 } from '../../lib/api';
-import { Save, RefreshCw, Eye, ExternalLink, Loader2 } from 'lucide-react';
+import { Save, RefreshCw, Eye, ExternalLink, Loader2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function OwnerWebsitePage() {
@@ -97,6 +97,23 @@ export default function OwnerWebsitePage() {
       <div className="py-20 text-center space-y-3">
         <RefreshCw className="w-8 h-8 animate-spin mx-auto text-[#3B82F6]" />
         <p className="text-xs text-[#A8B3C7]">Loading website profile editor...</p>
+      </div>
+    );
+  }
+
+  if (!website) {
+    return (
+      <div className="bg-[#0A1226] rounded-3xl border border-[#1A2442] p-8 text-center space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-[#F59E0B]/15 border border-[#F59E0B]/30 flex items-center justify-center mx-auto text-[#F59E0B]">
+          <AlertTriangle className="w-7 h-7" />
+        </div>
+        <div className="space-y-1.5">
+          <h2 className="text-lg font-bold text-[#F1F5F9]">No Registered Website Assigned</h2>
+          <p className="text-xs text-[#A8B3C7] max-w-md mx-auto leading-relaxed">
+            Your account is currently not linked to a directory entry. Once your registration is
+            approved by Super Admin, you can edit your profile here.
+          </p>
+        </div>
       </div>
     );
   }
