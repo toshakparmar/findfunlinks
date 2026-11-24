@@ -71,7 +71,8 @@ export default function AuditLogsPage() {
         <div>
           <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">System Audit Logs</h1>
           <p className="text-sm text-[#9CA3AF] mt-1">
-            Immutable security ledger tracking platform operations, status mutations, and approval events.
+            Immutable security ledger tracking platform operations, status mutations, and approval
+            events.
           </p>
         </div>
 
@@ -135,9 +136,7 @@ export default function AuditLogsPage() {
                       {log.actor ? (
                         <div>
                           <div className="font-semibold text-[#F3F4F6]">{log.actor.name}</div>
-                          <div className="text-xs font-mono text-[#9CA3AF]">
-                            {log.actor.email}
-                          </div>
+                          <div className="text-xs font-mono text-[#9CA3AF]">{log.actor.email}</div>
                         </div>
                       ) : (
                         <span className="text-[#6B7280] font-mono text-xs">System / Internal</span>
@@ -225,7 +224,9 @@ export default function AuditLogsPage() {
             <div className="space-y-4 text-sm max-h-[60vh] overflow-y-auto">
               {selectedLog.before && (
                 <div>
-                  <span className="font-semibold text-red-400 text-xs uppercase tracking-wider">State Before:</span>
+                  <span className="font-semibold text-red-400 text-xs uppercase tracking-wider">
+                    State Before:
+                  </span>
                   <pre className="p-3.5 rounded-lg bg-[#16181B] border border-[#33373D] text-xs font-mono text-[#D1D5DB] overflow-x-auto mt-1.5 leading-relaxed">
                     {JSON.stringify(selectedLog.before, null, 2)}
                   </pre>
@@ -234,7 +235,9 @@ export default function AuditLogsPage() {
 
               {selectedLog.after && (
                 <div>
-                  <span className="font-semibold text-emerald-400 text-xs uppercase tracking-wider">State After:</span>
+                  <span className="font-semibold text-emerald-400 text-xs uppercase tracking-wider">
+                    State After:
+                  </span>
                   <pre className="p-3.5 rounded-lg bg-[#16181B] border border-[#33373D] text-xs font-mono text-[#D1D5DB] overflow-x-auto mt-1.5 leading-relaxed">
                     {JSON.stringify(selectedLog.after, null, 2)}
                   </pre>

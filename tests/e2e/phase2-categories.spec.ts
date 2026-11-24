@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Phase 2 — Categories Page (/categories)', () => {
-  test('verifies desktop layout, 5-col grid, All Links first tile, and navigation at 1440px', async ({ page }) => {
+  test('verifies desktop layout, 5-col grid, All Links first tile, and navigation at 1440px', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/categories');
 

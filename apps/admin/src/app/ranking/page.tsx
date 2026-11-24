@@ -147,9 +147,7 @@ export default function WebsiteRankingPage() {
     const newStars = Math.max(0, site.stars + delta);
 
     // Optimistic update
-    setWebsites((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, stars: newStars } : w)),
-    );
+    setWebsites((prev) => prev.map((w) => (w.id === id ? { ...w, stars: newStars } : w)));
 
     try {
       await api.admin.updateWebsiteStars(id, newStars);
@@ -157,9 +155,7 @@ export default function WebsiteRankingPage() {
     } catch {
       toast.error('Failed to update star rating.');
       // Rollback
-      setWebsites((prev) =>
-        prev.map((w) => (w.id === id ? { ...w, stars: site.stars } : w)),
-      );
+      setWebsites((prev) => prev.map((w) => (w.id === id ? { ...w, stars: site.stars } : w)));
     }
   };
 
@@ -200,7 +196,8 @@ export default function WebsiteRankingPage() {
             </span>
           </div>
           <p className="text-sm text-[#9CA3AF] mt-1">
-            Reorder website display sequences within categories and calibrate star ratings to showcase top websites.
+            Reorder website display sequences within categories and calibrate star ratings to
+            showcase top websites.
           </p>
         </div>
 
@@ -302,10 +299,7 @@ export default function WebsiteRankingPage() {
                   const isLast = index === filteredWebsites.length - 1;
 
                   return (
-                    <tr
-                      key={site.id}
-                      className="hover:bg-[#26292F]/50 transition-colors group"
-                    >
+                    <tr key={site.id} className="hover:bg-[#26292F]/50 transition-colors group">
                       {/* Order Position Badge */}
                       <td className="py-4 px-5">
                         <div className="flex items-center gap-2">
@@ -326,12 +320,15 @@ export default function WebsiteRankingPage() {
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   (e.target as HTMLElement).style.display = 'none';
-                                  const fallback = (e.target as HTMLElement).nextElementSibling as HTMLElement;
+                                  const fallback = (e.target as HTMLElement)
+                                    .nextElementSibling as HTMLElement;
                                   if (fallback) fallback.style.display = 'flex';
                                 }}
                               />
                             ) : null}
-                            <div className={`w-full h-full items-center justify-center p-1.5 ${site.logoUrl ? 'hidden' : 'flex'}`}>
+                            <div
+                              className={`w-full h-full items-center justify-center p-1.5 ${site.logoUrl ? 'hidden' : 'flex'}`}
+                            >
                               <Logo variant="mark" className="w-5 h-5" />
                             </div>
                           </div>

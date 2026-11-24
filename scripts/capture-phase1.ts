@@ -28,10 +28,14 @@ async function sleep(ms: number) {
 async function capture() {
   console.log('Starting Next.js production server on 127.0.0.1:3005...');
   const nextBin = path.resolve('apps/web/node_modules/next/dist/bin/next');
-  const server: ChildProcess = spawn(process.execPath, [nextBin, 'start', 'apps/web', '--hostname', '127.0.0.1', '--port', '3005'], {
-    stdio: ['ignore', 'pipe', 'pipe'],
-    detached: false,
-  });
+  const server: ChildProcess = spawn(
+    process.execPath,
+    [nextBin, 'start', 'apps/web', '--hostname', '127.0.0.1', '--port', '3005'],
+    {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      detached: false,
+    },
+  );
 
   server.stdout?.on('data', (d) => console.log('[Server]:', d.toString().trim()));
   server.stderr?.on('data', (d) => console.error('[Server err]:', d.toString().trim()));

@@ -15,10 +15,14 @@ async function sleep(ms: number) {
 async function run() {
   console.log('Starting Next.js production server on 127.0.0.1:3005...');
   const nextBin = path.resolve('apps/web/node_modules/next/dist/bin/next');
-  const server: ChildProcess = spawn(process.execPath, [nextBin, 'start', 'apps/web', '--hostname', '127.0.0.1', '--port', '3005'], {
-    stdio: ['ignore', 'pipe', 'pipe'],
-    detached: false,
-  });
+  const server: ChildProcess = spawn(
+    process.execPath,
+    [nextBin, 'start', 'apps/web', '--hostname', '127.0.0.1', '--port', '3005'],
+    {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      detached: false,
+    },
+  );
 
   server.stdout?.on('data', (data) => console.log('[Server stdout]:', data.toString().trim()));
   server.stderr?.on('data', (data) => console.error('[Server stderr]:', data.toString().trim()));
@@ -63,16 +67,24 @@ async function run() {
     const html = res.body;
 
     // 1. Check for absence of legacy banner
-    const hasLegacyBanner = html.includes('Verified directory of official') || html.includes('Freshly curated websites and newly verified');
+    const hasLegacyBanner =
+      html.includes('Verified directory of official') ||
+      html.includes('Freshly curated websites and newly verified');
     console.log(`- Absence of legacy banner text: ${!hasLegacyBanner ? 'PASS ✓' : 'FAIL ✗'}`);
 
     // 2. Check for absence of visible breadcrumb
-    const hasVisibleBreadcrumb = html.includes('aria-label="Breadcrumb"') || html.includes('aria-label="breadcrumb"');
-    console.log(`- Absence of visible breadcrumb <nav>: ${!hasVisibleBreadcrumb ? 'PASS ✓' : 'FAIL ✗'}`);
+    const hasVisibleBreadcrumb =
+      html.includes('aria-label="Breadcrumb"') || html.includes('aria-label="breadcrumb"');
+    console.log(
+      `- Absence of visible breadcrumb <nav>: ${!hasVisibleBreadcrumb ? 'PASS ✓' : 'FAIL ✗'}`,
+    );
 
     // 3. Check for absence of legacy toggle
-    const hasLegacyToggle = html.includes('Has Mirrors') && html.includes('All') && html.includes('rounded-[10px] p-0.5');
-    console.log(`- Absence of legacy All/Has Mirrors toggle: ${!hasLegacyToggle ? 'PASS ✓' : 'FAIL ✗'}`);
+    const hasLegacyToggle =
+      html.includes('Has Mirrors') && html.includes('All') && html.includes('rounded-[10px] p-0.5');
+    console.log(
+      `- Absence of legacy All/Has Mirrors toggle: ${!hasLegacyToggle ? 'PASS ✓' : 'FAIL ✗'}`,
+    );
 
     // 4. Check for absence of legacy helper line
     const hasHelperLine = html.includes('Click row for mirrors · Click icon to open');
@@ -86,7 +98,15 @@ async function run() {
     console.log(`- Presence of Search Input: ${hasSearch ? 'PASS ✓' : 'FAIL ✗'}`);
     console.log(`- Presence of Filter dropdown button: ${hasFilterButton ? 'PASS ✓' : 'FAIL ✗'}`);
 
-    if (hasLegacyBanner || hasVisibleBreadcrumb || hasLegacyToggle || hasHelperLine || !hasH1 || !hasSearch || !hasFilterButton) {
+    if (
+      hasLegacyBanner ||
+      hasVisibleBreadcrumb ||
+      hasLegacyToggle ||
+      hasHelperLine ||
+      !hasH1 ||
+      !hasSearch ||
+      !hasFilterButton
+    ) {
       allPass = false;
     }
   }

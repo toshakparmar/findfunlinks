@@ -109,7 +109,9 @@ export default function MyWebsitesPage() {
     return (
       <div className="flex flex-col items-center justify-center py-24 space-y-4">
         <Loader2 className="w-8 h-8 animate-spin text-[#0B9DF7]" />
-        <p className="text-sm text-[#9CA3AF] font-medium">Loading your website management portal...</p>
+        <p className="text-sm text-[#9CA3AF] font-medium">
+          Loading your website management portal...
+        </p>
       </div>
     );
   }
@@ -123,8 +125,9 @@ export default function MyWebsitesPage() {
         <div className="space-y-1">
           <h2 className="text-lg font-bold text-[#F3F4F6]">No Associated Website Found</h2>
           <p className="text-sm text-[#9CA3AF] leading-relaxed">
-            Your owner account is not currently linked to an active website entry. If you recently registered,
-            please allow time for administrator verification, or submit a new registration.
+            Your owner account is not currently linked to an active website entry. If you recently
+            registered, please allow time for administrator verification, or submit a new
+            registration.
           </p>
         </div>
         <div className="pt-2 flex items-center justify-center gap-3">
@@ -168,15 +171,15 @@ export default function MyWebsitesPage() {
                   }}
                 />
               ) : null}
-              <div className={`w-full h-full items-center justify-center p-2.5 ${website.logoUrl ? 'hidden' : 'flex'}`}>
+              <div
+                className={`w-full h-full items-center justify-center p-2.5 ${website.logoUrl ? 'hidden' : 'flex'}`}
+              >
                 <Logo variant="mark" className="w-8 h-8" />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">
-                  {website.name}
-                </h1>
+                <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">{website.name}</h1>
                 <StatusBadge status={website.status} />
               </div>
               <p className="text-sm text-[#9CA3AF] mt-1 max-w-xl">
@@ -386,16 +389,12 @@ export default function MyWebsitesPage() {
                 .slice(0, 4)
                 .map((d) => {
                   const share =
-                    totalClicks > 0
-                      ? Math.round(((d.clickCount || 0) / totalClicks) * 100)
-                      : 0;
+                    totalClicks > 0 ? Math.round(((d.clickCount || 0) / totalClicks) * 100) : 0;
                   return (
                     <div key={d.id} className="space-y-1.5">
                       <div className="flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-medium text-[#F3F4F6]">
-                            {d.hostname}
-                          </span>
+                          <span className="font-mono font-medium text-[#F3F4F6]">{d.hostname}</span>
                           <StatusBadge status={d.type} type="domainType" />
                           <StatusBadge status={d.status} />
                         </div>
@@ -477,7 +476,10 @@ export default function MyWebsitesPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/my-websites/domains" className="text-sm font-semibold text-[#0B9DF7] hover:underline">
+            <Link
+              href="/my-websites/domains"
+              className="text-sm font-semibold text-[#0B9DF7] hover:underline"
+            >
               Manage all mirrors →
             </Link>
           </div>
@@ -543,7 +545,9 @@ export default function MyWebsitesPage() {
 
                     <td className="py-3.5 px-5 font-mono text-xs">
                       {domain.lastResponseMs ? (
-                        <span className="text-[#22C55E] font-semibold">{domain.lastResponseMs}ms</span>
+                        <span className="text-[#22C55E] font-semibold">
+                          {domain.lastResponseMs}ms
+                        </span>
                       ) : (
                         <span className="text-[#6B7280]">—</span>
                       )}

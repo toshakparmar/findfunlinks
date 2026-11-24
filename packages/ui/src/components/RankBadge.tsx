@@ -17,7 +17,9 @@ export const RankBadge: React.FC<RankBadgeProps> = ({ rank, categoryName, classN
       )}
     >
       <span>#{rank}</span>
-      {categoryName && <span className="font-normal opacity-80 truncate max-w-[140px]">{categoryName}</span>}
+      {categoryName && (
+        <span className="font-normal opacity-80 truncate max-w-[140px]">{categoryName}</span>
+      )}
     </span>
   );
 };

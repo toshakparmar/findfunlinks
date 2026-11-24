@@ -38,7 +38,9 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
-  const [activeTableTab, setActiveTableTab] = useState<'registrations' | 'queries' | 'mirrors'>('registrations');
+  const [activeTableTab, setActiveTableTab] = useState<'registrations' | 'queries' | 'mirrors'>(
+    'registrations',
+  );
   const [checkingDomainId, setCheckingDomainId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -63,7 +65,9 @@ export default function AdminDashboardPage() {
     totalClicks: 0,
   });
 
-  const [categoryBreakdown, setCategoryBreakdown] = useState<Array<{ name: string; count: number; percentage: number }>>([]);
+  const [categoryBreakdown, setCategoryBreakdown] = useState<
+    Array<{ name: string; count: number; percentage: number }>
+  >([]);
   const [recentRegistrations, setRecentRegistrations] = useState<RegistrationRequestDetails[]>([]);
   const [recentReports, setRecentReports] = useState<any[]>([]);
   const [degradedDomains, setDegradedDomains] = useState<DomainHealthItem[]>([]);
@@ -80,9 +84,11 @@ export default function AdminDashboardPage() {
       ]);
 
       const pendingRegs = (regRes?.items || []).filter((r) => r.status === 'PENDING').length;
-      const totalSites = webRes?.total || (webRes?.items?.length || 0);
+      const totalSites = webRes?.total || webRes?.items?.length || 0;
       const activeSites = (webRes?.items || []).filter((w: any) => w.status === 'ACTIVE').length;
-      const pendingSites = (webRes?.items || []).filter((w: any) => w.status === 'PENDING_REVIEW').length;
+      const pendingSites = (webRes?.items || []).filter(
+        (w: any) => w.status === 'PENDING_REVIEW',
+      ).length;
       const openReps = (repRes?.items || []).filter((r) => r.status === 'PENDING').length;
 
       const owners = userRes?.items || [];
@@ -96,7 +102,7 @@ export default function AdminDashboardPage() {
       const monitoredDomains: DomainHealthItem[] = [];
 
       if (webRes && webRes.items) {
-        for (const site of (webRes.items as any[])) {
+        for (const site of webRes.items as any[]) {
           const siteDomains = site.domains || [];
           domCount += siteDomains.length;
           siteDomains.forEach((d: any) => {
@@ -120,12 +126,15 @@ export default function AdminDashboardPage() {
 
       // Categories breakdown
       if (catRes && catRes.length > 0) {
-        const totalInCats = catRes.reduce((acc: number, c: any) => acc + (c.websiteCount || 0), 0) || 1;
-        const cats = catRes.map((c: any) => ({
-          name: c.name,
-          count: c.websiteCount || 0,
-          percentage: Math.min(100, Math.round(((c.websiteCount || 0) / totalInCats) * 100)),
-        })).sort((a: any, b: any) => b.count - a.count);
+        const totalInCats =
+          catRes.reduce((acc: number, c: any) => acc + (c.websiteCount || 0), 0) || 1;
+        const cats = catRes
+          .map((c: any) => ({
+            name: c.name,
+            count: c.websiteCount || 0,
+            percentage: Math.min(100, Math.round(((c.websiteCount || 0) / totalInCats) * 100)),
+          }))
+          .sort((a: any, b: any) => b.count - a.count);
         setCategoryBreakdown(cats.slice(0, 5));
       }
 
@@ -175,7 +184,8 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const domainHealthRate = stats.totalDomains > 0 ? Math.round((stats.onlineDomains / stats.totalDomains) * 100) : 100;
+  const domainHealthRate =
+    stats.totalDomains > 0 ? Math.round((stats.onlineDomains / stats.totalDomains) * 100) : 100;
 
   return (
     <div className="space-y-8 w-full">
@@ -186,7 +196,8 @@ export default function AdminDashboardPage() {
             Executive Operations Dashboard
           </h1>
           <p className="text-sm text-[#9CA3AF] mt-1">
-            Real-time analytics across websites, mirror health, operator registrations, and moderation tickets.
+            Real-time analytics across websites, mirror health, operator registrations, and
+            moderation tickets.
           </p>
         </div>
 
@@ -215,7 +226,11 @@ export default function AdminDashboardPage() {
             onClick={loadDashboardData}
             className="inline-flex items-center gap-2 px-3.5 h-9 rounded-lg border border-[#33373D] bg-[#1E2024] text-xs font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white transition-colors disabled:opacity-50"
           >
-            {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
+            {loading ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <RotateCcw className="h-3.5 w-3.5" />
+            )}
             <span>Refresh</span>
           </button>
         </div>
@@ -270,7 +285,9 @@ export default function AdminDashboardPage() {
           <div className="space-y-3 pt-1">
             <div className="flex items-center justify-between text-xs text-[#9CA3AF]">
               <span>Healthy & Responsive</span>
-              <span className="font-mono text-[#F3F4F6] font-semibold">{stats.onlineDomains} hostnames</span>
+              <span className="font-mono text-[#F3F4F6] font-semibold">
+                {stats.onlineDomains} hostnames
+              </span>
             </div>
             <div className="w-full bg-[#16181B] rounded-full h-2.5 overflow-hidden">
               <div
@@ -281,7 +298,9 @@ export default function AdminDashboardPage() {
 
             <div className="grid grid-cols-3 gap-2 pt-3 text-center border-t border-[#33373D]">
               <div className="p-2.5 rounded-lg bg-[#16181B] border border-[#33373D]">
-                <div className="font-mono font-bold text-base text-emerald-400">{stats.onlineDomains}</div>
+                <div className="font-mono font-bold text-base text-emerald-400">
+                  {stats.onlineDomains}
+                </div>
                 <div className="text-[11px] text-[#9CA3AF]">Active</div>
               </div>
               <div className="p-2.5 rounded-lg bg-[#16181B] border border-[#33373D]">
@@ -289,7 +308,9 @@ export default function AdminDashboardPage() {
                 <div className="text-[11px] text-[#9CA3AF]">Latency &gt;1s</div>
               </div>
               <div className="p-2.5 rounded-lg bg-[#16181B] border border-[#33373D]">
-                <div className="font-mono font-bold text-base text-red-400">{stats.downDomains}</div>
+                <div className="font-mono font-bold text-base text-red-400">
+                  {stats.downDomains}
+                </div>
                 <div className="text-[11px] text-[#9CA3AF]">Offline</div>
               </div>
             </div>
@@ -325,7 +346,9 @@ export default function AdminDashboardPage() {
                 </div>
               ))
             ) : (
-              <p className="text-xs text-[#9CA3AF] py-6 text-center">Loading category distribution...</p>
+              <p className="text-xs text-[#9CA3AF] py-6 text-center">
+                Loading category distribution...
+              </p>
             )}
           </div>
         </div>
@@ -348,7 +371,9 @@ export default function AdminDashboardPage() {
                 <span className="text-[#F3F4F6] font-semibold block">Active Website Owners</span>
                 <span className="text-[#9CA3AF] text-[11px]">Can manage domains & profiles</span>
               </div>
-              <span className="font-mono font-bold text-emerald-400 text-base">{stats.activeOwners}</span>
+              <span className="font-mono font-bold text-emerald-400 text-base">
+                {stats.activeOwners}
+              </span>
             </div>
 
             <div className="flex items-center justify-between p-3 rounded-lg bg-[#16181B] border border-[#33373D]">
@@ -356,7 +381,9 @@ export default function AdminDashboardPage() {
                 <span className="text-[#F3F4F6] font-semibold block">Suspended / Deactivated</span>
                 <span className="text-[#9CA3AF] text-[11px]">Restricted from publishing</span>
               </div>
-              <span className="font-mono font-bold text-red-400 text-base">{stats.suspendedOwners}</span>
+              <span className="font-mono font-bold text-red-400 text-base">
+                {stats.suspendedOwners}
+              </span>
             </div>
 
             <div className="flex items-center justify-between p-3 rounded-lg bg-[#16181B] border border-[#33373D]">
@@ -420,8 +447,8 @@ export default function AdminDashboardPage() {
               activeTableTab === 'registrations'
                 ? '/registrations'
                 : activeTableTab === 'queries'
-                ? '/inbox'
-                : '/domains'
+                  ? '/inbox'
+                  : '/domains'
             }
             className="text-xs font-medium text-[#0B9DF7] hover:underline inline-flex items-center gap-1 self-start sm:self-auto"
           >
@@ -507,7 +534,9 @@ export default function AdminDashboardPage() {
                     <tr key={rep.id} className="hover:bg-[#26292F] transition-colors">
                       <td className="py-3.5 px-5 font-medium text-[#F3F4F6]">
                         <div className="truncate max-w-sm">{rep.reason}</div>
-                        <div className="text-xs text-[#9CA3AF] mt-0.5">{rep.reporterEmail || 'Anonymous'}</div>
+                        <div className="text-xs text-[#9CA3AF] mt-0.5">
+                          {rep.reporterEmail || 'Anonymous'}
+                        </div>
                       </td>
 
                       <td className="py-3.5 px-5 text-[#9CA3AF]">
@@ -556,15 +585,18 @@ export default function AdminDashboardPage() {
                   {degradedDomains.map((dom) => (
                     <tr key={dom.id} className="hover:bg-[#26292F] transition-colors">
                       <td className="py-3.5 px-5 font-mono text-[#0B9DF7]">
-                        <a href={dom.url} target="_blank" rel="noopener noreferrer" className="hover:underline inline-flex items-center gap-1">
+                        <a
+                          href={dom.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline inline-flex items-center gap-1"
+                        >
                           {dom.hostname}
                           <ExternalLink className="h-3 w-3 text-[#6B7280]" />
                         </a>
                       </td>
 
-                      <td className="py-3.5 px-5 text-[#F3F4F6] font-medium">
-                        {dom.websiteName}
-                      </td>
+                      <td className="py-3.5 px-5 text-[#F3F4F6] font-medium">{dom.websiteName}</td>
 
                       <td className="py-3.5 px-5">
                         <StatusBadge status={dom.status} />

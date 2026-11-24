@@ -33,7 +33,11 @@ function walk(dir: string): string[] {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       results = results.concat(walk(fullPath));
-    } else if (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts') || entry.name.endsWith('.css')) {
+    } else if (
+      entry.name.endsWith('.tsx') ||
+      entry.name.endsWith('.ts') ||
+      entry.name.endsWith('.css')
+    ) {
       results.push(fullPath);
     }
   }
@@ -79,7 +83,9 @@ async function runStaticAudit(): Promise<boolean> {
   }
 
   if (violations.length === 0) {
-    console.log(`✓ Static Audit PASSED: Scanned ${files.length} files. Zero sub-13px arbitrary size violations.`);
+    console.log(
+      `✓ Static Audit PASSED: Scanned ${files.length} files. Zero sub-13px arbitrary size violations.`,
+    );
     return true;
   } else {
     console.error(`✗ Static Audit FAILED with ${violations.length} violations:`);
@@ -132,7 +138,12 @@ async function runPlaywrightAudit(): Promise<boolean> {
               const parent = node.parentElement;
               if (!parent) continue;
               const style = window.getComputedStyle(parent);
-              if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') continue;
+              if (
+                style.display === 'none' ||
+                style.visibility === 'hidden' ||
+                style.opacity === '0'
+              )
+                continue;
 
               // Check if inside BottomNav
               const isInsideBottomNav = !!parent.closest('nav.fixed.bottom-0');
@@ -140,11 +151,19 @@ async function runPlaywrightAudit(): Promise<boolean> {
 
               if (isInsideBottomNav) {
                 if (fontSizePx < 11) {
-                  results.push({ text: text.slice(0, 30), size: style.fontSize, tag: parent.tagName });
+                  results.push({
+                    text: text.slice(0, 30),
+                    size: style.fontSize,
+                    tag: parent.tagName,
+                  });
                 }
               } else if (fontSizePx < 12.8) {
                 // allow rounding 12.8 ~ 13px
-                results.push({ text: text.slice(0, 30), size: style.fontSize, tag: parent.tagName });
+                results.push({
+                  text: text.slice(0, 30),
+                  size: style.fontSize,
+                  tag: parent.tagName,
+                });
               }
             }
             return results.slice(0, 10);
@@ -153,7 +172,9 @@ async function runPlaywrightAudit(): Promise<boolean> {
           if (smallNodes.length > 0) {
             console.warn(`  [${vp.name}][${route}] Warning: Found text below 13px:`, smallNodes);
           } else {
-            console.log(`  ✓ [${vp.name}][${route}] Body size: ${bodyFontSize}, no visible text < 13px.`);
+            console.log(
+              `  ✓ [${vp.name}][${route}] Body size: ${bodyFontSize}, no visible text < 13px.`,
+            );
           }
         } catch (e: any) {
           // Server might not be running on 3000 during CI script
@@ -165,7 +186,9 @@ async function runPlaywrightAudit(): Promise<boolean> {
     await browser.close();
     return allPassed;
   } catch (err) {
-    console.log('Note: Playwright browser check skipped (offline or not running). Static scan verified.');
+    console.log(
+      'Note: Playwright browser check skipped (offline or not running). Static scan verified.',
+    );
     return true;
   }
 }

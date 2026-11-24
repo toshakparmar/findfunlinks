@@ -1,11 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  Save,
-  ExternalLink,
-  Loader2,
-} from 'lucide-react';
+import { Save, ExternalLink, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { BRAND } from '@finallinks/config';
 
@@ -28,7 +24,8 @@ const DEFAULT_PAGES: CmsPage[] = [
   {
     slug: 'privacy',
     title: 'Privacy Policy',
-    summary: 'User telemetry, cookie handling, zero-tracking policy, and data protection guidelines.',
+    summary:
+      'User telemetry, cookie handling, zero-tracking policy, and data protection guidelines.',
     lastUpdated: 'Nov 19, 2026',
     content: `# Privacy Policy\n\nYour privacy is paramount at ${BRAND.name}.\n\n## Data Collection\nWe operate on a minimal-telemetry principle. We do not track personal identifying information, sell user data, or deploy invasive third-party ad pixels.\n\n## Local Storage & Cookies\nPreferences such as dark/light themes and directory favorites are saved locally on your device using client storage.\n\n## Contact Us\nFor privacy inquiries, contact us at ${BRAND.supportEmail || 'support@finallinks.com'}.`,
   },
@@ -42,7 +39,8 @@ const DEFAULT_PAGES: CmsPage[] = [
   {
     slug: 'dmca',
     title: 'DMCA & Copyright Policy',
-    summary: 'Notice and takedown procedure, designated agent information, and reporting guidelines.',
+    summary:
+      'Notice and takedown procedure, designated agent information, and reporting guidelines.',
     lastUpdated: 'Nov 18, 2026',
     content: `# DMCA & Copyright Policy\n\n${BRAND.name} respects intellectual property rights and complies with the Digital Millennium Copyright Act (DMCA).\n\n## Notice & Takedown Procedure\nIf you believe an indexed directory listing infringes on your copyright, please submit an official takedown notification to our designated agent.\n\n## Required Information\n- Identification of the copyrighted work.\n- Exact URL listing on ${BRAND.name}.\n- Your contact details and signature.\n\nSend notices to: ${BRAND.supportEmail || 'dmca@finallinks.com'}.`,
   },
@@ -69,7 +67,16 @@ export default function PagesAdminPage() {
       setPages((prev) =>
         prev.map((p) =>
           p.slug === selectedPage.slug
-            ? { ...p, title, content, lastUpdated: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }
+            ? {
+                ...p,
+                title,
+                content,
+                lastUpdated: new Date().toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                }),
+              }
             : p,
         ),
       );
@@ -129,9 +136,7 @@ export default function PagesAdminPage() {
                     <span className="font-semibold text-sm">{p.title}</span>
                     <span className="text-xs font-mono text-[#0B9DF7]">/{p.slug}</span>
                   </div>
-                  <p className="text-xs text-[#9CA3AF] line-clamp-2 leading-relaxed">
-                    {p.summary}
-                  </p>
+                  <p className="text-xs text-[#9CA3AF] line-clamp-2 leading-relaxed">{p.summary}</p>
                   <span className="text-[11px] text-[#6B7280] block mt-2">
                     Updated {p.lastUpdated}
                   </span>
@@ -155,7 +160,11 @@ export default function PagesAdminPage() {
                 disabled={saving}
                 className="inline-flex items-center gap-2 px-5 h-11 rounded-lg bg-[#0B9DF7] hover:bg-[#0987d6] text-white text-sm font-medium transition-colors disabled:opacity-50"
               >
-                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {saving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
                 <span>Save Changes</span>
               </button>
             </div>

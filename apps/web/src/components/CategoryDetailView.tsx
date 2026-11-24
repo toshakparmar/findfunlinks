@@ -40,7 +40,8 @@ export function CategoryDetailView({ category, sites }: CategoryDetailViewProps)
 
   // Initialize state from URL params
   const initialQ = searchParams?.get('q') || '';
-  const initialSort = (searchParams?.get('sort') || 'featured') as 'featured' | 'starred' | 'newest' | 'az';
+  const initialSort = (searchParams?.get('sort') || 'featured') as
+    'featured' | 'starred' | 'newest' | 'az';
   const initialShow = (searchParams?.get('show') || 'all') as 'all' | 'online' | 'mirrors';
 
   const [searchQuery, setSearchQuery] = useState(initialQ);
@@ -167,7 +168,9 @@ export function CategoryDetailView({ category, sites }: CategoryDetailViewProps)
                 return (
                   <div
                     key={site.id || site.slug || index}
-                    className={isExpanded ? 'col-span-1 md:col-span-2 xl:col-span-3 transition-all' : ''}
+                    className={
+                      isExpanded ? 'col-span-1 md:col-span-2 xl:col-span-3 transition-all' : ''
+                    }
                   >
                     <SiteRow
                       rank={site.rank ?? index + 1}
@@ -181,7 +184,9 @@ export function CategoryDetailView({ category, sites }: CategoryDetailViewProps)
                       categoryName={category.name}
                       categorySlug={category.slug}
                       expanded={isExpanded}
-                      onToggle={() => setExpandedSlug((prev) => (prev === site.slug ? null : site.slug))}
+                      onToggle={() =>
+                        setExpandedSlug((prev) => (prev === site.slug ? null : site.slug))
+                      }
                       onExternalClick={(url) => {
                         window.open(url, '_blank');
                       }}

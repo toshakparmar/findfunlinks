@@ -93,7 +93,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <React.Suspense fallback={<div className="w-full py-20 text-center text-fs-base text-[var(--text-3,#6B7893)]">Loading category...</div>}>
+      <React.Suspense
+        fallback={
+          <div className="w-full py-20 text-center text-fs-base text-[var(--text-3,#6B7893)]">
+            Loading category...
+          </div>
+        }
+      >
         <CategoryDetailView
           category={{
             id: category.id,

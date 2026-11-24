@@ -141,7 +141,7 @@ function createIco(pngBuffers) {
     offset += buffer.length;
   }
 
-  return Buffer.concat([header, ...entries, ...pngBuffers.map(p => p.buffer)]);
+  return Buffer.concat([header, ...entries, ...pngBuffers.map((p) => p.buffer)]);
 }
 
 function main() {
@@ -163,7 +163,7 @@ function main() {
   }
 
   // Favicon sizes (16, 32, 48)
-  const icoPngs = [16, 32, 48].map(size => ({
+  const icoPngs = [16, 32, 48].map((size) => ({
     width: size,
     height: size,
     buffer: createPng(size, size, drawChainLink),

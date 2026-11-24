@@ -145,7 +145,8 @@ export class MailService {
     verificationMethod: string,
     verificationToken: string,
   ) {
-    const webUrl = process.env.WEB_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const webUrl =
+      process.env.WEB_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     const statusUrl = `${webUrl}/requests/status?ref=${referenceId}&email=${encodeURIComponent(to)}`;
     const subject = `Application Received: ${websiteName} (${referenceId})`;
     const text = `Hello ${applicantName},\n\nWe have received your website registration request for "${websiteName}".\n\nReference ID: ${referenceId}\nVerification Method: ${verificationMethod}\nVerification Token: ${verificationToken}\n\nYou can track the status of your application here:\n${statusUrl}\n\nBest regards,\nThe ${BRAND.name} Team`;

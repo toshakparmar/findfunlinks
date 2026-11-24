@@ -37,7 +37,9 @@ export class UsersController {
 
   @Post()
   @RequirePermissions('user.create')
-  @ApiOperation({ summary: 'Create a new Website Owner user and optionally provision their website' })
+  @ApiOperation({
+    summary: 'Create a new Website Owner user and optionally provision their website',
+  })
   async create(@Body() body: CreateOwnerUserInput) {
     return this.usersService.createOwnerUser(body);
   }

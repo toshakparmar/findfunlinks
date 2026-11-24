@@ -104,11 +104,7 @@ export default function TagsAdminPage() {
           disabled={creating || !newTagName.trim()}
           className="px-4 h-11 rounded-lg bg-[#0B9DF7] hover:bg-[#0987d6] text-white text-sm font-medium transition-colors disabled:opacity-50 inline-flex items-center gap-2"
         >
-          {creating ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Plus className="h-4 w-4" />
-          )}
+          {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           <span>Add</span>
         </button>
       </form>

@@ -145,7 +145,9 @@ export default function UsersPage() {
       await api.admin.setUserStatus(user.id, newStatus);
       toast.success(`User marked as ${newStatus.toLowerCase()}`);
       setUsers((prev) =>
-        prev.map((u) => (u.id === user.id ? { ...u, status: newStatus as 'ACTIVE' | 'SUSPENDED' | 'INVITED' } : u)),
+        prev.map((u) =>
+          u.id === user.id ? { ...u, status: newStatus as 'ACTIVE' | 'SUSPENDED' | 'INVITED' } : u,
+        ),
       );
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to update user status';
@@ -194,9 +196,7 @@ export default function UsersPage() {
         description: includeWebsite ? siteDescription.trim() || undefined : undefined,
       });
 
-      toast.success(
-        `Website Owner created! Login credentials dispatched to ${ownerEmail}.`,
-      );
+      toast.success(`Website Owner created! Login credentials dispatched to ${ownerEmail}.`);
 
       setCreateModalOpen(false);
       setOwnerName('');
@@ -618,7 +618,10 @@ export default function UsersPage() {
               </div>
 
               <div className="rounded-xl border border-[#33373D] bg-[#16181B] p-3 text-xs text-[#9CA3AF] leading-relaxed">
-                💡 <strong>Credentials Email:</strong> A randomized temporary password will be created and an invitation email will be dispatched to <strong>{ownerEmail || 'the user'}</strong> containing direct panel login instructions.
+                💡 <strong>Credentials Email:</strong> A randomized temporary password will be
+                created and an invitation email will be dispatched to{' '}
+                <strong>{ownerEmail || 'the user'}</strong> containing direct panel login
+                instructions.
               </div>
 
               {/* Submit Buttons */}

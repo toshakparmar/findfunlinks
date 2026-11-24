@@ -226,7 +226,9 @@ export function RequestsView() {
                   <div className="w-12 h-12 rounded-[12px] bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <h3 className="text-fs-lg font-bold text-white font-heading">Suggestion Received</h3>
+                  <h3 className="text-fs-lg font-bold text-white font-heading">
+                    Suggestion Received
+                  </h3>
                   <p className="text-fs-sm text-[var(--text-2,#A8B3C7)] max-w-sm mx-auto leading-relaxed">
                     Thank you for contributing. Our directory editors test and verify all links and
                     mirrors before publishing.

@@ -45,16 +45,16 @@ pnpm dev
 
 ### Local Development Ports:
 
-| Service                   | URL / Port                     | Credentials / Notes                                   |
-| ------------------------- | ------------------------------ | ----------------------------------------------------- |
-| **Public Directory**      | `http://localhost:3000`        | Public consumer portal                                |
-| **Super Admin Console**   | `http://localhost:3001`        | `admin@finallinks.com` / `SuperAdminSecretPass123!` |
+| Service                   | URL / Port                     | Credentials / Notes                                      |
+| ------------------------- | ------------------------------ | -------------------------------------------------------- |
+| **Public Directory**      | `http://localhost:3000`        | Public consumer portal                                   |
+| **Super Admin Console**   | `http://localhost:3001`        | `admin@finallinks.com` / `SuperAdminSecretPass123!`      |
 | **Management Console**    | `http://localhost:3001`        | Unified Console (Super Admin, Admin & Owner credentials) |
-| **NestJS REST API**       | `http://localhost:4000/api/v1` | Core API                                              |
-| **Swagger Documentation** | `http://localhost:4000/docs`   | Interactive OpenAPI UI                                |
-| **Mailpit Web UI**        | `http://localhost:8025`        | Local transactional email inspector                   |
-| **PostgreSQL**            | `localhost:5432`               | User: `postgres`, Password: `postgres`                |
-| **Redis**                 | `localhost:6379`               | Port 6379                                             |
+| **NestJS REST API**       | `http://localhost:4000/api/v1` | Core API                                                 |
+| **Swagger Documentation** | `http://localhost:4000/docs`   | Interactive OpenAPI UI                                   |
+| **Mailpit Web UI**        | `http://localhost:8025`        | Local transactional email inspector                      |
+| **PostgreSQL**            | `localhost:5432`               | User: `postgres`, Password: `postgres`                   |
+| **Redis**                 | `localhost:6379`               | Port 6379                                                |
 
 ---
 

@@ -313,9 +313,9 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
  */
 export const CATEGORY_SLUG_ALIASES: Record<string, string> = {
   'anime-streaming': 'anime',
-  'documentaries': 'documentary',
-  'educational': 'education',
-  'games': 'gaming',
+  documentaries: 'documentary',
+  educational: 'education',
+  games: 'gaming',
   'kids-family': 'kids',
 };
 

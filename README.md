@@ -138,14 +138,14 @@ pnpm dev
 
 ## 🌐 Service Ports & Default Credentials
 
-| Service | Port | Local URL | Notes / Credentials |
-| :--- | :--- | :--- | :--- |
-| **Public Web App** | `3000` | [http://localhost:3000](http://localhost:3000) | Public directory |
-| **Admin Console** | `3001` | [http://localhost:3001](http://localhost:3001) | Super Admin: `admin@finallinks.com` / `SuperAdmin123!` |
-| **Backend REST API** | `4000` | [http://localhost:4000](http://localhost:4000) | Swagger documentation at `/docs` |
-| **Mailpit (Webmail)** | `8025` | [http://localhost:8025](http://localhost:8025) | Local email inbox for verification emails |
-| **PostgreSQL 17** | `5432` | `localhost:5432` | `postgres` / `postgres` (Database: `finallinks`) |
-| **Redis 7** | `6379` | `localhost:6379` | Key-value store & background queue |
+| Service               | Port   | Local URL                                      | Notes / Credentials                                    |
+| :-------------------- | :----- | :--------------------------------------------- | :----------------------------------------------------- |
+| **Public Web App**    | `3000` | [http://localhost:3000](http://localhost:3000) | Public directory                                       |
+| **Admin Console**     | `3001` | [http://localhost:3001](http://localhost:3001) | Super Admin: `admin@finallinks.com` / `SuperAdmin123!` |
+| **Backend REST API**  | `4000` | [http://localhost:4000](http://localhost:4000) | Swagger documentation at `/docs`                       |
+| **Mailpit (Webmail)** | `8025` | [http://localhost:8025](http://localhost:8025) | Local email inbox for verification emails              |
+| **PostgreSQL 17**     | `5432` | `localhost:5432`                               | `postgres` / `postgres` (Database: `finallinks`)       |
+| **Redis 7**           | `6379` | `localhost:6379`                               | Key-value store & background queue                     |
 
 ---
 
@@ -179,6 +179,7 @@ pnpm format
 Render is ideal for deploying the NestJS backend and managing PostgreSQL and Redis.
 
 #### A. Set Up Database & Redis
+
 1. On [Render Dashboard](https://dashboard.render.com/), create a new **PostgreSQL** database:
    - Name: `finallinks-db`
    - Copy the **Internal Database URL** (or External if hosting outside Render).
@@ -187,12 +188,13 @@ Render is ideal for deploying the NestJS backend and managing PostgreSQL and Red
    - Copy the **Internal Redis URL**.
 
 #### B. Create Render Web Service for NestJS API
+
 1. Click **New +** -> **Web Service** -> Connect your GitHub repo (`findfunlinks`).
 2. Configure settings:
    - **Name:** `finallinks-api`
    - **Language / Environment:** `Node`
    - **Branch:** `main`
-   - **Root Directory:** *(leave blank / repository root)*
+   - **Root Directory:** _(leave blank / repository root)_
    - **Build Command:**
      ```bash
      pnpm install && pnpm --filter @finallinks/contracts build && pnpm --filter @finallinks/api build && pnpm --filter @finallinks/api prisma migrate deploy

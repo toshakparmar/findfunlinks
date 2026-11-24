@@ -18,7 +18,9 @@ for (const vp of viewports) {
     test.use({ viewport: { width: vp.width, height: vp.height } });
 
     for (const pageInfo of targetPages) {
-      test(`verifies header anatomy & absence of legacy items on ${pageInfo.path}`, async ({ page }) => {
+      test(`verifies header anatomy & absence of legacy items on ${pageInfo.path}`, async ({
+        page,
+      }) => {
         await page.goto(pageInfo.path);
 
         // 1. Presence of H1
@@ -35,7 +37,9 @@ for (const vp of viewports) {
         await expect(filterButton).toBeVisible();
 
         // 4. Absence of legacy banner card
-        const bannerCta = page.locator('a:has-text("List Website"), a:has-text("List Your Website")');
+        const bannerCta = page.locator(
+          'a:has-text("List Website"), a:has-text("List Your Website")',
+        );
         // The list banner inside page body is removed (only header/nav CTA may exist)
         const bodyBanner = page.locator('.rounded-\\[16px\\].p-4.sm\\:p-5:has-text("Sites")');
         await expect(bodyBanner).toHaveCount(0);

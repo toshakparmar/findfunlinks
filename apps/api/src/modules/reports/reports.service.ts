@@ -50,10 +50,7 @@ export class ReportsService {
     });
 
     const where: any = {
-      OR: [
-        { reporterEmail: user.email },
-        ...(website ? [{ websiteId: website.id }] : []),
-      ],
+      OR: [{ reporterEmail: user.email }, ...(website ? [{ websiteId: website.id }] : [])],
     };
 
     return this.prisma.report.findMany({
@@ -67,7 +64,10 @@ export class ReportsService {
     });
   }
 
-  async createOwnerTicket(user: { id: string; email: string }, input: { reason: string; details: string; domainId?: string }) {
+  async createOwnerTicket(
+    user: { id: string; email: string },
+    input: { reason: string; details: string; domainId?: string },
+  ) {
     const website = await this.prisma.website.findFirst({
       where: { ownerId: user.id },
       select: { id: true },

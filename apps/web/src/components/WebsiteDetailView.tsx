@@ -58,9 +58,8 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
   }, [website.domains]);
 
   const primaryDomain =
-    sortedDomains.find(
-      (d) => d.type === DomainType.PRIMARY && d.status === DomainStatus.ACTIVE,
-    ) || activeDomains[0];
+    sortedDomains.find((d) => d.type === DomainType.PRIMARY && d.status === DomainStatus.ACTIVE) ||
+    activeDomains[0];
 
   const handleCopy = async (url: string) => {
     try {

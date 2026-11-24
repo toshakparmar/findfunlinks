@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { WebsiteFilterParams, UpdateWebsiteInput, WebsiteStatus } from '@finallinks/contracts';
 import {
@@ -157,7 +162,13 @@ export class WebsitesService {
             status: PrismaWebsiteStatus.ACTIVE,
             deletedAt: null,
           },
-          orderBy: [{ sortOrder: 'asc' }, { isFeatured: 'desc' }, { stars: 'desc' }, { viewCount: 'desc' }, { name: 'asc' }],
+          orderBy: [
+            { sortOrder: 'asc' },
+            { isFeatured: 'desc' },
+            { stars: 'desc' },
+            { viewCount: 'desc' },
+            { name: 'asc' },
+          ],
           include: {
             tags: { include: { tag: true } },
             domains: {
@@ -305,8 +316,13 @@ export class WebsitesService {
     if (activeDomains.length > 0) {
       const withLatency = activeDomains
         .filter((d) => d.lastResponseMs != null && (d.lastResponseMs as number) > 0)
-        .sort((a, b) => ((a.lastResponseMs as number) ?? 9999) - ((b.lastResponseMs as number) ?? 9999));
-      const chosen = withLatency[0] || activeDomains.find((d) => d.type === DomainType.PRIMARY) || activeDomains[0];
+        .sort(
+          (a, b) => ((a.lastResponseMs as number) ?? 9999) - ((b.lastResponseMs as number) ?? 9999),
+        );
+      const chosen =
+        withLatency[0] ||
+        activeDomains.find((d) => d.type === DomainType.PRIMARY) ||
+        activeDomains[0];
       if (chosen) {
         fastestMirror = { url: chosen.url, ms: chosen.lastResponseMs };
       }
@@ -654,7 +670,8 @@ export class WebsitesService {
     const totalClicks = website.domains.reduce((acc, d) => acc + (d.clickCount || 0), 0);
     const totalDomains = website.domains.length;
     const onlineDomains = website.domains.filter((d) => d.status === 'ACTIVE').length;
-    const uptimePercentage = totalDomains > 0 ? Math.round((onlineDomains / totalDomains) * 100) : 100;
+    const uptimePercentage =
+      totalDomains > 0 ? Math.round((onlineDomains / totalDomains) * 100) : 100;
 
     const domainsBreakdown = website.domains.map((d) => ({
       id: d.id,
@@ -684,7 +701,13 @@ export class WebsitesService {
   // Super Admin Methods
   // ---------------------------------------------------------------------------
 
-  async findAllAdmin(page = 1, limit = 20, status?: WebsiteStatus, search?: string, categoryId?: string) {
+  async findAllAdmin(
+    page = 1,
+    limit = 20,
+    status?: WebsiteStatus,
+    search?: string,
+    categoryId?: string,
+  ) {
     const skip = (page - 1) * limit;
     const where: Prisma.WebsiteWhereInput = {
       deletedAt: null,
@@ -747,7 +770,10 @@ export class WebsitesService {
     };
   }
 
-  async reorderCategoryWebsites(categoryId: string, items: Array<{ id: string; sortOrder: number }>) {
+  async reorderCategoryWebsites(
+    categoryId: string,
+    items: Array<{ id: string; sortOrder: number }>,
+  ) {
     const updates = items.map((item) =>
       this.prisma.website.update({
         where: { id: item.id },

@@ -340,7 +340,8 @@ async function main() {
     {
       slug: 'stream-matrix',
       name: 'Stream Matrix Hub',
-      shortDescription: 'Global resilient mirror network with 150+ edge unblocked proxies and CDN relays.',
+      shortDescription:
+        'Global resilient mirror network with 150+ edge unblocked proxies and CDN relays.',
       highlights: [
         '150+ active global mirrors & proxies',
         'Anycast CDN acceleration',
@@ -356,7 +357,8 @@ async function main() {
     {
       slug: 'cinema-vault',
       name: 'Cinema Vault Online',
-      shortDescription: 'Archive of public-domain classics, indie festivals, and remastered cinema.',
+      shortDescription:
+        'Archive of public-domain classics, indie festivals, and remastered cinema.',
       highlights: [
         'Master quality 4K and 1080p remaster streams',
         'Multi-language soft subtitles in 20+ languages',
@@ -386,7 +388,8 @@ async function main() {
     {
       slug: 'open-source-haven',
       name: 'Open Source Haven',
-      shortDescription: 'Curated index of high-quality open-source desktop software and developer tools.',
+      shortDescription:
+        'Curated index of high-quality open-source desktop software and developer tools.',
       highlights: [
         'Strictly FOSS licensed applications',
         'SHA256 checksums verified for all releases',
@@ -431,7 +434,8 @@ async function main() {
     {
       slug: 'manga-nexus',
       name: 'Manga Nexus Reader',
-      shortDescription: 'Fast, responsive manga reader with high-res scans and continuous vertical scroll.',
+      shortDescription:
+        'Fast, responsive manga reader with high-res scans and continuous vertical scroll.',
       highlights: [
         'Continuous webtoon and vertical reading mode',
         'High-density image compression with sharp text',
@@ -461,7 +465,8 @@ async function main() {
     {
       slug: 'dev-toolbox-pro',
       name: 'Dev Toolbox Pro',
-      shortDescription: 'Essential in-browser utilities for developers: formatters, converters, and regex testers.',
+      shortDescription:
+        'Essential in-browser utilities for developers: formatters, converters, and regex testers.',
       highlights: [
         '100% client-side privacy: no data leaves your browser',
         'JSON, YAML, GraphQL, and SQL formatters',
@@ -491,7 +496,8 @@ async function main() {
     {
       slug: 'anime-pulse',
       name: 'Anime Pulse Central',
-      shortDescription: 'Seasonal anime broadcasting schedule, release tracker, and discussion links.',
+      shortDescription:
+        'Seasonal anime broadcasting schedule, release tracker, and discussion links.',
       highlights: [
         'Live airtime countdowns adjusted to user timezone',
         'Simulcast stream links and backup mirrors',
@@ -506,7 +512,8 @@ async function main() {
     {
       slug: 'classic-lit-library',
       name: 'Classic Lit E-Library',
-      shortDescription: 'Over 70,000 free public domain ebooks formatted for modern e-readers and web.',
+      shortDescription:
+        'Over 70,000 free public domain ebooks formatted for modern e-readers and web.',
       highlights: [
         'Available in EPUB, Kindle MOBI, and responsive Web Reader',
         'Beautiful bespoke cover art and typography',
@@ -521,7 +528,8 @@ async function main() {
     {
       slug: 'live-sports-wire',
       name: 'Live Sports Wire',
-      shortDescription: 'Real-time scores, verified legal broadcast schedules, and match replay mirrors.',
+      shortDescription:
+        'Real-time scores, verified legal broadcast schedules, and match replay mirrors.',
       highlights: [
         'Sub-second live score updates across soccer, basketball, F1',
         'Official broadcast provider links by country',
@@ -536,7 +544,8 @@ async function main() {
     {
       slug: 'ambient-chillout',
       name: 'Ambient Chillout Radio',
-      shortDescription: 'Curated 24/7 lo-fi, synthwave, and generative ambient streams for focus and study.',
+      shortDescription:
+        'Curated 24/7 lo-fi, synthwave, and generative ambient streams for focus and study.',
       highlights: [
         'Continuous commercial-free generative audio',
         'Built-in Pomodoro productivity timer',
@@ -551,7 +560,8 @@ async function main() {
     {
       slug: 'theatre-arts-hub',
       name: 'Theatre & Arts Hub',
-      shortDescription: 'Archived stage plays, Shakespeare productions, and performing arts recordings.',
+      shortDescription:
+        'Archived stage plays, Shakespeare productions, and performing arts recordings.',
       highlights: [
         'Full multicam recordings of historic theatre',
         'Accompanying scripts and study guides',
@@ -566,7 +576,8 @@ async function main() {
     {
       slug: 'kids-learn-zone',
       name: 'Kids Learning Adventures',
-      shortDescription: 'Safe, age-appropriate educational games, animations, and interactive storybooks.',
+      shortDescription:
+        'Safe, age-appropriate educational games, animations, and interactive storybooks.',
       highlights: [
         'COPPA compliant: zero ads, zero data tracking',
         'Interactive math and phonics minigames',
@@ -581,7 +592,8 @@ async function main() {
     {
       slug: 'tv-archive-project',
       name: 'TV Archive Project',
-      shortDescription: 'Classic television broadcasts, retro commercials, and nostalgic television specials.',
+      shortDescription:
+        'Classic television broadcasts, retro commercials, and nostalgic television specials.',
       highlights: [
         'Uncut broadcast master quality with original bumpers',
         'Searchable by original air date and decade',
@@ -596,7 +608,8 @@ async function main() {
     {
       slug: 'live-stream-directory',
       name: 'Live Stream Directory',
-      shortDescription: 'Global public webcam streams, space agency views, and wildlife sanctuary feeds.',
+      shortDescription:
+        'Global public webcam streams, space agency views, and wildlife sanctuary feeds.',
       highlights: [
         'NASA ISS Earth orbit live feeds',
         'African watering hole wildlife cameras',
@@ -611,7 +624,8 @@ async function main() {
     {
       slug: 'open-learn-academy',
       name: 'Open Learn Academy',
-      shortDescription: 'Free university-level computer science, mathematics, and philosophy video courses.',
+      shortDescription:
+        'Free university-level computer science, mathematics, and philosophy video courses.',
       highlights: [
         'Complete course lecture recordings and syllabi',
         'Practice problem sets with step-by-step solutions',

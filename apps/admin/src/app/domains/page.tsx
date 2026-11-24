@@ -20,7 +20,7 @@ export default function DomainsAdminPage() {
       const res = await api.admin.getWebsites({ limit: 100 });
       const extracted: DomainItem[] = [];
       if (res && res.items) {
-        for (const site of (res.items as any[])) {
+        for (const site of res.items as any[]) {
           if (site.domains && Array.isArray(site.domains)) {
             extracted.push(...site.domains);
           }
@@ -136,7 +136,9 @@ export default function DomainsAdminPage() {
 
                     <td className="py-3.5 px-4 font-mono text-sm">
                       {dom.lastResponseMs ? (
-                        <span className="text-emerald-400 font-semibold">{dom.lastResponseMs}ms</span>
+                        <span className="text-emerald-400 font-semibold">
+                          {dom.lastResponseMs}ms
+                        </span>
                       ) : (
                         <span className="text-[#6B7280]">N/A</span>
                       )}

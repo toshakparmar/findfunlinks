@@ -26,7 +26,11 @@ export function Navbar() {
           className="flex items-center gap-2 group transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg"
           aria-label="FinalLinks Home"
         >
-          <Logo variant="full" theme="auto" className="h-8 w-auto transition-transform group-hover:scale-105" />
+          <Logo
+            variant="full"
+            theme="auto"
+            className="h-8 w-auto transition-transform group-hover:scale-105"
+          />
         </Link>
 
         {/* Desktop Navigation */}

@@ -73,9 +73,7 @@ export default function LoginPage() {
             <Shield className="h-3.5 w-3.5" />
             <span>{BRAND.name} Console</span>
           </div>
-          <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">
-            Account Sign In
-          </h1>
+          <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">Account Sign In</h1>
           <p className="text-sm text-[#9CA3AF]">
             Sign in with your Administrator or Website Owner credentials.
           </p>

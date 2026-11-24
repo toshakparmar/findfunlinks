@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE_URL =
+  process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 async function handleStarToggle(
   request: NextRequest,
@@ -37,14 +38,14 @@ async function handleStarToggle(
   } catch (_error: any) {
     // Fallback response
     const isStarred = method === 'PUT';
-    return NextResponse.json({ starCount: isStarred ? 343 : 342, starred: isStarred }, { status: 200 });
+    return NextResponse.json(
+      { starCount: isStarred ? 343 : 342, starred: isStarred },
+      { status: 200 },
+    );
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   return handleStarToggle(request, params, 'PUT');
 }
 

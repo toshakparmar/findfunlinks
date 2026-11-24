@@ -243,9 +243,7 @@ export default function WebsitesAdminPage() {
     const current = websites.find((w) => w.id === id);
     if (!current) return;
     const newStars = Math.max(0, ((current as any).stars || 0) + delta);
-    setWebsites((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, stars: newStars } : w)),
-    );
+    setWebsites((prev) => prev.map((w) => (w.id === id ? { ...w, stars: newStars } : w)));
     try {
       await api.admin.updateWebsiteStars(id, newStars);
       toast.success(`Updated ${current.name} rating to ${newStars} stars`);
@@ -270,7 +268,10 @@ export default function WebsitesAdminPage() {
   };
 
   const handleMoveToPosition = (fromIndex: number) => {
-    const target = prompt(`Enter new position for this website (1 to ${websites.length}):`, String(fromIndex + 1));
+    const target = prompt(
+      `Enter new position for this website (1 to ${websites.length}):`,
+      String(fromIndex + 1),
+    );
     if (!target) return;
     const pos = parseInt(target, 10);
     if (isNaN(pos) || pos < 1 || pos > websites.length) {
@@ -287,7 +288,8 @@ export default function WebsitesAdminPage() {
         <div>
           <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">Websites Directory</h1>
           <p className="text-sm text-[#9CA3AF] mt-1">
-            Manage public directory listings, custom category ordering sequences, and moderation states.
+            Manage public directory listings, custom category ordering sequences, and moderation
+            states.
           </p>
         </div>
 
@@ -299,7 +301,11 @@ export default function WebsitesAdminPage() {
               onClick={handleSaveOrder}
               className="inline-flex items-center gap-2 px-4 h-11 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors disabled:opacity-50"
             >
-              {savingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {savingOrder ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
               <span>Save Sequence</span>
             </button>
           )}
@@ -378,7 +384,8 @@ export default function WebsitesAdminPage() {
           <div className="flex items-center gap-2">
             <GripVertical className="h-4 w-4" />
             <span>
-              <strong>Sequence Mode Active:</strong> Drag rows or use Move buttons to reorder how listings appear on the public directory. Click &quot;Save Sequence&quot; when done.
+              <strong>Sequence Mode Active:</strong> Drag rows or use Move buttons to reorder how
+              listings appear on the public directory. Click &quot;Save Sequence&quot; when done.
             </span>
           </div>
           <span className="font-mono font-bold">{websites.length} items</span>
@@ -396,7 +403,9 @@ export default function WebsitesAdminPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-[#33373D] bg-[#16181B] text-[#9CA3AF]">
-                  {isOrderingMode && <th className="py-3 px-3 font-medium text-center w-16">Seq</th>}
+                  {isOrderingMode && (
+                    <th className="py-3 px-3 font-medium text-center w-16">Seq</th>
+                  )}
                   <th className="py-3 px-4 font-medium">Website</th>
                   <th className="py-3 px-4 font-medium">Category</th>
                   <th className="py-3 px-4 font-medium">Stars</th>
@@ -429,14 +438,19 @@ export default function WebsitesAdminPage() {
                       className={`transition-colors ${
                         isDragging ? 'opacity-40 bg-[#26292F]' : ''
                       } ${
-                        isDragOver ? 'border-t-2 border-[#0B9DF7] bg-[#26292F]/80' : 'hover:bg-[#26292F]'
+                        isDragOver
+                          ? 'border-t-2 border-[#0B9DF7] bg-[#26292F]/80'
+                          : 'hover:bg-[#26292F]'
                       }`}
                     >
                       {/* Rank & Drag Handle Column */}
                       {isOrderingMode && (
                         <td className="py-3.5 px-3 text-center">
                           <div className="flex items-center justify-center gap-1.5">
-                            <span className="cursor-grab text-[#6B7280] hover:text-white" title="Drag to reorder">
+                            <span
+                              className="cursor-grab text-[#6B7280] hover:text-white"
+                              title="Drag to reorder"
+                            >
                               <GripVertical className="h-4 w-4" />
                             </span>
                             <span className="font-mono text-xs font-bold text-[#9CA3AF]">
@@ -791,7 +805,8 @@ export default function WebsitesAdminPage() {
                       />
                     </div>
                     <p className="text-[11px] text-[#9CA3AF] leading-relaxed">
-                      💡 A secure temporary password will be generated and dispatched to this email immediately.
+                      💡 A secure temporary password will be generated and dispatched to this email
+                      immediately.
                     </p>
                   </div>
                 ) : (
@@ -817,7 +832,8 @@ export default function WebsitesAdminPage() {
                     </select>
                     {availableOwners.filter((o) => !o.hasWebsite).length === 0 && (
                       <p className="text-[11px] text-amber-400">
-                        All existing owners already manage a website. Please select &quot;Create New Owner&quot;.
+                        All existing owners already manage a website. Please select &quot;Create New
+                        Owner&quot;.
                       </p>
                     )}
                   </div>

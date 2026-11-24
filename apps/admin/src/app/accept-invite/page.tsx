@@ -89,7 +89,8 @@ function AcceptInviteContent() {
               Welcome to FinalLinks
             </h1>
             <p className="text-sm text-[#9CA3AF]">
-              Your website registration has been approved. Please set your secure password to activate your owner account.
+              Your website registration has been approved. Please set your secure password to
+              activate your owner account.
             </p>
           </div>
 
@@ -100,7 +101,8 @@ function AcceptInviteContent() {
                 Missing Invitation Token
               </div>
               <p className="text-[#9CA3AF] text-xs">
-                The setup link appears to be incomplete. Please use the exact link sent to your email or provided by the platform administrators.
+                The setup link appears to be incomplete. Please use the exact link sent to your
+                email or provided by the platform administrators.
               </p>
             </div>
           ) : completed ? (
@@ -158,7 +160,11 @@ function AcceptInviteContent() {
                       hasMinLength ? 'text-emerald-400' : 'text-[#6B7280]'
                     }`}
                   >
-                    {hasMinLength ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                    {hasMinLength ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : (
+                      <X className="w-3.5 h-3.5" />
+                    )}
                     <span>12+ characters</span>
                   </div>
                   <div
@@ -198,7 +204,11 @@ function AcceptInviteContent() {
                       passwordsMatch ? 'text-emerald-400' : 'text-[#6B7280]'
                     }`}
                   >
-                    {passwordsMatch ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                    {passwordsMatch ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : (
+                      <X className="w-3.5 h-3.5" />
+                    )}
                     <span>Passwords match</span>
                   </div>
                 </div>

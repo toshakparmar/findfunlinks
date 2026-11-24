@@ -6,10 +6,9 @@ import { AnimatePresence } from 'framer-motion';
 import { SiteRowHeader } from './SiteRowHeader';
 
 // Dynamically import SiteRowPanel lazily when expanded
-const SiteRowPanel = dynamic(
-  () => import('./SiteRowPanel').then((mod) => mod.SiteRowPanel),
-  { ssr: false },
-);
+const SiteRowPanel = dynamic(() => import('./SiteRowPanel').then((mod) => mod.SiteRowPanel), {
+  ssr: false,
+});
 
 export interface SiteRowProps {
   rank: number;

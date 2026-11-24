@@ -89,11 +89,10 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">
-            Reports & Moderation
-          </h1>
+          <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">Reports & Moderation</h1>
           <p className="text-sm text-[#9CA3AF] mt-1">
-            Review user-submitted reports regarding broken links, malicious content, or policy violations.
+            Review user-submitted reports regarding broken links, malicious content, or policy
+            violations.
           </p>
         </div>
 

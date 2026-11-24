@@ -1,24 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE_URL =
+  process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const cookie = request.headers.get('cookie') || '';
   const forwardedFor = request.headers.get('x-forwarded-for') || '127.0.0.1';
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/websites/${encodeURIComponent(slug)}/engagement`, {
-      headers: {
-        'Content-Type': 'application/json',
-        cookie,
-        'x-forwarded-for': forwardedFor,
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/websites/${encodeURIComponent(slug)}/engagement`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          cookie,
+          'x-forwarded-for': forwardedFor,
+        },
+        cache: 'no-store',
       },
-      cache: 'no-store',
-    });
+    );
 
     if (res.ok) {
       const data = await res.json();

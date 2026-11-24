@@ -26,8 +26,12 @@ export const WebsiteDetailModal: React.FC = () => {
     async function loadDetails() {
       try {
         const [previewRes, engagementRes] = await Promise.all([
-          fetch(`/api/public/websites/${encodeURIComponent(activeSlug!)}/preview`).catch(() => null),
-          fetch(`/api/public/websites/${encodeURIComponent(activeSlug!)}/engagement`).catch(() => null),
+          fetch(`/api/public/websites/${encodeURIComponent(activeSlug!)}/preview`).catch(
+            () => null,
+          ),
+          fetch(`/api/public/websites/${encodeURIComponent(activeSlug!)}/engagement`).catch(
+            () => null,
+          ),
         ]);
 
         if (previewRes && previewRes.ok) {
@@ -37,7 +41,7 @@ export const WebsiteDetailModal: React.FC = () => {
             setData(pData);
           }
         }
-        
+
         // If data was not populated from API, resolve from verified catalog
         if (!data && activeSlug) {
           let fallbackSite: any = null;
@@ -55,18 +59,21 @@ export const WebsiteDetailModal: React.FC = () => {
           }
 
           if (fallbackSite && isMounted) {
-            const rawDomains = fallbackSite.domains && fallbackSite.domains.length > 0
-              ? fallbackSite.domains
-              : [
-                  {
-                    id: `${fallbackSite.id}-p`,
-                    domainName: fallbackSite.bestDomainUrl?.replace(/^https?:\/\//, '') || `${fallbackSite.slug}.com`,
-                    url: fallbackSite.bestDomainUrl || `https://${fallbackSite.slug}.com`,
-                    domainType: 'PRIMARY',
-                    status: 'ACTIVE',
-                    lastResponseMs: 52,
-                  },
-                ];
+            const rawDomains =
+              fallbackSite.domains && fallbackSite.domains.length > 0
+                ? fallbackSite.domains
+                : [
+                    {
+                      id: `${fallbackSite.id}-p`,
+                      domainName:
+                        fallbackSite.bestDomainUrl?.replace(/^https?:\/\//, '') ||
+                        `${fallbackSite.slug}.com`,
+                      url: fallbackSite.bestDomainUrl || `https://${fallbackSite.slug}.com`,
+                      domainType: 'PRIMARY',
+                      status: 'ACTIVE',
+                      lastResponseMs: 52,
+                    },
+                  ];
 
             const mirrors = rawDomains.map((d: any, idx: number) => ({
               id: d.id || `m-${idx + 1}`,
@@ -82,7 +89,9 @@ export const WebsiteDetailModal: React.FC = () => {
               name: fallbackSite.name,
               slug: fallbackSite.slug,
               faviconUrl: fallbackSite.faviconUrl,
-              shortDescription: fallbackSite.description || `Official verified directory listing for ${fallbackSite.name}.`,
+              shortDescription:
+                fallbackSite.description ||
+                `Official verified directory listing for ${fallbackSite.name}.`,
               highlights: [
                 `Fast verified ${fallbackSite.name} mirror endpoints`,
                 'Clean high-speed streaming infrastructure',
@@ -99,7 +108,9 @@ export const WebsiteDetailModal: React.FC = () => {
               starCount: 343,
               domainsCount: mirrors.length,
               onlineCount: mirrors.filter((m: any) => m.status === 'ACTIVE').length,
-              fastestMirror: mirrors[0] ? { url: mirrors[0].url, ms: mirrors[0].responseMs } : undefined,
+              fastestMirror: mirrors[0]
+                ? { url: mirrors[0].url, ms: mirrors[0].responseMs }
+                : undefined,
               mirrors,
               lastVerifiedAt: new Date().toISOString(),
               tags: [],
@@ -220,7 +231,9 @@ export const WebsiteDetailModal: React.FC = () => {
                   }}
                 />
               ) : null}
-              <div className={`w-full h-full items-center justify-center ${data?.faviconUrl ? 'hidden' : 'flex'}`}>
+              <div
+                className={`w-full h-full items-center justify-center ${data?.faviconUrl ? 'hidden' : 'flex'}`}
+              >
                 <Logo variant="mark" size={24} className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
             </div>
@@ -237,7 +250,8 @@ export const WebsiteDetailModal: React.FC = () => {
                 )}
               </div>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">
-                {data?.shortDescription || 'Verified directory listing and live working mirror endpoints.'}
+                {data?.shortDescription ||
+                  'Verified directory listing and live working mirror endpoints.'}
               </p>
             </div>
           </div>
@@ -286,7 +300,9 @@ export const WebsiteDetailModal: React.FC = () => {
                           key={i}
                           className="flex items-start gap-2 p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-slate-100/90 dark:bg-[var(--card-hover,#0E182F)] border border-slate-200 dark:border-[var(--line,#1A2442)] text-xs sm:text-sm text-slate-800 dark:text-slate-200"
                         >
-                          <span className="text-brand-blue-500 dark:text-brand-blue-400 font-bold text-sm leading-none mt-0.5">+</span>
+                          <span className="text-brand-blue-500 dark:text-brand-blue-400 font-bold text-sm leading-none mt-0.5">
+                            +
+                          </span>
                           <span className="leading-snug">{h}</span>
                         </div>
                       ))}
@@ -308,9 +324,7 @@ export const WebsiteDetailModal: React.FC = () => {
                     <h3 className="text-[11px] uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
                       Working Domains &amp; Mirrors ({data.mirrors?.length || 0})
                     </h3>
-                    <span className="text-[11px] text-slate-500 font-mono">
-                      auto-monitored
-                    </span>
+                    <span className="text-[11px] text-slate-500 font-mono">auto-monitored</span>
                   </div>
 
                   <div className="space-y-1.5">

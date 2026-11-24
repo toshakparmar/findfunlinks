@@ -32,7 +32,7 @@ No code, copywriting, or graphical assets are copied from the reference site.
 
 ### 2.3 Strengths & Limitations of Reference Site
 
-| Dimension              | Reference Site (EverythingMoe)                                         | Opportunity for FinalLinks                                                                                                                                                    |
+| Dimension              | Reference Site (EverythingMoe)                                         | Opportunity for FinalLinks                                                                                                                                                      |
 | ---------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Visual Design**      | Utilitarian, dated, somewhat plain developer-centric styling.          | **Original, modern, vibrant visual design** with brand colors (`#0B57D9`, `#F59E0B`, `#EA580C`), glass/soft shadows, light/dark themes, and smooth micro-interactions.          |
 | **Animation & Feel**   | Pure static web styling; minimal micro-interactions.                   | Fluid animations powered by Framer Motion and GSAP scroll triggers while strictly respecting `prefers-reduced-motion`.                                                          |

@@ -43,7 +43,7 @@ test.describe('Phase 2: Expandable Rows & Inline Dropdown Panel', () => {
 
     // 7. Test single-open behavior: click the second row's chevron in the same card
     const secondChevron = firstCard.locator('button[aria-label^="Show details"]').nth(1);
-    if (await secondChevron.count() > 0) {
+    if ((await secondChevron.count()) > 0) {
       await secondChevron.click();
       await page.waitForTimeout(400);
 

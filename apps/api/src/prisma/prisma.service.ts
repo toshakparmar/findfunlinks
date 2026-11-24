@@ -30,7 +30,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
                   code === 'P2024' || // Timed out fetching a new connection from the pool
                   msg.includes('Server has closed the connection') ||
                   msg.includes('Timed out fetching a new connection') ||
-                  msg.includes('Can\'t reach database server') ||
+                  msg.includes("Can't reach database server") ||
                   msg.includes('connection pool') ||
                   msg.includes('Connection closed');
 

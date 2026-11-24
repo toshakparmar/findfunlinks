@@ -43,10 +43,7 @@ export class VoterIdentityService {
       });
     }
 
-    const voterHash = crypto
-      .createHmac('sha256', this.secret)
-      .update(voterId)
-      .digest('hex');
+    const voterHash = crypto.createHmac('sha256', this.secret).update(voterId).digest('hex');
 
     const clientIp =
       (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
@@ -54,10 +51,7 @@ export class VoterIdentityService {
       req.socket.remoteAddress ||
       '127.0.0.1';
 
-    const ipHash = crypto
-      .createHmac('sha256', this.secret)
-      .update(clientIp)
-      .digest('hex');
+    const ipHash = crypto.createHmac('sha256', this.secret).update(clientIp).digest('hex');
 
     return { voterId, voterHash, ipHash };
   }

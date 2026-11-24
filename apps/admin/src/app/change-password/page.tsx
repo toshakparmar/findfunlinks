@@ -65,11 +65,10 @@ export default function ChangePasswordPage() {
     <div className="w-full space-y-6 select-none">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">
-          Update Your Password
-        </h1>
+        <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">Update Your Password</h1>
         <p className="text-sm text-[#9CA3AF] mt-1">
-          Set a secure permanent password to protect your account, website management, and mirror settings.
+          Set a secure permanent password to protect your account, website management, and mirror
+          settings.
         </p>
       </div>
 
@@ -145,7 +144,11 @@ export default function ChangePasswordPage() {
                       hasMinLength ? 'text-emerald-400' : 'text-[#6B7280]'
                     }`}
                   >
-                    {hasMinLength ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                    {hasMinLength ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : (
+                      <X className="w-3.5 h-3.5" />
+                    )}
                     <span>12+ characters</span>
                   </div>
                   <div
@@ -185,7 +188,11 @@ export default function ChangePasswordPage() {
                       passwordsMatch ? 'text-emerald-400' : 'text-[#6B7280]'
                     }`}
                   >
-                    {passwordsMatch ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                    {passwordsMatch ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : (
+                      <X className="w-3.5 h-3.5" />
+                    )}
                     <span>Passwords match</span>
                   </div>
                 </div>
@@ -194,7 +201,8 @@ export default function ChangePasswordPage() {
               <div className="p-4 rounded-xl bg-[#0B9DF7]/10 border border-[#0B9DF7]/20 text-xs text-[#9CA3AF] space-y-1">
                 <p className="font-semibold text-[#F3F4F6]">Security Tip</p>
                 <p className="leading-relaxed">
-                  Never reuse passwords across administrative platforms. We strongly advise using a password manager.
+                  Never reuse passwords across administrative platforms. We strongly advise using a
+                  password manager.
                 </p>
               </div>
             </div>

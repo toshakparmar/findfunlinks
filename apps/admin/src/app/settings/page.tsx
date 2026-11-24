@@ -117,7 +117,8 @@ export default function SettingsPage() {
         <div>
           <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">Account & Security</h1>
           <p className="text-sm text-[#9CA3AF] mt-1">
-            Manage your account credentials, login email, active device sessions, and security posture.
+            Manage your account credentials, login email, active device sessions, and security
+            posture.
           </p>
         </div>
 
@@ -173,7 +174,9 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between border-b border-[#33373D] pb-3">
             <div className="flex items-center gap-2.5">
               <KeyRound className="h-5 w-5 text-[#0B9DF7]" />
-              <h2 className="font-semibold text-base text-[#F3F4F6]">Credentials & Authentication</h2>
+              <h2 className="font-semibold text-base text-[#F3F4F6]">
+                Credentials & Authentication
+              </h2>
             </div>
             <Link
               href="/change-password"
@@ -257,7 +260,8 @@ export default function SettingsPage() {
         <div>
           <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">Platform Settings</h1>
           <p className="text-sm text-[#9CA3AF] mt-1">
-            Global directory parameters, health-check automation frequencies, and operational controls.
+            Global directory parameters, health-check automation frequencies, and operational
+            controls.
           </p>
         </div>
 
@@ -397,7 +401,9 @@ export default function SettingsPage() {
           <div className="rounded-xl border border-[#33373D] bg-[#1E2024] p-6 space-y-4">
             <div className="flex items-center gap-2.5 border-b border-[#33373D] pb-3">
               <Sliders className="h-5 w-5 text-amber-400" />
-              <h2 className="font-semibold text-base text-[#F3F4F6]">Policy & Registration Flags</h2>
+              <h2 className="font-semibold text-base text-[#F3F4F6]">
+                Policy & Registration Flags
+              </h2>
             </div>
 
             <div className="space-y-3">

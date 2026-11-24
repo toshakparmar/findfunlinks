@@ -104,9 +104,7 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
     navSections = [
       {
         title: 'Overview',
-        items: [
-          { href: '/', label: 'Executive Dashboard', icon: LayoutDashboard },
-        ],
+        items: [{ href: '/', label: 'Executive Dashboard', icon: LayoutDashboard }],
       },
       {
         title: 'Directory & Moderation',
@@ -221,9 +219,7 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
                   >
                     <div className="flex items-center gap-2.5">
                       <Icon
-                        className={`h-4 w-4 ${
-                          isActive ? 'text-[#0B9DF7]' : 'text-[#9CA3AF]'
-                        }`}
+                        className={`h-4 w-4 ${isActive ? 'text-[#0B9DF7]' : 'text-[#9CA3AF]'}`}
                       />
                       <span>{item.label}</span>
                     </div>

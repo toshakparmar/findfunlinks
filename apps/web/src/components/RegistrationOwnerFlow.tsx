@@ -246,7 +246,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary font-mono text-fs-sm font-bold flex items-center justify-center">
                   1
                 </div>
-                <p className="text-fs-sm sm:text-fs-base font-semibold text-token">Confirmation Email</p>
+                <p className="text-fs-sm sm:text-fs-base font-semibold text-token">
+                  Confirmation Email
+                </p>
                 <p className="text-fs-sm text-token/70 leading-relaxed">
                   We sent a confirmation to{' '}
                   <strong className="text-token">{submittedData.email}</strong> with your reference
@@ -258,7 +260,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary font-mono text-fs-sm font-bold flex items-center justify-center">
                   2
                 </div>
-                <p className="text-fs-sm sm:text-fs-base font-semibold text-token">2–3 Days Review</p>
+                <p className="text-fs-sm sm:text-fs-base font-semibold text-token">
+                  2–3 Days Review
+                </p>
                 <p className="text-fs-sm text-token/70 leading-relaxed">
                   Our curation team verifies your domain ownership, link safety, and content rating.
                 </p>
@@ -268,7 +272,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary font-mono text-fs-sm font-bold flex items-center justify-center">
                   3
                 </div>
-                <p className="text-fs-sm sm:text-fs-base font-semibold text-token">Owner Credentials</p>
+                <p className="text-fs-sm sm:text-fs-base font-semibold text-token">
+                  Owner Credentials
+                </p>
                 <p className="text-fs-sm text-token/70 leading-relaxed">
                   Upon approval, you receive a secure 24h link by email to set your password and
                   access your Owner Console.
@@ -390,7 +396,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                     1
                   </span>
                   <div>
-                    <p className="text-xs sm:text-sm md:text-fs-base font-semibold text-token">Submit this form</p>
+                    <p className="text-xs sm:text-sm md:text-fs-base font-semibold text-token">
+                      Submit this form
+                    </p>
                     <p className="text-[11px] sm:text-xs md:text-fs-sm text-token/70 mt-0.5 sm:mt-1 leading-relaxed">
                       Provide your official domain, mirrors, category, and ownership verification
                       method.
@@ -402,7 +410,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                     2
                   </span>
                   <div>
-                    <p className="text-xs sm:text-sm md:text-fs-base font-semibold text-token">Review &amp; verification</p>
+                    <p className="text-xs sm:text-sm md:text-fs-base font-semibold text-token">
+                      Review &amp; verification
+                    </p>
                     <p className="text-[11px] sm:text-xs md:text-fs-sm text-token/70 mt-0.5 sm:mt-1 leading-relaxed">
                       Our curators inspect your site and check ownership proof (usually within 2–3
                       business days).
@@ -414,7 +424,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                     3
                   </span>
                   <div>
-                    <p className="text-xs sm:text-sm md:text-fs-base font-semibold text-token">Receive credentials</p>
+                    <p className="text-xs sm:text-sm md:text-fs-base font-semibold text-token">
+                      Receive credentials
+                    </p>
                     <p className="text-[11px] sm:text-xs md:text-fs-sm text-token/70 mt-0.5 sm:mt-1 leading-relaxed">
                       You receive an email invite to set your password and access the Website Owner
                       Console.
@@ -475,25 +487,34 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
             </h2>
             <div className="space-y-2.5 sm:space-y-3.5 divide-y divide-token/10">
               <div className="pt-2 sm:pt-2.5 first:pt-0">
-                <p className="text-xs sm:text-fs-base font-semibold text-token">How long does the review take?</p>
+                <p className="text-xs sm:text-fs-base font-semibold text-token">
+                  How long does the review take?
+                </p>
                 <p className="text-[11px] sm:text-fs-sm text-token/70 mt-0.5 sm:mt-1 leading-relaxed">
                   Most submissions are reviewed within 2–3 business days. You will receive an
                   automated email as soon as a decision is made.
                 </p>
               </div>
               <div className="pt-2 sm:pt-3">
-                <p className="text-xs sm:text-fs-base font-semibold text-token">Can I add more mirrors later?</p>
+                <p className="text-xs sm:text-fs-base font-semibold text-token">
+                  Can I add more mirrors later?
+                </p>
                 <p className="text-[11px] sm:text-fs-sm text-token/70 mt-0.5 sm:mt-1 leading-relaxed">
                   Yes! Once approved, you can add, remove, and reorder unlimited domain links
                   directly inside your Owner Console.
                 </p>
               </div>
               <div className="pt-2 sm:pt-3">
-                <p className="text-xs sm:text-fs-base font-semibold text-token">How do I track my request?</p>
+                <p className="text-xs sm:text-fs-base font-semibold text-token">
+                  How do I track my request?
+                </p>
                 <p className="text-[11px] sm:text-fs-sm text-token/70 mt-0.5 sm:mt-1 leading-relaxed">
                   You can track your application status at any time using your Reference ID and
                   email address on our{' '}
-                  <Link href="/register/status" className="text-primary hover:underline font-medium">
+                  <Link
+                    href="/register/status"
+                    className="text-primary hover:underline font-medium"
+                  >
                     Status Check page
                   </Link>
                   .
@@ -503,7 +524,10 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
 
             <div className="pt-2.5 sm:pt-3.5 border-t border-token/10 text-xs sm:text-fs-sm text-token/60">
               Need assistance? Email{' '}
-              <a href="mailto:support@finallinks.com" className="text-primary hover:underline font-medium">
+              <a
+                href="mailto:support@finallinks.com"
+                className="text-primary hover:underline font-medium"
+              >
                 support@finallinks.com
               </a>
             </div>
@@ -528,7 +552,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
             {/* SECTION 1: Your Details */}
             <div className="space-y-4 sm:space-y-5">
               <div>
-                <h2 className="text-base sm:text-lg md:text-fs-xl font-bold font-display text-token">1. Your details</h2>
+                <h2 className="text-base sm:text-lg md:text-fs-xl font-bold font-display text-token">
+                  1. Your details
+                </h2>
                 <p className="text-xs sm:text-fs-sm text-token/70 mt-0.5 sm:mt-1">
                   Who is submitting this request and how can our curation team reach you?
                 </p>
@@ -547,7 +573,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                     className="w-full h-10 sm:h-11 md:h-12 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm md:text-fs-base bg-surface-2 border border-token/10 focus:border-primary focus:outline-none text-token placeholder:text-token/30 transition-colors"
                   />
                   {errors.applicantName && (
-                    <p className="text-fs-xs sm:text-fs-sm text-status-down">{errors.applicantName.message}</p>
+                    <p className="text-fs-xs sm:text-fs-sm text-status-down">
+                      {errors.applicantName.message}
+                    </p>
                   )}
                 </div>
 
@@ -563,7 +591,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                     className="w-full h-10 sm:h-11 md:h-12 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm md:text-fs-base bg-surface-2 border border-token/10 focus:border-primary focus:outline-none text-token placeholder:text-token/30 transition-colors"
                   />
                   {errors.applicantEmail ? (
-                    <p className="text-fs-xs sm:text-fs-sm text-status-down">{errors.applicantEmail.message}</p>
+                    <p className="text-fs-xs sm:text-fs-sm text-status-down">
+                      {errors.applicantEmail.message}
+                    </p>
                   ) : (
                     <p className="text-[10px] sm:text-fs-xs text-token/50">
                       We will email review decisions & your login link here.
@@ -583,7 +613,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                     className="w-full h-10 sm:h-11 md:h-12 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm md:text-fs-base bg-surface-2 border border-token/10 focus:border-primary focus:outline-none text-token placeholder:text-token/30 transition-colors"
                   />
                   {errors.applicantPhone && (
-                    <p className="text-fs-xs sm:text-fs-sm text-status-down">{errors.applicantPhone.message}</p>
+                    <p className="text-fs-xs sm:text-fs-sm text-status-down">
+                      {errors.applicantPhone.message}
+                    </p>
                   )}
                 </div>
 
@@ -614,7 +646,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
             {/* SECTION 2: Website Details */}
             <div className="space-y-4 sm:space-y-5">
               <div>
-                <h2 className="text-base sm:text-lg md:text-fs-xl font-bold font-display text-token">2. Website details</h2>
+                <h2 className="text-base sm:text-lg md:text-fs-xl font-bold font-display text-token">
+                  2. Website details
+                </h2>
                 <p className="text-xs sm:text-fs-sm text-token/70 mt-0.5 sm:mt-1">
                   Information about your site that will be indexed and presented to directory
                   visitors.
@@ -635,7 +669,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                       className="w-full h-10 sm:h-11 md:h-12 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm md:text-fs-base bg-surface-2 border border-token/10 focus:border-primary focus:outline-none text-token placeholder:text-token/30 transition-colors"
                     />
                     {errors.websiteName && (
-                      <p className="text-fs-xs sm:text-fs-sm text-status-down">{errors.websiteName.message}</p>
+                      <p className="text-fs-xs sm:text-fs-sm text-status-down">
+                        {errors.websiteName.message}
+                      </p>
                     )}
                   </div>
 
@@ -651,7 +687,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                       className="w-full h-10 sm:h-11 md:h-12 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm md:text-fs-base bg-surface-2 border border-token/10 focus:border-primary focus:outline-none text-token placeholder:text-token/30 transition-colors"
                     />
                     {errors.primaryUrl && (
-                      <p className="text-fs-xs sm:text-fs-sm text-status-down">{errors.primaryUrl.message}</p>
+                      <p className="text-fs-xs sm:text-fs-sm text-status-down">
+                        {errors.primaryUrl.message}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -717,7 +755,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                       }))}
                     />
                     {errors.categoryId && (
-                      <p className="text-fs-xs sm:text-fs-sm text-status-down">{errors.categoryId.message}</p>
+                      <p className="text-fs-xs sm:text-fs-sm text-status-down">
+                        {errors.categoryId.message}
+                      </p>
                     )}
                   </div>
 
@@ -770,7 +810,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm md:text-fs-base bg-surface-2 border border-token/10 focus:border-primary focus:outline-none text-token placeholder:text-token/30 transition-colors leading-relaxed"
                   />
                   {errors.description && (
-                    <p className="text-fs-xs sm:text-fs-sm text-status-down">{errors.description.message}</p>
+                    <p className="text-fs-xs sm:text-fs-sm text-status-down">
+                      {errors.description.message}
+                    </p>
                   )}
                 </div>
 
@@ -787,7 +829,9 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                     className="w-full h-10 sm:h-11 md:h-12 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm md:text-fs-base bg-surface-2 border border-token/10 focus:border-primary focus:outline-none text-token placeholder:text-token/30 transition-colors"
                   />
                   {errors.logoUrl && (
-                    <p className="text-fs-xs sm:text-fs-sm text-status-down">{errors.logoUrl.message}</p>
+                    <p className="text-fs-xs sm:text-fs-sm text-status-down">
+                      {errors.logoUrl.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -848,9 +892,7 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                       </span>
                       <button
                         type="button"
-                        onClick={() =>
-                          handleCopy(`finallinks-verify=${tempVerifyToken}`, 'token')
-                        }
+                        onClick={() => handleCopy(`finallinks-verify=${tempVerifyToken}`, 'token')}
                         className="p-1 sm:p-1.5 hover:text-token transition-colors"
                         title="Copy DNS record"
                       >
@@ -978,7 +1020,11 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   <span className="text-xs sm:text-fs-sm text-token/80 leading-relaxed">
                     I confirm that I own or hold explicit operational authority to register this
                     website on FinalLinks, and I agree to the{' '}
-                    <Link href="/terms" target="_blank" className="text-primary hover:underline font-medium">
+                    <Link
+                      href="/terms"
+                      target="_blank"
+                      className="text-primary hover:underline font-medium"
+                    >
                       Terms of Service
                     </Link>{' '}
                     and directory listing policies.
@@ -1012,7 +1058,8 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                 )}
               </button>
               <p className="text-center text-[11px] sm:text-fs-sm text-token/50 mt-2 sm:mt-3">
-                Reviewed by human curators within 2–3 business days &bull; 100% Free directory listing
+                Reviewed by human curators within 2–3 business days &bull; 100% Free directory
+                listing
               </p>
             </div>
           </form>

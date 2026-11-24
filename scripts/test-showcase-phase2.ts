@@ -51,7 +51,9 @@ async function run() {
     process.exit(1);
   }
 
-  console.log('\n--- Running Phase 2 Showcase Verification (Expandable Rows & Dropdown Panels) ---');
+  console.log(
+    '\n--- Running Phase 2 Showcase Verification (Expandable Rows & Dropdown Panels) ---',
+  );
   let allPass = true;
 
   const browser = await chromium.launch({ headless: true });
@@ -76,14 +78,18 @@ async function run() {
     const isChevronVisible = await firstChevron.isVisible();
     console.log(`- Row chevron toggle visible: ${isChevronVisible ? 'PASS ✓' : 'FAIL ✗'}`);
     const initialAria = await firstChevron.getAttribute('aria-expanded');
-    console.log(`- Initial aria-expanded="false": ${initialAria === 'false' ? 'PASS ✓' : 'FAIL ✗'}`);
+    console.log(
+      `- Initial aria-expanded="false": ${initialAria === 'false' ? 'PASS ✓' : 'FAIL ✗'}`,
+    );
 
     // Click to expand row 1
     await firstChevron.click();
     await sleep(600);
 
     const expandedAria = await firstChevron.getAttribute('aria-expanded');
-    console.log(`- Click expands row (aria-expanded="true"): ${expandedAria === 'true' ? 'PASS ✓' : 'FAIL ✗'}`);
+    console.log(
+      `- Click expands row (aria-expanded="true"): ${expandedAria === 'true' ? 'PASS ✓' : 'FAIL ✗'}`,
+    );
     if (expandedAria !== 'true') allPass = false;
 
     // Verify inline panel is mounted and wait for preview data
@@ -115,7 +121,9 @@ async function run() {
       const secondAria = await secondChevron.getAttribute('aria-expanded');
       const firstAriaAfter = await firstChevron.getAttribute('aria-expanded');
       const isSingleOpenOk = secondAria === 'true' && firstAriaAfter === 'false';
-      console.log(`- Row 2 expanded, Row 1 automatically collapsed: ${isSingleOpenOk ? 'PASS ✓' : 'FAIL ✗'}`);
+      console.log(
+        `- Row 2 expanded, Row 1 automatically collapsed: ${isSingleOpenOk ? 'PASS ✓' : 'FAIL ✗'}`,
+      );
       if (!isSingleOpenOk) allPass = false;
     }
 
@@ -123,7 +131,10 @@ async function run() {
     const desktopDarkPath = path.join(outDir, 'showcase-expanded-desktop-dark.png');
     await pageDark.screenshot({ path: desktopDarkPath, fullPage: false });
     if (fs.existsSync(artifactDir)) {
-      fs.copyFileSync(desktopDarkPath, path.join(artifactDir, 'showcase-expanded-desktop-dark.png'));
+      fs.copyFileSync(
+        desktopDarkPath,
+        path.join(artifactDir, 'showcase-expanded-desktop-dark.png'),
+      );
     }
     console.log('✓ Captured desktop dark screenshot');
 
@@ -155,7 +166,10 @@ async function run() {
     const desktopLightPath = path.join(outDir, 'showcase-expanded-desktop-light.png');
     await pageLight.screenshot({ path: desktopLightPath, fullPage: false });
     if (fs.existsSync(artifactDir)) {
-      fs.copyFileSync(desktopLightPath, path.join(artifactDir, 'showcase-expanded-desktop-light.png'));
+      fs.copyFileSync(
+        desktopLightPath,
+        path.join(artifactDir, 'showcase-expanded-desktop-light.png'),
+      );
     }
     console.log('✓ Captured desktop light screenshot');
     await contextLight.close();
@@ -184,7 +198,9 @@ async function run() {
     await contextMobile.close();
 
     console.log(`\n========================================`);
-    console.log(`PHASE 2 SHOWCASE UPGRADE: ${allPass ? 'ALL TESTS PASSED ✓' : 'SOME TESTS FAILED ✗'}`);
+    console.log(
+      `PHASE 2 SHOWCASE UPGRADE: ${allPass ? 'ALL TESTS PASSED ✓' : 'SOME TESTS FAILED ✗'}`,
+    );
     console.log(`========================================\n`);
   } catch (err) {
     console.error('Test execution error:', err);

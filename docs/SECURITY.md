@@ -8,7 +8,7 @@ FinalLinks operates under the principle of **Defense-in-Depth** and aligns with 
 
 ## 2. STRIDE Threat Model & Mitigations
 
-| Threat Category            | Potential Attack Vector                                                         | Countermeasure in FinalLinks                                                                                                                                                                           |
+| Threat Category            | Potential Attack Vector                                                         | Countermeasure in FinalLinks                                                                                                                                                                             |
 | -------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Spoofing**               | Credential brute-forcing, credential stuffing, token replay                     | **Argon2id** password hashing with salt, progressive account lockout (exponential delay), dual-token JWT architecture with rotating refresh token families, and instant revocation upon reuse detection. |
 | **Tampering**              | Insecure Direct Object References (IDOR), parameter tampering, mirror hijacking | Strict NestJS `OwnerScopeGuard` verifying owner relationship against database records before modifying websites or domains; contracts-first Zod validation schemas (`forbidNonWhitelisted: true`).       |

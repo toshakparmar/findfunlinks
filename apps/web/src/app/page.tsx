@@ -26,7 +26,9 @@ const CATALOG_FALLBACK_WEBSITES: WebsiteCardData[] = CLIENT_18_CATEGORIES.flatMa
     slug: s.slug,
     tagline: s.tagline || `Official verified directory listing for ${s.name}.`,
     description: s.description || s.tagline || `Official verified directory listing for ${s.name}.`,
-    logoUrl: s.faviconUrl || `https://www.google.com/s2/favicons?domain=${s.bestDomainUrl || `${s.slug}.com`}&sz=64`,
+    logoUrl:
+      s.faviconUrl ||
+      `https://www.google.com/s2/favicons?domain=${s.bestDomainUrl || `${s.slug}.com`}&sz=64`,
     categoryId: c.id || c.slug,
     categoryName: c.name,
     categorySlug: c.slug,

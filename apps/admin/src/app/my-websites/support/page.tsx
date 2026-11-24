@@ -4,15 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { StatusBadge } from '@/components/StatusBadge';
 import { formatTimeAgo } from '@/lib/utils';
-import {
-  LifeBuoy,
-  Plus,
-  RefreshCw,
-  Loader2,
-  X,
-  MessageSquare,
-  HelpCircle,
-} from 'lucide-react';
+import { LifeBuoy, Plus, RefreshCw, Loader2, X, MessageSquare, HelpCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface SupportTicket {
@@ -87,7 +79,8 @@ export default function OwnerSupportPage() {
             Support & Operator Inquiries
           </h1>
           <p className="text-sm text-[#9CA3AF] mt-1">
-            Submit questions, domain unblock requests, or report issues directly to directory operators.
+            Submit questions, domain unblock requests, or report issues directly to directory
+            operators.
           </p>
         </div>
 
@@ -122,7 +115,8 @@ export default function OwnerSupportPage() {
           <div className="space-y-1">
             <h2 className="text-lg font-bold text-[#F3F4F6]">No Open Support Tickets</h2>
             <p className="text-sm text-[#9CA3AF]">
-              Need help updating your listing, unblocking a mirror, or requesting category reassignment? Open a support ticket.
+              Need help updating your listing, unblocking a mirror, or requesting category
+              reassignment? Open a support ticket.
             </p>
           </div>
           <button
@@ -219,14 +213,16 @@ export default function OwnerSupportPage() {
                         <span className="font-semibold">{selectedTicket.handledBy.name}</span>
                       </div>
                       <p className="text-sm text-[#F3F4F6] leading-relaxed">
-                        This inquiry has been reviewed and responded to by our administrative operators. An official reply has also been delivered to your email inbox.
+                        This inquiry has been reviewed and responded to by our administrative
+                        operators. An official reply has also been delivered to your email inbox.
                       </p>
                     </div>
                   ) : (
                     <div className="p-4 rounded-lg bg-[#16181B] border border-[#33373D] flex items-center gap-3 text-sm text-[#9CA3AF]">
                       <HelpCircle className="w-5 h-5 text-[#F59E0B] flex-shrink-0" />
                       <span>
-                        Ticket is pending review. Operators typically reply within 24-48 business hours.
+                        Ticket is pending review. Operators typically reply within 24-48 business
+                        hours.
                       </span>
                     </div>
                   )}
@@ -271,9 +267,15 @@ export default function OwnerSupportPage() {
                 >
                   <option value="Broken Link / Mirror Down">Broken Link / Mirror Down</option>
                   <option value="Domain Unblock Request">Domain Unblock Request</option>
-                  <option value="Category Reassignment Request">Category Reassignment Request</option>
-                  <option value="Ownership / Credentials Inquiry">Ownership / Credentials Inquiry</option>
-                  <option value="General Question / Technical Support">General Question / Technical Support</option>
+                  <option value="Category Reassignment Request">
+                    Category Reassignment Request
+                  </option>
+                  <option value="Ownership / Credentials Inquiry">
+                    Ownership / Credentials Inquiry
+                  </option>
+                  <option value="General Question / Technical Support">
+                    General Question / Technical Support
+                  </option>
                 </select>
               </div>
 

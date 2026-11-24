@@ -70,16 +70,23 @@ async function run() {
     console.log(`- OTT Platforms card visible: ${isOttVisible ? 'PASS ✓' : 'FAIL ✗'}`);
 
     // Verify Count Pill = Total (15 Sites, not 10)
-    const countPillText = await ottCard.locator('.cat-card div:has-text("Sites")').first().innerText();
+    const countPillText = await ottCard
+      .locator('.cat-card div:has-text("Sites")')
+      .first()
+      .innerText();
     const countMatchesTotal = countPillText.includes('15 Sites');
-    console.log(`- Card header count pill shows total ("15 Sites"): ${countMatchesTotal ? `PASS ✓ (${countPillText.trim()})` : `FAIL ✗ (${countPillText.trim()})`}`);
+    console.log(
+      `- Card header count pill shows total ("15 Sites"): ${countMatchesTotal ? `PASS ✓ (${countPillText.trim()})` : `FAIL ✗ (${countPillText.trim()})`}`,
+    );
 
     // Verify Exactly 10 rows rendered on Home card
     // Site rows have role="button"
     const rowButtons = ottCard.locator('div[role="button"]');
     const rowCount = await rowButtons.count();
     const has10Rows = rowCount === 10;
-    console.log(`- Exactly 10 site rows rendered on Home card: ${has10Rows ? `PASS ✓ (count=${rowCount})` : `FAIL ✗ (count=${rowCount})`}`);
+    console.log(
+      `- Exactly 10 site rows rendered on Home card: ${has10Rows ? `PASS ✓ (count=${rowCount})` : `FAIL ✗ (count=${rowCount})`}`,
+    );
 
     // Verify "View All" button
     const viewAllBtn = ottCard.locator('a', { hasText: 'View All' });
@@ -87,28 +94,45 @@ async function run() {
     const viewAllText = (await viewAllBtn.innerText()).trim();
     const isCleanViewAll = viewAllText === 'View All';
     console.log(`- "View All" button visible: ${isViewAllVisible ? 'PASS ✓' : 'FAIL ✗'}`);
-    console.log(`- Button text is clean "View All" (no duplicate arrow): ${isCleanViewAll ? `PASS ✓ ("${viewAllText}")` : `FAIL ✗ ("${viewAllText}")`}`);
+    console.log(
+      `- Button text is clean "View All" (no duplicate arrow): ${isCleanViewAll ? `PASS ✓ ("${viewAllText}")` : `FAIL ✗ ("${viewAllText}")`}`,
+    );
 
     // Click "View All" and verify navigation + active sidebar
     await viewAllBtn.click();
     await page.waitForURL('**/category/ott-platforms');
     const currentUrl = page.url();
     const isNavigated = currentUrl.includes('/category/ott-platforms');
-    console.log(`- "View All" navigates to /category/ott-platforms: ${isNavigated ? 'PASS ✓' : 'FAIL ✗'}`);
+    console.log(
+      `- "View All" navigates to /category/ott-platforms: ${isNavigated ? 'PASS ✓' : 'FAIL ✗'}`,
+    );
 
     // Check sidebar active state
     const ottSidebarItem = page.locator('aside a', { hasText: 'OTT Platforms' });
     const isOttActive = (await ottSidebarItem.getAttribute('aria-current')) === 'page';
-    console.log(`- Sidebar "OTT Platforms" has aria-current="page": ${isOttActive ? 'PASS ✓' : 'FAIL ✗'}`);
+    console.log(
+      `- Sidebar "OTT Platforms" has aria-current="page": ${isOttActive ? 'PASS ✓' : 'FAIL ✗'}`,
+    );
 
     // Wait for sites to finish rendering on the category page
     await page.locator('text=Netflix').first().waitFor({ state: 'visible', timeout: 20000 });
     const categoryRows = page.locator('div[role="button"]');
     const catRowCount = await categoryRows.count();
     const hasAllSites = catRowCount >= 15;
-    console.log(`- Full category page displays all sites (>=15): ${hasAllSites ? `PASS ✓ (count=${catRowCount})` : `FAIL ✗ (count=${catRowCount})`}`);
+    console.log(
+      `- Full category page displays all sites (>=15): ${hasAllSites ? `PASS ✓ (count=${catRowCount})` : `FAIL ✗ (count=${catRowCount})`}`,
+    );
 
-    if (!isOttVisible || !countMatchesTotal || !has10Rows || !isViewAllVisible || !isCleanViewAll || !isNavigated || !isOttActive || !hasAllSites) {
+    if (
+      !isOttVisible ||
+      !countMatchesTotal ||
+      !has10Rows ||
+      !isViewAllVisible ||
+      !isCleanViewAll ||
+      !isNavigated ||
+      !isOttActive ||
+      !hasAllSites
+    ) {
       allPass = false;
     }
 
@@ -131,7 +155,9 @@ async function run() {
     // Check that there is NO grid-cols-2 inside the card
     const hasTwoColsGrid = await mobileOttCard.locator('.grid-cols-2').count();
     const isSingleCol = hasTwoColsGrid === 0;
-    console.log(`- Mobile card uses single-column vertical list (no 2-col split): ${isSingleCol ? 'PASS ✓' : 'FAIL ✗'}`);
+    console.log(
+      `- Mobile card uses single-column vertical list (no 2-col split): ${isSingleCol ? 'PASS ✓' : 'FAIL ✗'}`,
+    );
 
     if (!mobileHas10Rows || !isSingleCol) {
       allPass = false;

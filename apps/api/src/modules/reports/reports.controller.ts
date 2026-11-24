@@ -35,7 +35,9 @@ export class ReportsController {
   @Get('my-reports')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'List support tickets/reports submitted by the current authenticated user' })
+  @ApiOperation({
+    summary: 'List support tickets/reports submitted by the current authenticated user',
+  })
   async getMyReports(@CurrentUser() user: { id: string; email: string }) {
     return this.reportsService.getMyReports(user);
   }

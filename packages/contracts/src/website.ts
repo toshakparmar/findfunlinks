@@ -84,7 +84,9 @@ export type WebsiteFilterParams = z.infer<typeof WebsiteFilterParamsSchema>;
 export const PublicWebsitesQuerySchema = PaginationQuerySchema.extend({
   category: z.string().trim().optional(),
   tag: z.string().trim().optional(),
-  sort: z.enum(['popular', 'newest', 'recently_verified', 'alpha', 'most_starred']).default('popular'),
+  sort: z
+    .enum(['popular', 'newest', 'recently_verified', 'alpha', 'most_starred'])
+    .default('popular'),
   rating: z.nativeEnum(ContentRating).optional(),
 });
 export type PublicWebsitesQuery = z.infer<typeof PublicWebsitesQuerySchema>;
@@ -126,7 +128,9 @@ export const WebsitePreviewSchema = z.object({
     .optional(),
   mirrors: z.array(MirrorPreviewItemSchema).default([]),
   lastVerifiedAt: z.string().nullable().optional(),
-  tags: z.array(z.object({ id: z.string().uuid(), name: z.string(), slug: z.string() })).default([]),
+  tags: z
+    .array(z.object({ id: z.string().uuid(), name: z.string(), slug: z.string() }))
+    .default([]),
   isNew: z.boolean().default(false),
 });
 export type WebsitePreview = z.infer<typeof WebsitePreviewSchema>;
@@ -160,4 +164,3 @@ export const EngagementSchema = z.object({
   starred: z.boolean(),
 });
 export type Engagement = z.infer<typeof EngagementSchema>;
-

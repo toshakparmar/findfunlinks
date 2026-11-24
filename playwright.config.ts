@@ -23,7 +23,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'node apps/web/node_modules/next/dist/bin/next start apps/web --hostname 127.0.0.1 --port 3005',
+    command:
+      'node apps/web/node_modules/next/dist/bin/next start apps/web --hostname 127.0.0.1 --port 3005',
     url: 'http://127.0.0.1:3005',
     reuseExistingServer: true,
     timeout: 30000,

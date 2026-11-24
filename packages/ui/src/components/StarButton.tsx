@@ -79,7 +79,11 @@ export const StarButton: React.FC<StarButtonProps> = ({
       onClick={handleClick}
       disabled={disabled || loading}
       aria-pressed={starred}
-      aria-label={starred ? `Remove star. Currently ${count} stars` : `Star this site. Currently ${count} stars`}
+      aria-label={
+        starred
+          ? `Remove star. Currently ${count} stars`
+          : `Star this site. Currently ${count} stars`
+      }
       title={starred ? 'Remove your star' : 'Star this website'}
       className={cn(
         'inline-flex items-center gap-1.5 rounded-lg font-medium transition-all duration-150 select-none cursor-pointer',

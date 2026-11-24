@@ -255,8 +255,8 @@ function StatusContent() {
                 <p className="text-fs-sm text-token/70 leading-relaxed">
                   Our review team is currently verifying website performance, directory
                   categorization, and ownership. Normal turn-around time is{' '}
-                  <strong className="text-token">2–3 business days</strong>. You will receive an email as soon as an
-                  editorial decision is reached.
+                  <strong className="text-token">2–3 business days</strong>. You will receive an
+                  email as soon as an editorial decision is reached.
                 </p>
               </div>
 
@@ -401,7 +401,9 @@ function StatusContent() {
                 <XCircle className="w-5 h-5" />
                 Application not accepted
               </p>
-              <p className="text-fs-sm text-token/70 leading-relaxed">Reason given by review team:</p>
+              <p className="text-fs-sm text-token/70 leading-relaxed">
+                Reason given by review team:
+              </p>
               <div className="bg-surface-1/70 border border-status-down/20 rounded-xl p-4 text-fs-sm text-token font-medium">
                 {requestData.reviewNote ||
                   'The submitted domain did not meet directory listing standards.'}

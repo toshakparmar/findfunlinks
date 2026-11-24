@@ -26,9 +26,9 @@ export default function DmcaPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">1. Overview & Disclaimer</h2>
           <p>
-            FinalLinks (<strong>finallinks.com</strong>) respects the intellectual property
-            rights of creators and copyright holders. FinalLinks is a search directory and index
-            of publicly available third-party websites. FinalLinks does <strong>not</strong> host,
+            FinalLinks (<strong>finallinks.com</strong>) respects the intellectual property rights
+            of creators and copyright holders. FinalLinks is a search directory and index of
+            publicly available third-party websites. FinalLinks does <strong>not</strong> host,
             store, stream, or distribute any copyrighted files, multimedia, or proprietary software
             on its own servers.
           </p>
@@ -36,9 +36,9 @@ export default function DmcaPage() {
             The directory merely indexes hyperlinks to external web destinations. Because we do not
             control the content hosted by third-party web operators, we strongly recommend directing
             takedown notices to the actual hosting provider or registrar of the destination website.
-            However, if a directory listing on FinalLinks links to copyright-infringing content,
-            we will expeditiously remove or disable access to that directory listing upon receipt of
-            a compliant notice.
+            However, if a directory listing on FinalLinks links to copyright-infringing content, we
+            will expeditiously remove or disable access to that directory listing upon receipt of a
+            compliant notice.
           </p>
         </section>
 

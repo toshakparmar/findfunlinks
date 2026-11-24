@@ -28,13 +28,15 @@ export const MirrorChip: React.FC<MirrorChipProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
-  const displayLabel = label || (() => {
-    try {
-      return new URL(url).hostname;
-    } catch {
-      return url;
-    }
-  })();
+  const displayLabel =
+    label ||
+    (() => {
+      try {
+        return new URL(url).hostname;
+      } catch {
+        return url;
+      }
+    })();
 
   const isActive = status === 'ACTIVE';
 
@@ -102,8 +104,8 @@ export const MirrorChip: React.FC<MirrorChipProps> = ({
               responseMs < 150
                 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
                 : responseMs < 400
-                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
-                : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
+                  ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                  : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
             )}
           >
             {responseMs}ms
@@ -118,7 +120,11 @@ export const MirrorChip: React.FC<MirrorChipProps> = ({
           className="p-1 rounded text-[var(--text-3,#6B7893)] hover:text-white hover:bg-slate-800 transition-colors opacity-70 group-hover/chip:opacity-100"
           title="Copy URL"
         >
-          {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? (
+            <Check className="w-3.5 h-3.5 text-emerald-400" />
+          ) : (
+            <Copy className="w-3.5 h-3.5" />
+          )}
         </button>
 
         {/* External Link icon */}

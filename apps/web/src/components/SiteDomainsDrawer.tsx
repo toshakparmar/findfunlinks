@@ -1,7 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, ExternalLink, Copy, Check, AlertTriangle, Clock, ShieldCheck, Star } from 'lucide-react';
+import {
+  X,
+  ExternalLink,
+  Copy,
+  Check,
+  AlertTriangle,
+  Clock,
+  ShieldCheck,
+  Star,
+} from 'lucide-react';
 import { api } from '../lib/api';
 
 export interface DomainItemData {
@@ -143,7 +152,9 @@ export const SiteDomainsDrawer: React.FC<SiteDomainsDrawerProps> = ({
               }`}
               title={hasStarred ? 'You loved this website' : 'Give a star to this website'}
             >
-              <Star className={`w-3.5 h-3.5 ${hasStarred ? 'fill-amber-400 text-amber-400' : 'text-amber-400'}`} />
+              <Star
+                className={`w-3.5 h-3.5 ${hasStarred ? 'fill-amber-400 text-amber-400' : 'text-amber-400'}`}
+              />
               <span>{starCount}</span>
             </button>
 

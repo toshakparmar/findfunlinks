@@ -36,7 +36,10 @@ export const CircularLoader: React.FC<CircularLoaderProps> = ({
       role="status"
       aria-label={label || 'Loading...'}
     >
-      <div className="relative flex items-center justify-center" style={{ width: dim, height: dim }}>
+      <div
+        className="relative flex items-center justify-center"
+        style={{ width: dim, height: dim }}
+      >
         {/* Background ambient glow bloom */}
         <div
           className="absolute inset-0 rounded-full blur-md opacity-40 transition-opacity animate-pulse pointer-events-none"
@@ -51,7 +54,10 @@ export const CircularLoader: React.FC<CircularLoaderProps> = ({
           height={dim}
           viewBox={`0 0 ${dim} ${dim}`}
           className="animate-spin relative z-10"
-          style={{ animationDuration: '0.9s', animationTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)' }}
+          style={{
+            animationDuration: '0.9s',
+            animationTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
         >
           <defs>
             <linearGradient id={`fl-spinner-grad-${dim}`} x1="0%" y1="0%" x2="100%" y2="100%">
@@ -89,7 +95,9 @@ export const CircularLoader: React.FC<CircularLoaderProps> = ({
 
       {/* Optional text label underneath */}
       {label && (
-        <div className={`font-semibold text-slate-800 dark:text-slate-300 tracking-wide flex items-center gap-1 ${text}`}>
+        <div
+          className={`font-semibold text-slate-800 dark:text-slate-300 tracking-wide flex items-center gap-1 ${text}`}
+        >
           <span>{label}</span>
           <span className="inline-flex animate-pulse">...</span>
         </div>

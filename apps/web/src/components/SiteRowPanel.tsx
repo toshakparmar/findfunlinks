@@ -195,20 +195,18 @@ export const SiteRowPanel: React.FC<SiteRowPanelProps> = ({
                   <div className="flex items-center gap-2">
                     <span
                       className={`w-2 h-2 rounded-full ${
-                        data.onlineCount > 0 ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-rose-500'
+                        data.onlineCount > 0
+                          ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'
+                          : 'bg-rose-500'
                       }`}
                     />
                     <span className="font-semibold text-slate-800 dark:text-slate-200">
                       {data.domainsCount} {data.domainsCount === 1 ? 'domain' : 'domains'}
                     </span>
                     <span>&middot;</span>
-                    <span className="text-emerald-400 font-medium">
-                      {data.onlineCount} online
-                    </span>
+                    <span className="text-emerald-400 font-medium">{data.onlineCount} online</span>
                   </div>
-                  <span className="tabular-nums">
-                    {formatTimeAgo(data.lastVerifiedAt)}
-                  </span>
+                  <span className="tabular-nums">{formatTimeAgo(data.lastVerifiedAt)}</span>
                 </div>
 
                 {/* Stack of Top Mirror Buttons */}

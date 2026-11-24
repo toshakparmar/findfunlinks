@@ -182,7 +182,9 @@ function RegistrationsContent() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <CheckCircle2 className="h-5 w-5 text-emerald-400" />
-              <span className="font-semibold text-base text-[#F3F4F6]">Website Owner Provisioned</span>
+              <span className="font-semibold text-base text-[#F3F4F6]">
+                Website Owner Provisioned
+              </span>
             </div>
             <button
               type="button"
@@ -193,8 +195,8 @@ function RegistrationsContent() {
             </button>
           </div>
           <p className="text-sm text-[#9CA3AF] leading-relaxed">
-            The website and owner account have been created. Notification has been dispatched to the applicant.
-            Credentials and access details are provided below:
+            The website and owner account have been created. Notification has been dispatched to the
+            applicant. Credentials and access details are provided below:
           </p>
 
           {/* Temporary Password Card */}
@@ -204,7 +206,9 @@ function RegistrationsContent() {
                 <span className="text-xs font-semibold uppercase tracking-wider text-[#9CA3AF]">
                   Temporary Password (72h Expiration)
                 </span>
-                <span className="text-xs text-amber-400 font-medium">Change required on first login</span>
+                <span className="text-xs text-amber-400 font-medium">
+                  Change required on first login
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <input
@@ -336,9 +340,7 @@ function RegistrationsContent() {
                       </div>
                       <div className="text-xs text-[#9CA3AF] mt-0.5">{reg.applicantEmail}</div>
                       {reg.applicantCountry && (
-                        <span className="text-xs text-[#6B7280]">
-                          {reg.applicantCountry}
-                        </span>
+                        <span className="text-xs text-[#6B7280]">{reg.applicantCountry}</span>
                       )}
                     </td>
 
@@ -346,7 +348,9 @@ function RegistrationsContent() {
                       <StatusBadge status={reg.status} />
                     </td>
 
-                    <td className="py-3.5 px-4 text-[#9CA3AF] font-mono text-xs">{formatTimeAgo(reg.submittedAt)}</td>
+                    <td className="py-3.5 px-4 text-[#9CA3AF] font-mono text-xs">
+                      {formatTimeAgo(reg.submittedAt)}
+                    </td>
 
                     <td className="py-3.5 px-4 text-right">
                       <button
@@ -429,7 +433,9 @@ function RegistrationsContent() {
                   </div>
                   <div>
                     <span className="text-[#9CA3AF]">Content Rating:</span>
-                    <div className="font-semibold text-[#F3F4F6] mt-0.5">{selectedItem.contentRating}</div>
+                    <div className="font-semibold text-[#F3F4F6] mt-0.5">
+                      {selectedItem.contentRating}
+                    </div>
                   </div>
                 </div>
 
@@ -467,11 +473,15 @@ function RegistrationsContent() {
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
                     <span className="text-[#9CA3AF]">Full Name:</span>
-                    <div className="font-medium text-[#F3F4F6] mt-0.5">{selectedItem.applicantName}</div>
+                    <div className="font-medium text-[#F3F4F6] mt-0.5">
+                      {selectedItem.applicantName}
+                    </div>
                   </div>
                   <div>
                     <span className="text-[#9CA3AF]">Email:</span>
-                    <div className="font-mono text-[#F3F4F6] mt-0.5">{selectedItem.applicantEmail}</div>
+                    <div className="font-mono text-[#F3F4F6] mt-0.5">
+                      {selectedItem.applicantEmail}
+                    </div>
                   </div>
                   <div>
                     <span className="text-[#9CA3AF]">Country:</span>
@@ -488,7 +498,9 @@ function RegistrationsContent() {
                   {selectedItem.applicantPhone && (
                     <div>
                       <span className="text-[#9CA3AF]">Phone:</span>
-                      <div className="font-mono text-[#F3F4F6] mt-0.5">{selectedItem.applicantPhone}</div>
+                      <div className="font-mono text-[#F3F4F6] mt-0.5">
+                        {selectedItem.applicantPhone}
+                      </div>
                     </div>
                   )}
                   {selectedItem.telegramOrDiscord && (
@@ -576,7 +588,8 @@ function RegistrationsContent() {
                     Approving will automatically create the Website Owner account in{' '}
                     <strong className="text-[#F3F4F6]">ACTIVE</strong> status, create the{' '}
                     <strong className="text-[#F3F4F6]">ACTIVE</strong> website profile, register the
-                    primary domain, generate a 72-hour temporary password, and email the credentials.
+                    primary domain, generate a 72-hour temporary password, and email the
+                    credentials.
                   </p>
                 )}
 

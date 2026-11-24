@@ -1,14 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import {
-  ShieldCheck,
-  Compass,
-  Radio,
-  ArrowRight,
-  HelpCircle,
-  Zap,
-} from 'lucide-react';
+import { ShieldCheck, Compass, Radio, ArrowRight, HelpCircle, Zap } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'About FinalLinks — Mission, How It Works & FAQ',
@@ -28,8 +21,8 @@ export default function AboutPage() {
           About FinalLinks
         </h1>
         <p className="text-fs-sm text-[var(--text-2,#A8B3C7)] max-w-2xl leading-relaxed">
-          FinalLinks was built to index the most entertaining, novel websites on the internet and ensure
-          broken links or ISP blocking never stop you from accessing them.
+          FinalLinks was built to index the most entertaining, novel websites on the internet and
+          ensure broken links or ISP blocking never stop you from accessing them.
         </p>
       </div>
 

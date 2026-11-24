@@ -18,11 +18,19 @@ export function DirectoryView(props?: DirectoryViewProps) {
 
   // Dynamic categories from DB via props, fallback to client catalog
   const visibleCategories = React.useMemo(() => {
-    if (props?.categories && props.categories.length > 0 && props?.websites && props.websites.length > 0) {
+    if (
+      props?.categories &&
+      props.categories.length > 0 &&
+      props?.websites &&
+      props.websites.length > 0
+    ) {
       const mapped = props.categories.map((cat, catIdx) => {
         if (!cat) return CLIENT_18_CATEGORIES[catIdx % CLIENT_18_CATEGORIES.length]!;
         const catWebsites = props.websites!.filter(
-          (w) => w && (w.categoryId === cat.id || w.categorySlug === cat.slug) && (w.primaryDomainUrl || (w.domains && w.domains.length > 0))
+          (w) =>
+            w &&
+            (w.categoryId === cat.id || w.categorySlug === cat.slug) &&
+            (w.primaryDomainUrl || (w.domains && w.domains.length > 0)),
         );
         if (catWebsites.length > 0) {
           const fallbackCat = CLIENT_18_CATEGORIES.find((c) => c.slug === cat.slug);
@@ -60,7 +68,9 @@ export function DirectoryView(props?: DirectoryViewProps) {
         const fallbackCat = CLIENT_18_CATEGORIES.find((c) => c.slug === cat.slug);
         return fallbackCat || CLIENT_18_CATEGORIES[catIdx % CLIENT_18_CATEGORIES.length]!;
       });
-      return mapped.filter((c): c is typeof CLIENT_18_CATEGORIES[number] => Boolean(c && c.sites));
+      return mapped.filter((c): c is (typeof CLIENT_18_CATEGORIES)[number] =>
+        Boolean(c && c.sites),
+      );
     }
     return CLIENT_18_CATEGORIES;
   }, [props?.categories, props?.websites]);

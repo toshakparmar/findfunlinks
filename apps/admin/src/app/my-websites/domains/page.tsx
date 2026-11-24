@@ -631,7 +631,9 @@ export default function OwnerDomainsPage() {
               <h3 className="font-bold text-base text-[#F3F4F6]">Delete Mirror Link?</h3>
             </div>
             <p className="text-xs text-[#9CA3AF] leading-relaxed">
-              Are you sure you want to remove <strong className="text-[#F3F4F6] font-mono">{deleteConfirmDomain.hostname}</strong>? Visitors will no longer be routed to this mirror.
+              Are you sure you want to remove{' '}
+              <strong className="text-[#F3F4F6] font-mono">{deleteConfirmDomain.hostname}</strong>?
+              Visitors will no longer be routed to this mirror.
             </p>
             <div className="flex justify-end gap-3 pt-2">
               <button
@@ -766,9 +768,7 @@ export default function OwnerDomainsPage() {
                 </label>
                 <select
                   value={bulkType}
-                  onChange={(e) =>
-                    setBulkType(e.target.value as 'MIRROR' | 'PROXY' | 'ALTERNATE')
-                  }
+                  onChange={(e) => setBulkType(e.target.value as 'MIRROR' | 'PROXY' | 'ALTERNATE')}
                   className="w-full h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-sm text-[#F3F4F6] focus:outline-none focus:border-[#0B9DF7]"
                 >
                   <option value="MIRROR">Official Mirror</option>

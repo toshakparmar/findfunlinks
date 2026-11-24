@@ -285,7 +285,9 @@ export function NewView() {
                     <div
                       key={site.id || site.slug || idx}
                       className={`rounded-xl border border-[var(--line,#1A2442)] bg-[var(--card-hover,#0E182F)]/40 hover:bg-[var(--card-hover,#0E182F)] hover:border-[var(--primary,#2563EB)]/40 transition-all p-0.5 ${
-                        isExpanded ? 'col-span-1 md:col-span-2 xl:col-span-3 ring-1 ring-[var(--primary,#2563EB)]/30' : ''
+                        isExpanded
+                          ? 'col-span-1 md:col-span-2 xl:col-span-3 ring-1 ring-[var(--primary,#2563EB)]/30'
+                          : ''
                       }`}
                     >
                       <SiteRow
@@ -301,7 +303,9 @@ export function NewView() {
                         categoryName={site.categoryName}
                         categorySlug={site.categorySlug}
                         expanded={isExpanded}
-                        onToggle={() => setExpandedSlug((prev) => (prev === site.slug ? null : site.slug))}
+                        onToggle={() =>
+                          setExpandedSlug((prev) => (prev === site.slug ? null : site.slug))
+                        }
                         onExternalClick={(url) => {
                           window.open(url, '_blank');
                         }}

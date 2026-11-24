@@ -28,7 +28,10 @@ export const HighlightList: React.FC<HighlightListProps> = ({
     <div className={cn('space-y-1.5', className)}>
       <ul className="space-y-1.5" role="list">
         {displayList.map((item, index) => (
-          <li key={index} className="flex items-start gap-2 text-fs-sm leading-relaxed text-slate-700 dark:text-[var(--text,#F1F5F9)]">
+          <li
+            key={index}
+            className="flex items-start gap-2 text-fs-sm leading-relaxed text-slate-700 dark:text-[var(--text,#F1F5F9)]"
+          >
             <span
               className="inline-flex items-center justify-center w-4 h-4 rounded-full shrink-0 mt-0.5"
               style={{

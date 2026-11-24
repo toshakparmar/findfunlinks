@@ -1,14 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  Eye,
-  Send,
-  Save,
-  X,
-  Loader2,
-  Info,
-} from 'lucide-react';
+import { Eye, Send, Save, X, Loader2, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { BRAND } from '@finallinks/config';
 
@@ -30,8 +23,18 @@ const DEFAULT_TEMPLATES: EmailTemplate[] = [
     name: 'Registration Approved & Credentials',
     category: 'Onboarding',
     subject: `Your {{websiteName}} is approved on ${BRAND.name}`,
-    description: 'Dispatched to website owners when an operator approves their directory registration. Contains temporary password.',
-    variables: ['applicantName', 'brandName', 'websiteName', 'loginUrl', 'email', 'tempPassword', 'expiresIn', 'supportEmail'],
+    description:
+      'Dispatched to website owners when an operator approves their directory registration. Contains temporary password.',
+    variables: [
+      'applicantName',
+      'brandName',
+      'websiteName',
+      'loginUrl',
+      'email',
+      'tempPassword',
+      'expiresIn',
+      'supportEmail',
+    ],
     restrictedVariables: ['tempPassword'],
     html: `
 <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 700; color: #0F172A;">Your Website is Approved!</h2>
@@ -54,8 +57,17 @@ const DEFAULT_TEMPLATES: EmailTemplate[] = [
     name: 'Registration Rejected',
     category: 'Moderation',
     subject: `Application update regarding "{{websiteName}}" on ${BRAND.name}`,
-    description: 'Sent when an application is rejected with a respectful reason, reference ID, and reapply guidelines.',
-    variables: ['applicantName', 'brandName', 'websiteName', 'reason', 'referenceId', 'reapplyUrl', 'supportEmail'],
+    description:
+      'Sent when an application is rejected with a respectful reason, reference ID, and reapply guidelines.',
+    variables: [
+      'applicantName',
+      'brandName',
+      'websiteName',
+      'reason',
+      'referenceId',
+      'reapplyUrl',
+      'supportEmail',
+    ],
     html: `
 <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 700; color: #0F172A;">Application Status Update</h2>
 <p style="font-size: 14px; line-height: 1.6; margin: 0 0 16px 0;">Hello <strong>{{applicantName}}</strong>,</p>
@@ -72,7 +84,8 @@ const DEFAULT_TEMPLATES: EmailTemplate[] = [
     name: 'Query & Report Support Reply',
     category: 'Support',
     subject: `[{{ticketId}}] Update regarding your report`,
-    description: 'Official response dispatched from the inbox desk to user inquiries and broken link reporters.',
+    description:
+      'Official response dispatched from the inbox desk to user inquiries and broken link reporters.',
     variables: ['ticketId', 'reason', 'replyMessage', 'brandName', 'supportEmail'],
     html: `
 <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 700; color: #0F172A;">Support Update</h2>
@@ -90,7 +103,8 @@ const DEFAULT_TEMPLATES: EmailTemplate[] = [
     name: 'Password Reset Request',
     category: 'Security',
     subject: `Reset your ${BRAND.name} password`,
-    description: 'Automated 1-hour secure password reset link for platform operators and website owners.',
+    description:
+      'Automated 1-hour secure password reset link for platform operators and website owners.',
     variables: ['name', 'brandName', 'resetUrl', 'supportEmail'],
     html: `
 <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 700; color: #0F172A;">Password Reset Request</h2>
@@ -108,7 +122,8 @@ const DEFAULT_TEMPLATES: EmailTemplate[] = [
     name: 'Mirror Offline Alert',
     category: 'Monitoring',
     subject: `Alert: Mirror offline for "{{websiteName}}" on ${BRAND.name}`,
-    description: 'Instant notification dispatched to owners when consecutive automated health-checks fail.',
+    description:
+      'Instant notification dispatched to owners when consecutive automated health-checks fail.',
     variables: ['ownerName', 'websiteName', 'hostname', 'brandName', 'manageUrl'],
     html: `
 <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 700; color: #DC2626;">Mirror Unreachable Notice</h2>
@@ -154,9 +169,7 @@ export default function EmailTemplatesPage() {
   const handleSaveTemplate = () => {
     setTemplates((prev) =>
       prev.map((t) =>
-        t.id === selectedTemplate.id
-          ? { ...t, subject, html: htmlContent, text: textContent }
-          : t,
+        t.id === selectedTemplate.id ? { ...t, subject, html: htmlContent, text: textContent } : t,
       ),
     );
     toast.success(`Template "${selectedTemplate.name}" saved!`);
@@ -170,7 +183,9 @@ export default function EmailTemplatesPage() {
     setSendingTest(true);
     try {
       await new Promise((r) => setTimeout(r, 800));
-      toast.success(`Test email for "${selectedTemplate.name}" dispatched to ${testEmailRecipient}`);
+      toast.success(
+        `Test email for "${selectedTemplate.name}" dispatched to ${testEmailRecipient}`,
+      );
       setTestEmailOpen(false);
     } catch {
       toast.error('Failed to send test email');
@@ -234,7 +249,8 @@ export default function EmailTemplatesPage() {
             Transactional Email Templates
           </h1>
           <p className="text-sm text-[#9CA3AF] mt-1">
-            Configure system notification templates, variable interpolations, and live test delivery.
+            Configure system notification templates, variable interpolations, and live test
+            delivery.
           </p>
         </div>
 
@@ -458,7 +474,9 @@ export default function EmailTemplatesPage() {
 
             <div className="space-y-3 text-sm">
               <p className="text-xs text-[#9CA3AF]">
-                Dispatches a rendered test sample of <strong>&quot;{selectedTemplate.name}&quot;</strong> via the transactional mail service.
+                Dispatches a rendered test sample of{' '}
+                <strong>&quot;{selectedTemplate.name}&quot;</strong> via the transactional mail
+                service.
               </p>
 
               <div>

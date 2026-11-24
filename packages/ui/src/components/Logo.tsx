@@ -22,15 +22,10 @@ export const Logo: React.FC<LogoProps> = ({
   ...props
 }) => {
   // Normalize variant and theme for backward compatibility
-  const resolvedVariant: 'full' | 'mark' =
-    iconOnly || variant === 'mark'
-      ? 'mark'
-      : 'full';
+  const resolvedVariant: 'full' | 'mark' = iconOnly || variant === 'mark' ? 'mark' : 'full';
 
   const resolvedTheme: 'auto' | 'dark' | 'light' =
-    variant === 'dark' || variant === 'light' || variant === 'auto'
-      ? variant
-      : theme;
+    variant === 'dark' || variant === 'light' || variant === 'auto' ? variant : theme;
 
   const isMark = resolvedVariant === 'mark';
   const isDark = resolvedTheme === 'dark';
@@ -38,13 +33,7 @@ export const Logo: React.FC<LogoProps> = ({
 
   // Height mappings
   const heightClass =
-    typeof size === 'string'
-      ? size === 'sm'
-        ? 'h-6'
-        : size === 'lg'
-          ? 'h-10'
-          : 'h-8'
-      : undefined;
+    typeof size === 'string' ? (size === 'sm' ? 'h-6' : size === 'lg' ? 'h-10' : 'h-8') : undefined;
 
   const dynamicStyle: React.CSSProperties = {
     ...(typeof size === 'number' ? { height: `${size}px` } : {}),

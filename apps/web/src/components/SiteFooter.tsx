@@ -62,8 +62,8 @@ export const SiteFooter: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto mt-6 pt-4 border-t border-[var(--line,#1A2442)]/60 text-center text-fs-xs text-[var(--text-3,#6B7893)]">
-        © {new Date().getFullYear()} FinalLinks. All trademarks and logos belong to their
-        respective owners.
+        © {new Date().getFullYear()} FinalLinks. All trademarks and logos belong to their respective
+        owners.
       </div>
     </footer>
   );

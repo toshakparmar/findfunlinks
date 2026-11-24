@@ -144,10 +144,7 @@ export class WebsitesController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('website.view')
   @ApiOperation({ summary: "Get analytics overview for the authenticated owner's website" })
-  async getMyWebsiteAnalytics(
-    @CurrentUser('id') ownerId: string,
-    @Query('range') range?: string,
-  ) {
+  async getMyWebsiteAnalytics(@CurrentUser('id') ownerId: string, @Query('range') range?: string) {
     return this.websitesService.getMyWebsiteAnalytics(ownerId, range);
   }
 

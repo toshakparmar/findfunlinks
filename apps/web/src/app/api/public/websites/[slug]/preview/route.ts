@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CLIENT_18_CATEGORIES } from '@/lib/client-catalog';
 
-const API_BASE_URL = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE_URL =
+  process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export async function GET(
   _request: NextRequest,
@@ -11,12 +12,15 @@ export async function GET(
   const normalizedSlug = slug.toLowerCase();
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/websites/${encodeURIComponent(normalizedSlug)}/preview`, {
-      headers: {
-        'Content-Type': 'application/json',
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/websites/${encodeURIComponent(normalizedSlug)}/preview`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        next: { revalidate: 60 },
       },
-      next: { revalidate: 60 },
-    });
+    );
 
     if (res.ok) {
       const data = await res.json();
@@ -49,18 +53,20 @@ export async function GET(
     return NextResponse.json({ error: 'Website not found or unverified' }, { status: 404 });
   }
 
-  const rawDomains = foundSite.domains && foundSite.domains.length > 0
-    ? foundSite.domains
-    : [
-        {
-          id: `${foundSite.id}-primary`,
-          domainName: foundSite.bestDomainUrl?.replace(/^https?:\/\//, '') || `${foundSite.slug}.com`,
-          url: foundSite.bestDomainUrl || `https://${foundSite.slug}.com`,
-          domainType: 'PRIMARY',
-          status: 'ACTIVE',
-          lastResponseMs: 48,
-        },
-      ];
+  const rawDomains =
+    foundSite.domains && foundSite.domains.length > 0
+      ? foundSite.domains
+      : [
+          {
+            id: `${foundSite.id}-primary`,
+            domainName:
+              foundSite.bestDomainUrl?.replace(/^https?:\/\//, '') || `${foundSite.slug}.com`,
+            url: foundSite.bestDomainUrl || `https://${foundSite.slug}.com`,
+            domainType: 'PRIMARY',
+            status: 'ACTIVE',
+            lastResponseMs: 48,
+          },
+        ];
 
   const mirrors = rawDomains.map((d: any, idx: number) => ({
     id: d.id || `${foundSite.id}-m${idx + 1}`,
@@ -68,7 +74,7 @@ export async function GET(
     url: d.url || foundSite.bestDomainUrl || `https://${foundSite.slug}.com`,
     type: d.domainType || (idx === 0 ? 'PRIMARY' : 'MIRROR'),
     status: d.status || 'ACTIVE',
-    responseMs: d.lastResponseMs ?? (45 + (idx * 28)),
+    responseMs: d.lastResponseMs ?? 45 + idx * 28,
   }));
 
   const activeMirrors = mirrors.filter((m: any) => m.status === 'ACTIVE');

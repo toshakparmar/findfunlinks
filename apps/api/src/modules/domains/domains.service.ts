@@ -86,10 +86,12 @@ export class DomainsService {
     });
 
     if (domain.websiteId) {
-      await this.prisma.website.update({
-        where: { id: domain.websiteId },
-        data: { viewCount: { increment: 1 } },
-      }).catch(() => {});
+      await this.prisma.website
+        .update({
+          where: { id: domain.websiteId },
+          data: { viewCount: { increment: 1 } },
+        })
+        .catch(() => {});
     }
 
     return { success: true, url: domain.url };

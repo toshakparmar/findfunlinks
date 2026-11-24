@@ -115,9 +115,9 @@ export function Footer() {
         {/* Disclaimer & Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border/40 text-xs text-muted-foreground/80 space-y-4">
           <p className="leading-relaxed">
-            <strong>Disclaimer:</strong> FinalLinks is a curated directory index. FinalLinks
-            does not host, stream, or store any third-party files or content. All links, trademarks,
-            and logos belong to their respective owners. Users are solely responsible for compliance
+            <strong>Disclaimer:</strong> FinalLinks is a curated directory index. FinalLinks does
+            not host, stream, or store any third-party files or content. All links, trademarks, and
+            logos belong to their respective owners. Users are solely responsible for compliance
             with local regulations when navigating external links.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">

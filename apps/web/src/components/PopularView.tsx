@@ -2,10 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import {
-  Trophy,
-  Star,
-} from 'lucide-react';
+import { Trophy, Star } from 'lucide-react';
 import { api } from '../lib/api';
 import { CLIENT_18_CATEGORIES } from '../lib/client-catalog';
 import { PageHeader, FilterGroup } from './PageHeader';
@@ -289,7 +286,9 @@ export function PopularView() {
                     <Trophy className="w-3.5 h-3.5" />
                     <span>{style.badge}</span>
                   </span>
-                  <span className="text-fs-xs text-[var(--text-3,#6B7893)]">{site.categoryName}</span>
+                  <span className="text-fs-xs text-[var(--text-3,#6B7893)]">
+                    {site.categoryName}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -341,7 +340,9 @@ export function PopularView() {
             return (
               <div
                 key={site.id || site.slug || index}
-                className={isExpanded ? 'col-span-1 md:col-span-2 xl:col-span-3 transition-all' : ''}
+                className={
+                  isExpanded ? 'col-span-1 md:col-span-2 xl:col-span-3 transition-all' : ''
+                }
               >
                 <SiteRow
                   rank={actualRank}
@@ -355,7 +356,9 @@ export function PopularView() {
                   categoryName={site.categoryName}
                   categorySlug={site.categorySlug}
                   expanded={isExpanded}
-                  onToggle={() => setExpandedSlug((prev) => (prev === site.slug ? null : site.slug))}
+                  onToggle={() =>
+                    setExpandedSlug((prev) => (prev === site.slug ? null : site.slug))
+                  }
                   onExternalClick={(url) => {
                     window.open(url, '_blank');
                   }}

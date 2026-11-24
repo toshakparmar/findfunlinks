@@ -52,7 +52,9 @@ const CANNED_RESPONSES = [
 export default function InboxPage() {
   const [queries, setQueries] = useState<QueryItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'RESOLVED' | 'DISMISSED'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'RESOLVED' | 'DISMISSED'>(
+    'ALL',
+  );
   const [selectedItem, setSelectedItem] = useState<QueryItem | null>(null);
   const [replyMessage, setReplyMessage] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
@@ -131,7 +133,8 @@ export default function InboxPage() {
             Queries & Inbound Inbox
           </h1>
           <p className="text-sm text-[#9CA3AF] mt-1">
-            Centralized communications desk for broken link reports, DMCA requests, and visitor suggestions.
+            Centralized communications desk for broken link reports, DMCA requests, and visitor
+            suggestions.
           </p>
         </div>
 
@@ -222,7 +225,9 @@ export default function InboxPage() {
                           <span className="text-[#F3F4F6] font-medium">{item.website.name}</span>
                         </div>
                       ) : item.domain ? (
-                        <span className="font-mono text-xs text-[#0B9DF7]">{item.domain.hostname}</span>
+                        <span className="font-mono text-xs text-[#0B9DF7]">
+                          {item.domain.hostname}
+                        </span>
                       ) : (
                         <span className="text-[#6B7280]">General Platform</span>
                       )}
@@ -395,7 +400,11 @@ export default function InboxPage() {
                   onClick={handleSendReply}
                   className="px-5 h-11 rounded-lg bg-[#0B9DF7] hover:bg-[#0987d6] text-white text-sm font-medium transition-colors disabled:opacity-50 inline-flex items-center gap-2"
                 >
-                  {sendingReply ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  {sendingReply ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
                   <span>Send & Resolve</span>
                 </button>
               </div>

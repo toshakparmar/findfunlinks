@@ -18,7 +18,12 @@ describe('Showcase Upgrade - Phase 1 Data & API Test Suite', () => {
     tagline: 'High speed anime & entertainment index',
     shortDescription: 'High speed anime & entertainment index with instant mirrors',
     description: '## Full About\nDetailed markdown description of the website.',
-    highlights: ['Zero popups or redirects', '4K streaming available', 'Hourly mirror updates', 'Community curated'],
+    highlights: [
+      'Zero popups or redirects',
+      '4K streaming available',
+      'Hourly mirror updates',
+      'Community curated',
+    ],
     note: 'Active community Discord available for link updates.',
     logoUrl: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=128',
     coverUrl: null,
@@ -169,7 +174,9 @@ describe('Showcase Upgrade - Phase 1 Data & API Test Suite', () => {
       expect(preview.id).toBe('w-101');
       expect(preview.slug).toBe('showcase-portal');
       expect(preview.name).toBe('Showcase Portal');
-      expect(preview.shortDescription).toBe('High speed anime & entertainment index with instant mirrors');
+      expect(preview.shortDescription).toBe(
+        'High speed anime & entertainment index with instant mirrors',
+      );
       expect(preview.highlights).toEqual(mockWebsite.highlights);
       expect(preview.rankInCategory).toBe(1);
       expect(preview.starCount).toBe(42);
@@ -203,7 +210,9 @@ describe('Showcase Upgrade - Phase 1 Data & API Test Suite', () => {
       mockPrisma.website.findUnique.mockResolvedValueOnce(null);
       mockPrisma.slugRedirect.findUnique.mockResolvedValueOnce(null);
 
-      await expect(websitesService.getPreviewBySlug('nonexistent')).rejects.toThrow(NotFoundException);
+      await expect(websitesService.getPreviewBySlug('nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

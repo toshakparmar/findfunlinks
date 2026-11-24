@@ -23,10 +23,9 @@ export default function TermsPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">1. Acceptance of Terms</h2>
           <p>
-            By accessing or using the FinalLinks platform (including{' '}
-            <strong>finallinks.com</strong>, associated subdomains, and API services), you agree
-            to be bound by these Terms of Service. If you do not agree to all terms, do not access
-            or use the service.
+            By accessing or using the FinalLinks platform (including <strong>finallinks.com</strong>
+            , associated subdomains, and API services), you agree to be bound by these Terms of
+            Service. If you do not agree to all terms, do not access or use the service.
           </p>
         </section>
 
@@ -81,10 +80,9 @@ export default function TermsPage() {
             availability.
           </p>
           <p>
-            In no event shall FinalLinks, its operators, or contributors be liable for any
-            indirect, incidental, special, consequential, or punitive damages resulting from your
-            use of or inability to use the service or any external links accessed through the
-            directory.
+            In no event shall FinalLinks, its operators, or contributors be liable for any indirect,
+            incidental, special, consequential, or punitive damages resulting from your use of or
+            inability to use the service or any external links accessed through the directory.
           </p>
         </section>
 

@@ -126,7 +126,7 @@ export function DataTable<T extends { id?: string | number }>({
                           >
                             {col.render
                               ? col.render(row)
-                              : (row as Record<string, any>)[col.key] ?? '—'}
+                              : ((row as Record<string, any>)[col.key] ?? '—')}
                           </td>
                         );
                       })}

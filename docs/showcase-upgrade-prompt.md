@@ -1,8 +1,11 @@
 # FinalLinks — Website Showcase Upgrade
+
 ### Expandable rows (dropdown with details) · Star system (+1 per person) · Website detail page
+
 ### Master prompt for Antigravity (execute phase by phase)
 
 > **Reference images (everythingmoe.com), save to `docs/design-reference/showcase/`:**
+>
 > 1. `detail-top.png` — site detail page: breadcrumb, title with rank badge, highlights list, mirrors list, note, screenshots row, start of "User Reviews".
 > 2. `detail-reviews.png` — reviews list, sentiment tabs, "337 Comments" button, back-to-top button.
 > 3. `home-expanded.png` — home page with one row expanded inline (highlights on the left, mirror buttons on the right, comments button, note), other rows collapsed with chevrons, small badges (NEW, DDL, USENET).
@@ -42,44 +45,49 @@
 ## 2. INFORMATION MODEL
 
 ### 2.1 Website content fields (new/changed)
-| Field | Rules | Where shown |
-|---|---|---|
-| `shortDescription` | ≤ 160 chars, plain text | Expanded panel, meta description, cards |
-| `description` | Markdown, ≤ 5,000 chars, sanitized | Detail page "About" |
-| `highlights` | `string[]`, max 8, each ≤ 80 chars | Expanded panel (first 6) and detail page (all) as "+" bullets |
-| `note` | ≤ 300 chars, plain text | Panel and detail page callout |
-| `screenshots` | table `WebsiteScreenshot` (max 8), alt text required | Detail page gallery |
-| `starCount` | denormalized int | Panel, detail, Popular/Category sorting |
-| `language`, `contentRating` | existing | Detail stats |
-| Computed | `rankInCategory` (position by `rankKey` within category), `isNew` (published < 14 days), `onlineCount`, `domainsCount`, `lastVerifiedAt`, `uptime30d` | Badges and stats |
+
+| Field                       | Rules                                                                                                                                                 | Where shown                                                   |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `shortDescription`          | ≤ 160 chars, plain text                                                                                                                               | Expanded panel, meta description, cards                       |
+| `description`               | Markdown, ≤ 5,000 chars, sanitized                                                                                                                    | Detail page "About"                                           |
+| `highlights`                | `string[]`, max 8, each ≤ 80 chars                                                                                                                    | Expanded panel (first 6) and detail page (all) as "+" bullets |
+| `note`                      | ≤ 300 chars, plain text                                                                                                                               | Panel and detail page callout                                 |
+| `screenshots`               | table `WebsiteScreenshot` (max 8), alt text required                                                                                                  | Detail page gallery                                           |
+| `starCount`                 | denormalized int                                                                                                                                      | Panel, detail, Popular/Category sorting                       |
+| `language`, `contentRating` | existing                                                                                                                                              | Detail stats                                                  |
+| Computed                    | `rankInCategory` (position by `rankKey` within category), `isNew` (published < 14 days), `onlineCount`, `domainsCount`, `lastVerifiedAt`, `uptime30d` | Badges and stats                                              |
 
 Owners and admins edit these in the panel (Section 10). Tags (existing M:N) render as small badges (e.g. DDL); `NEW` badge is computed, not a tag.
 
 ### 2.2 Stars
+
 ```
 WebsiteStar { id, websiteId, voterHash, ipHash, createdAt, status ('VALID'|'SUSPECT'|'REMOVED') }
 UNIQUE (websiteId, voterHash)          -- one star per person per website
 Website.starCount                       -- counts VALID only, updated transactionally
 ```
+
 `voterHash` = HMAC of the visitor identity (Section 6.1); raw identifiers are never stored. `ipHash` = salted hash for abuse detection only (retention 30 days).
 
 ### 2.3 Slug safety
+
 Detail URLs are `/site/[slug]`. Keep a `SlugRedirect(oldSlug → websiteId)` table so renamed sites 301-redirect.
 
 ---
 
 ## 3. API (public, NestJS) — add and document in Swagger
 
-| Endpoint | Purpose | Caching |
-|---|---|---|
-| `GET /public/websites/:slug/preview` | Data for the inline dropdown: `{ id, slug, name, faviconUrl, shortDescription, highlights[0..6], note, category{slug,name,accentKey}, rankInCategory, starCount, domainsCount, onlineCount, fastestMirror{url,ms}, mirrors:[{id,label,url,type,status,responseMs}] (top 8: Primary first then owner order), lastVerifiedAt, tags[], isNew }` | Redis 60s, ETag, tag-invalidated |
-| `GET /public/websites/:slug` | Full detail: everything above + `description`, all `highlights`, `screenshots[]`, stats (`clicks30d`, `uptime30d`, `addedAt`, `language`, `contentRating`), `related[]` | Redis 60s, ISR tag |
-| `GET /public/websites/:slug/domains` | Existing infinite list (cursor, filters, search) used on the detail page | 30s |
-| `GET /public/websites/:slug/engagement` | `{ starCount, starred }` for **this visitor** | `no-store` |
-| `PUT /public/websites/:slug/star` | Idempotently give a star | rate-limited |
-| `DELETE /public/websites/:slug/star` | Remove own star | rate-limited |
+| Endpoint                                | Purpose                                                                                                                                                                                                                                                                                                                                      | Caching                          |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `GET /public/websites/:slug/preview`    | Data for the inline dropdown: `{ id, slug, name, faviconUrl, shortDescription, highlights[0..6], note, category{slug,name,accentKey}, rankInCategory, starCount, domainsCount, onlineCount, fastestMirror{url,ms}, mirrors:[{id,label,url,type,status,responseMs}] (top 8: Primary first then owner order), lastVerifiedAt, tags[], isNew }` | Redis 60s, ETag, tag-invalidated |
+| `GET /public/websites/:slug`            | Full detail: everything above + `description`, all `highlights`, `screenshots[]`, stats (`clicks30d`, `uptime30d`, `addedAt`, `language`, `contentRating`), `related[]`                                                                                                                                                                      | Redis 60s, ISR tag               |
+| `GET /public/websites/:slug/domains`    | Existing infinite list (cursor, filters, search) used on the detail page                                                                                                                                                                                                                                                                     | 30s                              |
+| `GET /public/websites/:slug/engagement` | `{ starCount, starred }` for **this visitor**                                                                                                                                                                                                                                                                                                | `no-store`                       |
+| `PUT /public/websites/:slug/star`       | Idempotently give a star                                                                                                                                                                                                                                                                                                                     | rate-limited                     |
+| `DELETE /public/websites/:slug/star`    | Remove own star                                                                                                                                                                                                                                                                                                                              | rate-limited                     |
 
 Rules:
+
 - Preview/detail responses are **visitor-independent** (cacheable). Visitor-specific state (`starred`) only comes from `/engagement`.
 - `PUT star` when already starred returns `200 { starred: true }` (never double counts). Count can never exceed one per person.
 - Errors use the standard envelope (`VALIDATION_ERROR`, `RATE_LIMITED`, `NOT_FOUND`, `CAPTCHA_REQUIRED`).
@@ -90,7 +98,9 @@ Rules:
 ## 4. UI: EXPANDABLE ROW (home cards, category page, New, Popular)
 
 ### 4.1 Row anatomy (collapsed)
+
 `[number] [favicon] [Site name (link)] [badges…] ········· [external-link icon] [chevron button]`
+
 - **Site name and favicon** are a single `<Link href="/site/[slug]">` → detail page (prefetched on hover).
 - **External-link icon** keeps the approved behavior: opens the fastest online mirror in a new tab (`rel="noopener noreferrer nofollow"`), counts the click via `sendBeacon`.
 - **Chevron button** (`ChevronDown`, 36×36 visual, 44×44 hit area): toggles the dropdown. `aria-expanded`, `aria-controls`, accessible name "Show details for {name}".
@@ -99,16 +109,19 @@ Rules:
 - **Mobile (≤ 479px, two-column list inside cards):** show name + chevron only (hide the external icon; "Open" lives inside the panel). Tapping the name navigates; tapping the chevron or empty area toggles.
 
 ### 4.2 Expanded panel (the dropdown)
+
 Container: inside the same `<li>`, below the row header; background `--card-hover`, 1px `--line` border-top with a short accent-colored top rule, radius 12 on the bottom, padding 16–20.
 
 Desktop/laptop (panel width ≥ 520px) — **two columns with a thin vertical divider** (like the reference):
 
 **Left column**
+
 1. Short description (2–3 lines, "Read more" → detail page).
 2. **Highlights** list: each item prefixed with a **"+" icon in the category accent color**, up to 6, then "+N more" → detail page.
 3. **Note** (muted callout with `Info` icon), if present.
 
 **Right column**
+
 1. Header line: `{domainsCount} domains · {onlineCount} online` with status dot; "Checked 12m ago".
 2. **Mirror buttons** (chips stacked vertically): each is a full-width dark pill with label + link icon at the right, status dot at the left, response time on hover tooltip; Primary first. Click opens the link in a new tab; a small copy icon appears on hover/focus. Max 8 shown; if more: "View all {N} domains →" (goes to `/site/[slug]#domains`).
 3. **"Open fastest mirror"** primary button.
@@ -119,6 +132,7 @@ Desktop/laptop (panel width ≥ 520px) — **two columns with a thin vertical di
 Mobile (panel width < 520px): single column in this order — description, highlights, note, fastest-mirror button, mirror chips, footer strip (wraps). In a two-column inner list the expanded row spans both columns (`grid-column: 1 / -1`).
 
 ### 4.3 Behavior
+
 - **One open row per card** (opening another closes the previous) to keep cards tidy; configurable constant `ROW_EXPAND_MODE = 'single' | 'multiple'`.
 - State in the URL? Optional deep link `?open=slug` (on load, scroll into view and open). Not stored globally; closes on route change.
 - **Lazy data:** panel mounts only when first opened. Data from `useQuery(['preview', slug])` (stale 60s). Prefetch on `pointerenter`/`focus` of the row (desktop) after 120ms, and on touch start for chevron.
@@ -127,6 +141,7 @@ Mobile (panel width < 520px): single column in this order — description, highl
 - Keyboard: Enter/Space on chevron toggles; `Esc` inside the panel closes it and returns focus to the chevron; Tab order flows into the panel content while open and skips it when closed (`inert`/`hidden`).
 
 ### 4.4 Animation (Framer Motion + subtle GSAP)
+
 - Panel: `AnimatePresence initial={false}`; `motion.div` animating `height: 0 → 'auto'` and `opacity: 0 → 1`, duration 260ms, ease `[0.2, 0.8, 0.2, 1]`; `overflow: hidden` during animation, then `visible`.
 - Inner content **stagger**: description, highlights (each 25ms), chips (each 25ms) fade/translate 6px.
 - Chevron rotates 180° (180ms). Row header gets a soft background while open.
@@ -158,12 +173,14 @@ Lives in the persistent shell (header + sidebar). **The sidebar highlights the w
 9. **Back-to-top** floating button (bottom-right, appears after 600px scroll, respects bottom nav on mobile).
 
 ### 5.2 States and SEO
+
 - Skeleton for the whole page via `loading.tsx`; 404 (branded) for unknown slug; archived/suspended sites show a notice and `noindex`.
 - SSR/ISR with on-demand revalidation (`revalidateTag('site:'+slug)`) when the owner/admin edits content or domains change.
 - Metadata: title `{Name} — Mirrors & Links | FinalLinks`, description from `shortDescription`, canonical `/site/[slug]`, OG/Twitter with dynamic OG image (logo, name, rank, star count). JSON-LD: `WebPage` + `BreadcrumbList`. **Do not output `AggregateRating`/`Review` markup unless real ratings/reviews exist.**
 - Outbound links `rel="noopener noreferrer nofollow"`; `sitemap.ts` includes site pages with `lastmod`.
 
 ### 5.3 Styling rules (our theme, not the reference)
+
 - Cards: `--card` fill, accent border (category `--accent`), 16px radius; inner dividers `--line`.
 - "+" bullets: Lucide `Plus` in `--accent`, text `--text`; notes use `--text-2` with an info icon.
 - Mirror chips: `--bg` fill, 1px `--line` border, 10px radius, hover border `--accent`; link icon in `--text-2`.
@@ -175,19 +192,23 @@ Lives in the persistent shell (header + sidebar). **The sidebar highlights the w
 ## 6. STARS: +1 PER PERSON
 
 ### 6.1 Identity (who is "a person")
+
 The public site has no visitor accounts today, so implement a **`VisitorIdentity` abstraction** with two strategies:
 
 **Strategy A — anonymous (ship first):**
+
 - On first visit the server issues a signed, `httpOnly`, `Secure`, `SameSite=Lax`, 1-year cookie `fl_voter` (random 128-bit id + HMAC signature).
 - `voterHash = HMAC(secret, voterId)`; unique per `(websiteId, voterHash)`.
 - Abuse controls (below) make clearing cookies expensive: per-IP and per-subnet caps, CAPTCHA, anomaly detection.
 
 **Strategy B — signed-in visitors (optional, behind `STAR_REQUIRE_LOGIN=false` by default):**
+
 - Lightweight visitor accounts (email magic link and/or Google sign-in), table `Visitor`; `voterHash = HMAC(secret, visitorId)`; stars follow the account across devices. Required for reviews/comments in Section 11.
 
 Document the trade-off in `DECISIONS.md`: anonymous is frictionless but not tamper-proof; signed-in is stronger.
 
 ### 6.2 Rules
+
 - Maximum **one star per person per website**; `PUT` is idempotent; the DB unique constraint enforces it even under races.
 - A person may **remove** their star (`DELETE`); they can never add more than one.
 - Counts update in the same transaction (`starCount` ±1, VALID stars only). A nightly job reconciles `starCount` against `COUNT(*)`.
@@ -195,18 +216,21 @@ Document the trade-off in `DECISIONS.md`: anonymous is frictionless but not tamp
 - Count display: abbreviated (1.2K), exact value in tooltip/`aria-label`.
 
 ### 6.3 Anti-abuse
+
 - Rate limits: `PUT/DELETE star` 10/min and 60/hour per IP, 100/day per voter; global safety cap per website per hour (spike triggers quarantine).
 - **Bot check:** invisible CAPTCHA (Cloudflare Turnstile) required on the visitor's **first** star of a session; token verified server-side.
 - **Anomaly detection:** many new stars on one site from the same /24 subnet or within seconds, or voter ids created < 1 minute earlier in bulk → mark stars `SUSPECT` (not counted publicly) and surface them to admins.
 - Privacy: never store raw IP; salted `ipHash` with 30-day retention; mention the functional cookie in the Privacy Policy page and `/privacy` copy.
 
 ### 6.4 Star button UI
+
 - Component `<StarButton slug count starred size="sm|md" />`: outline star when not starred, **filled gold** (`--accent-gold`) when starred; count next to it (tabular numbers).
 - Click: optimistic toggle (count ±1), small pop animation (scale 1 → 1.3 → 1, fill color transition, subtle sparkle optional via a light "click spark"), then reconcile with the server response; on error revert and toast ("Couldn't save your star. Try again.").
 - States: loading spinner on first-star CAPTCHA/verification, disabled for the owner, tooltip "Star this website" / "Remove your star". `aria-pressed` reflects state; announces "Starred" via live region.
 - Shown in the expanded panel, hero of the detail page, and (read-only count) on Popular/Category rows when sorting by stars.
 
 ### 6.5 Ranking integration
+
 `popularScore` includes stars (e.g. `0.5·clicks7d + 1.0·stars_recent + decay`); add sort **"Most starred"** to Category view and Popular page.
 
 ---
@@ -241,6 +265,7 @@ Document the trade-off in `DECISIONS.md`: anonymous is frictionless but not tamp
 ## 9. OWNER AND ADMIN PANEL CHANGES (single panel app)
 
 **Owner → My Website** gains a "Showcase" section:
+
 - Short description (counter 160), full description (markdown editor + preview), **Highlights editor** (add/remove/reorder with drag handle, max 8, 80 chars each), **Note**, **Screenshots uploader** (drag-and-drop, up to 8, JPG/PNG/WebP ≤ 3MB, per-image alt text required, reorder by drag, delete), tags.
 - **Live preview** tabs using the real components: "Row dropdown" and "Detail page header" so owners see exactly what visitors will see.
 - Moderation setting (admin-controlled): edits go live instantly or enter `PENDING_REVIEW`.
@@ -288,11 +313,11 @@ Enable with `FEATURE_REVIEWS` and `FEATURE_COMMENTS` (default off). **Requires v
 
 ## 13. EXECUTION PHASES (stop after each; show screenshots + test results)
 
-**Phase 1 — Data and API:** migrations, content fields, preview/detail/engagement endpoints, seed data. *Accept:* API tests green; preview < 6KB; `EXPLAIN` shows indexed queries.
-**Phase 2 — Expandable row + panel:** BFF handlers, `SiteRow` split, lazy panel, animations, prefetch, mobile layout. *Accept:* E2E for expand/collapse, single-open behavior, keyboard, reduced-motion; no CLS.
-**Phase 3 — Stars:** identity, endpoints, anti-abuse, `StarButton`, optimistic UI, admin star tools. *Accept:* race-condition and rate-limit tests; one star per person proven; owner block works.
-**Phase 4 — Detail page:** layout, gallery + lightbox, domains section, related, SEO/OG, sidebar active state. *Accept:* E2E navigation (name → detail, back works), SEO checks, Lighthouse ≥ 90 mobile.
-**Phase 5 — Panel editing:** owner/admin showcase editor, uploader, previews, moderation setting. *Accept:* edits reflect on row panel and detail page after revalidation.
+**Phase 1 — Data and API:** migrations, content fields, preview/detail/engagement endpoints, seed data. _Accept:_ API tests green; preview < 6KB; `EXPLAIN` shows indexed queries.
+**Phase 2 — Expandable row + panel:** BFF handlers, `SiteRow` split, lazy panel, animations, prefetch, mobile layout. _Accept:_ E2E for expand/collapse, single-open behavior, keyboard, reduced-motion; no CLS.
+**Phase 3 — Stars:** identity, endpoints, anti-abuse, `StarButton`, optimistic UI, admin star tools. _Accept:_ race-condition and rate-limit tests; one star per person proven; owner block works.
+**Phase 4 — Detail page:** layout, gallery + lightbox, domains section, related, SEO/OG, sidebar active state. _Accept:_ E2E navigation (name → detail, back works), SEO checks, Lighthouse ≥ 90 mobile.
+**Phase 5 — Panel editing:** owner/admin showcase editor, uploader, previews, moderation setting. _Accept:_ edits reflect on row panel and detail page after revalidation.
 **Phase 6 — Responsive, themes, a11y, polish:** device matrix, light theme, axe, perf budgets.
 **Phase 7 (flagged) — Reviews and comments + visitor accounts + moderation.** Ship only after approval.
 **Phase 8 — Hardening:** security review, load test (k6 on preview/star endpoints), docs, final report.
@@ -339,8 +364,9 @@ Active Document: d:\Freelancing Projects\FindFunLinks\scripts\test-phase1-direct
 Cursor is on line: 1
 
 The user has uploaded 3 image(s):
+
 - C:/Users/hp/.gemini/antigravity/brain/5a976452-709c-46b9-b024-9bb67cad7d11/.user_uploaded/media_1795467633142_3de9e70d.jpg
 - C:/Users/hp/.gemini/antigravity/brain/5a976452-709c-46b9-b024-9bb67cad7d11/.user_uploaded/media_1795467635494_61ec97bc.jpg
 - C:/Users/hp/.gemini/antigravity/brain/5a976452-709c-46b9-b024-9bb67cad7d11/.user_uploaded/media_1795467637916_3cfb64b9.jpg
-You can embed these images in an artifact if you need the USER to review them.
-</ADDITIONAL_METADATA>
+  You can embed these images in an artifact if you need the USER to review them.
+  </ADDITIONAL_METADATA>

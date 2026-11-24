@@ -15,10 +15,14 @@ async function sleep(ms: number) {
 async function run() {
   console.log('Starting Next.js production server on 127.0.0.1:3005...');
   const nextBin = path.resolve('apps/web/node_modules/next/dist/bin/next');
-  const server: ChildProcess = spawn(process.execPath, [nextBin, 'start', 'apps/web', '--hostname', '127.0.0.1', '--port', '3005'], {
-    stdio: ['ignore', 'pipe', 'pipe'],
-    detached: false,
-  });
+  const server: ChildProcess = spawn(
+    process.execPath,
+    [nextBin, 'start', 'apps/web', '--hostname', '127.0.0.1', '--port', '3005'],
+    {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      detached: false,
+    },
+  );
 
   server.stdout?.on('data', (d) => console.log('[Server]:', d.toString().trim()));
   server.stderr?.on('data', (d) => console.error('[Server err]:', d.toString().trim()));
@@ -63,7 +67,16 @@ async function run() {
   const hasAllLinksTile = catHtml.includes('All Links') && catHtml.includes('href="/"');
   console.log(`- First tile "All Links" -> /: ${hasAllLinksTile ? 'PASS ✓' : 'FAIL ✗'}`);
 
-  const sampleCats = ['movies', 'tv-shows', 'ott-platforms', 'anime', 'sports', 'cartoons', 'gaming', 'technology'];
+  const sampleCats = [
+    'movies',
+    'tv-shows',
+    'ott-platforms',
+    'anime',
+    'sports',
+    'cartoons',
+    'gaming',
+    'technology',
+  ];
   let missingCats = 0;
   for (const s of sampleCats) {
     if (!catHtml.includes(`href="/category/${s}"`)) {
@@ -71,9 +84,17 @@ async function run() {
       missingCats++;
     }
   }
-  console.log(`- Seeded category tiles present (checked sample): ${missingCats === 0 ? 'PASS ✓' : 'FAIL ✗'}`);
+  console.log(
+    `- Seeded category tiles present (checked sample): ${missingCats === 0 ? 'PASS ✓' : 'FAIL ✗'}`,
+  );
 
-  if (!hasH1Categories || !hasGradientLines || !hasSubtitle || !hasAllLinksTile || missingCats > 0) {
+  if (
+    !hasH1Categories ||
+    !hasGradientLines ||
+    !hasSubtitle ||
+    !hasAllLinksTile ||
+    missingCats > 0
+  ) {
     allPass = false;
   }
 
@@ -82,11 +103,18 @@ async function run() {
   const homeHtml = await homeRes.text();
 
   console.log(`\nTesting Home / (Status: ${homeRes.status}):`);
-  const hasAllCategoriesSlot = homeHtml.includes('All Categories') && homeHtml.includes('href="/categories"');
-  console.log(`- Top Tile Strip "All Categories" slot -> /categories: ${hasAllCategoriesSlot ? 'PASS ✓' : 'FAIL ✗'}`);
+  const hasAllCategoriesSlot =
+    homeHtml.includes('All Categories') && homeHtml.includes('href="/categories"');
+  console.log(
+    `- Top Tile Strip "All Categories" slot -> /categories: ${hasAllCategoriesSlot ? 'PASS ✓' : 'FAIL ✗'}`,
+  );
 
-  const hasStripTiles = homeHtml.includes('href="/category/movies"') && homeHtml.includes('href="/category/ott-platforms"');
-  console.log(`- Quick-access category tiles present on top: ${hasStripTiles ? 'PASS ✓' : 'FAIL ✗'}`);
+  const hasStripTiles =
+    homeHtml.includes('href="/category/movies"') &&
+    homeHtml.includes('href="/category/ott-platforms"');
+  console.log(
+    `- Quick-access category tiles present on top: ${hasStripTiles ? 'PASS ✓' : 'FAIL ✗'}`,
+  );
 
   if (!hasAllCategoriesSlot || !hasStripTiles) {
     allPass = false;

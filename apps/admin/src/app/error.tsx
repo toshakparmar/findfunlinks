@@ -23,13 +23,7 @@ export default function ErrorBoundary({
       <div className="w-full max-w-md relative z-10 text-center space-y-6">
         <div className="bg-[#0A1226]/90 backdrop-blur-xl rounded-3xl border border-[#1A2442] p-8 shadow-2xl space-y-6">
           <div className="relative w-12 h-12 mx-auto">
-            <Image
-              src="/logo-mark.svg"
-              alt="FinalLinks"
-              fill
-              className="object-contain"
-              priority
-            />
+            <Image src="/logo-mark.svg" alt="FinalLinks" fill className="object-contain" priority />
           </div>
 
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/30 text-xs font-bold uppercase tracking-wider">

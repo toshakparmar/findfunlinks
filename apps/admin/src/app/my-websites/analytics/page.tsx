@@ -163,7 +163,9 @@ export default function OwnerAnalyticsPage() {
             </div>
 
             {data.domains.length === 0 ? (
-              <p className="text-sm text-[#9CA3AF] py-8 text-center">No configured mirrors found.</p>
+              <p className="text-sm text-[#9CA3AF] py-8 text-center">
+                No configured mirrors found.
+              </p>
             ) : (
               <div className="space-y-4">
                 {data.domains.map((domain) => (
@@ -204,7 +206,8 @@ export default function OwnerAnalyticsPage() {
             <div className="p-5 border-b border-[#33373D]">
               <h2 className="text-base font-bold text-[#F3F4F6]">Live Mirror Performance</h2>
               <p className="text-xs text-[#9CA3AF] mt-0.5">
-                Automated health checks measure TCP and TLS response latencies to route visitors to the fastest mirror.
+                Automated health checks measure TCP and TLS response latencies to route visitors to
+                the fastest mirror.
               </p>
             </div>
 
