@@ -40,7 +40,7 @@ export class VoterIdentityService {
       res.cookie('fl_voter', voterId, {
         httpOnly: true,
         secure: isProd,
-        sameSite: 'lax',
+        sameSite: isProd ? 'none' : 'lax',
         maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
         path: '/',
       });

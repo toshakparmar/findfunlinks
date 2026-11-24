@@ -57,10 +57,11 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   private setRefreshCookie(res: Response, token: string) {
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie(REFRESH_COOKIE_NAME, token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       path: '/',
       maxAge: COOKIE_MAX_AGE_MS,
     });
@@ -72,26 +73,28 @@ export class AuthController {
       process.env.JWT_EXPIRES_IN,
       24 * 60 * 60 * 1000, // default 1 day session
     );
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       path: '/',
       maxAge: accessMaxAge,
     });
   }
 
   private clearRefreshCookie(res: Response) {
+    const isProduction = process.env.NODE_ENV === 'production';
     res.clearCookie(REFRESH_COOKIE_NAME, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       path: '/',
     });
     res.clearCookie('access_token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       path: '/',
     });
   }
