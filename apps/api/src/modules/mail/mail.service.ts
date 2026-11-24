@@ -27,20 +27,29 @@ export class MailService {
   private readonly fromAddress: string;
 
   constructor(private readonly prisma: PrismaService) {
-    this.fromAddress =
-      process.env.MAIL_FROM || `${BRAND.fromName} <noreply@${BRAND.domain || 'finallinks.com'}>`;
+    const host = process.env.SMTP_HOST || process.env.MAIL_HOST;
+    const user = process.env.SMTP_USER || process.env.MAIL_USER;
+    const pass = process.env.SMTP_PASS || process.env.MAIL_PASS || process.env.SMTP_PASSWORD;
+    const port = Number(process.env.SMTP_PORT || process.env.MAIL_PORT) || 465;
+    const isSecure = process.env.SMTP_SECURE === 'true' || port === 465;
 
-    if (process.env.SMTP_HOST && process.env.SMTP_USER) {
+    this.fromAddress =
+      process.env.MAIL_FROM ||
+      (user
+        ? `${BRAND.fromName} <${user}>`
+        : `${BRAND.fromName} <noreply@${BRAND.domain || 'finallinks.com'}>`);
+
+    if (host && user) {
       this.transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: process.env.SMTP_SECURE === 'true',
+        host,
+        port,
+        secure: isSecure,
         auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS || '',
+          user,
+          pass: pass || '',
         },
       });
-      this.logger.log(`Configured SMTP transport for ${process.env.SMTP_HOST}`);
+      this.logger.log(`Configured SMTP transport for ${host}:${port} (secure: ${isSecure})`);
     } else {
       this.logger.log(
         'No SMTP configuration found. MailService running in development simulation mode.',
@@ -50,7 +59,7 @@ export class MailService {
 
   async sendMail(options: SendMailOptions): Promise<boolean> {
     try {
-      if (this.transporter && process.env.NODE_ENV === 'production') {
+      if (this.transporter && process.env.NODE_ENV !== 'test') {
         await this.transporter.sendMail({
           from: this.fromAddress,
           to: options.to,

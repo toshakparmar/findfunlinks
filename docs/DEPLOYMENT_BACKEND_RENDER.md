@@ -98,12 +98,12 @@ In Render Dashboard -> **finallinks-api** -> **Environment**, add the following 
 | `SUPABASE_STORAGE_BUCKET`   | Optional | `finallinks-media`                                                                                                                      |
 | `PUBLIC_WEB_URL`            | **Yes**  | Production Main Web URL (e.g., `https://finallinks.com` or Vercel URL)                                                                  |
 | `ADMIN_PANEL_URL`           | **Yes**  | Production Admin Panel URL (e.g., `https://admin.finallinks.com` or Vercel URL)                                                         |
-| `SMTP_HOST`                 | Optional | `smtp.resend.com`                                                                                                                       |
-| `SMTP_PORT`                 | Optional | `465`                                                                                                                                   |
-| `SMTP_SECURE`               | Optional | `true`                                                                                                                                  |
-| `SMTP_USER`                 | Optional | `resend`                                                                                                                                |
-| `SMTP_PASS`                 | Optional | Your SMTP Password or API Key                                                                                                           |
-| `MAIL_FROM`                 | Optional | `FinalLinks <noreply@finallinks.com>`                                                                                                   |
+| `SMTP_HOST`                 | Optional | `smtp.gmail.com` (for Gmail) or custom SMTP                                                                                             |
+| `SMTP_PORT`                 | Optional | `465` (SSL) or `587` (TLS)                                                                                                              |
+| `SMTP_SECURE`               | Optional | `true` (for port 465) or `false` (for 587)                                                                                              |
+| `SMTP_USER`                 | Optional | `finallinksreal@gmail.com`                                                                                                              |
+| `SMTP_PASS`                 | Optional | Gmail App Password (e.g. `finallinks44AA@@`)                                                                                            |
+| `MAIL_FROM`                 | Optional | `FinalLinks <finallinksreal@gmail.com>`                                                                                                 |
 | `ALLOW_TEMP_PASSWORD_EMAIL` | Optional | `true`                                                                                                                                  |
 
 > [!TIP]
