@@ -61,7 +61,8 @@ You can deploy using either **Blueprint (1-Click)** or **Manual Web Service Setu
    - **Name:** `finallinks-api`
    - **Region:** Choose closest to your Supabase region (e.g., `Oregon (US West)` or `Singapore`).
    - **Branch:** `main`
-   - **Root Directory:** Leave empty (monorepo root).
+   - **Root Directory:** Leave **EMPTY / BLANK** (monorepo root).
+     > ⚠️ **CRITICAL:** Do NOT set Root Directory to `apps/api/src` or `apps/api`. In a Turborepo monorepo, Render must execute from the repository root so it can resolve workspace packages and root lockfiles. If you already set Root Directory to `apps/api/src`, clear it and save settings!
    - **Runtime:** `Node`
    - **Build Command:**
      ```bash
@@ -69,8 +70,9 @@ You can deploy using either **Blueprint (1-Click)** or **Manual Web Service Setu
      ```
    - **Start Command:**
      ```bash
-     node apps/api/dist/main.js
+     pnpm --filter @finallinks/api start:prod
      ```
+     _(Alternatively: `node apps/api/dist/src/main.js` or `node apps/api/dist/main.js`)_
    - **Instance Type:** `Starter` ($7/mo recommended for production) or `Free`.
    - **Health Check Path:** `/api/v1/health`
 

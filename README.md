@@ -196,9 +196,10 @@ FinalLinks includes a `render.yaml` blueprint. In [Render Dashboard](https://das
      ```bash
      pnpm install --frozen-lockfile && pnpm --filter @finallinks/config build && pnpm --filter @finallinks/contracts build && pnpm --filter @finallinks/api db:generate && pnpm --filter @finallinks/api db:migrate:deploy && pnpm --filter @finallinks/api build
      ```
+   - **Root Directory:** Leave empty / blank
    - **Start Command:**
      ```bash
-     node apps/api/dist/main.js
+     pnpm --filter @finallinks/api start:prod
      ```
    - **Health Check Path:** `/api/v1/health`
 3. Set the Production Environment Variables on Render:
