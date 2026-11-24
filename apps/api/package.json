@@ -1,5 +1,5 @@
 {
-  "name": "@findfunlinks/api",
+  "name": "@finallinks/api",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -16,7 +16,7 @@
     "db:seed": "node -r ts-node/register prisma/seed.ts"
   },
   "dependencies": {
-    "@findfunlinks/contracts": "workspace:*",
+    "@finallinks/contracts": "workspace:*",
     "@nestjs/common": "^10.4.15",
     "@nestjs/config": "^3.3.0",
     "@nestjs/core": "^10.4.15",
@@ -46,7 +46,7 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
-    "@findfunlinks/config": "workspace:*",
+    "@finallinks/config": "workspace:*",
     "@nestjs/cli": "^10.4.9",
     "@nestjs/schematics": "^10.2.3",
     "@nestjs/testing": "^10.4.22",
@@ -63,5 +63,8 @@
     "typescript": "^5.7.3",
     "unplugin-swc": "^2.0.0",
     "vitest": "^3.0.5"
+  },
+  "prisma": {
+    "seed": "node -r ts-node/register prisma/seed.ts"
   }
 }

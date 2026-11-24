@@ -3,20 +3,24 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { api } from '../../lib/api';
-import type { Category } from '@findfunlinks/contracts';
+import type { Category } from '@finallinks/contracts';
 import { FolderKanban, Plus, Trash2, Edit, Loader2, X, RotateCcw } from 'lucide-react';
+import { DeleteConfirmModal } from '@/components/DeleteConfirmModal';
 
 export default function CategoriesAdminPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Form state
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
   const [icon, setIcon] = useState('Folder');
+  const [homeLimit, setHomeLimit] = useState(10);
   const [submitting, setSubmitting] = useState(false);
 
   const fetchCategories = async () => {
@@ -41,6 +45,7 @@ export default function CategoriesAdminPage() {
     setSlug('');
     setDescription('');
     setIcon('Folder');
+    setHomeLimit(10);
     setModalOpen(true);
   };
 
@@ -50,6 +55,7 @@ export default function CategoriesAdminPage() {
     setSlug(cat.slug);
     setDescription(cat.description || '');
     setIcon(cat.icon || 'Folder');
+    setHomeLimit(cat.homeLimit ?? 10);
     setModalOpen(true);
   };
 
@@ -68,6 +74,7 @@ export default function CategoriesAdminPage() {
           slug: slug.trim(),
           description: description.trim() || undefined,
           icon: icon.trim() || undefined,
+          homeLimit: Number(homeLimit) || 10,
         });
         toast.success('Category updated.');
       } else {
@@ -76,6 +83,7 @@ export default function CategoriesAdminPage() {
           slug: slug.trim(),
           description: description.trim() || undefined,
           icon: icon.trim() || undefined,
+          homeLimit: Number(homeLimit) || 10,
         });
         toast.success('Category created.');
       }
@@ -88,25 +96,18 @@ export default function CategoriesAdminPage() {
     }
   };
 
-  const handleDelete = async (cat: Category) => {
-    if (cat.websiteCount && cat.websiteCount > 0) {
-      if (
-        !confirm(
-          `Warning: This category contains ${cat.websiteCount} active websites. Are you sure you want to delete it?`,
-        )
-      ) {
-        return;
-      }
-    } else if (!confirm(`Delete category "${cat.name}"?`)) {
-      return;
-    }
-
+  const handleConfirmDelete = async () => {
+    if (!deletingCategory) return;
     try {
-      await api.admin.deleteCategory(cat.id);
+      setDeleteLoading(true);
+      await api.admin.deleteCategory(deletingCategory.id);
       toast.success('Category deleted.');
+      setDeletingCategory(null);
       await fetchCategories();
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Delete failed.');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -115,28 +116,28 @@ export default function CategoriesAdminPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">
+          <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">
             Directory Categories
           </h1>
-          <p className="text-xs text-[#A8B3C7] mt-1">
+          <p className="text-sm text-[#9CA3AF] mt-1">
             Organize directory listings into discovery categories with tailored icons and metadata.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={fetchCategories}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors"
+            className="inline-flex items-center gap-2 px-4 h-11 rounded-lg border border-[#33373D] bg-[#1E2024] text-sm font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white transition-colors"
           >
-            <RotateCcw className="h-3.5 w-3.5" />
+            <RotateCcw className="h-4 w-4" />
             Refresh
           </button>
 
           <button
             type="button"
             onClick={handleOpenCreate}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all shadow-md shadow-[#2563EB]/25"
+            className="inline-flex items-center gap-2 px-4 h-11 rounded-lg bg-[#0B9DF7] hover:bg-[#0987d6] text-white text-sm font-medium transition-colors"
           >
             <Plus className="h-4 w-4" />
             Add Category
@@ -148,51 +149,51 @@ export default function CategoriesAdminPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? (
           <div className="col-span-full py-20 flex justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
+            <Loader2 className="h-7 w-7 animate-spin text-[#0B9DF7]" />
           </div>
         ) : categories.length > 0 ? (
           categories.map((cat) => (
             <div
               key={cat.id}
-              className="rounded-2xl border border-[#1A2442] bg-[#0A1226] p-5 shadow-sm space-y-3 flex flex-col justify-between hover:bg-[#0E182F] transition-colors"
+              className="rounded-xl border border-[#33373D] bg-[#1E2024] p-5 space-y-4 flex flex-col justify-between hover:bg-[#26292F] transition-colors"
             >
               <div>
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-2.5 rounded-xl bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-lg bg-[#26292F] text-[#0B9DF7] border border-[#33373D]">
                       <FolderKanban className="h-5 w-5" />
                     </div>
                     <div>
-                      <h2 className="font-bold text-[#F1F5F9] text-sm">{cat.name}</h2>
-                      <span className="font-mono text-[11px] text-[#3B82F6]">/{cat.slug}</span>
+                      <h2 className="font-semibold text-[#F3F4F6] text-base">{cat.name}</h2>
+                      <span className="font-mono text-xs text-[#0B9DF7]">/{cat.slug}</span>
                     </div>
                   </div>
 
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#1A2442] text-[#A8B3C7]">
+                  <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#26292F] text-[#9CA3AF] border border-[#33373D]">
                     {cat.websiteCount || 0} sites
                   </span>
                 </div>
 
                 {cat.description && (
-                  <p className="text-xs text-[#A8B3C7] mt-3 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[#9CA3AF] mt-3 line-clamp-2 leading-relaxed">
                     {cat.description}
                   </p>
                 )}
               </div>
 
-              <div className="pt-3 border-t border-[#1A2442] flex items-center justify-end gap-1.5">
+              <div className="pt-3 border-t border-[#33373D] flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => handleOpenEdit(cat)}
-                  className="px-2.5 py-1 rounded-lg border border-[#1A2442] bg-[#070D1E] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors inline-flex items-center gap-1"
+                  className="px-3 h-8 rounded-lg border border-[#33373D] bg-[#16181B] text-xs font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white transition-colors inline-flex items-center gap-1.5"
                 >
-                  <Edit className="h-3 w-3" />
+                  <Edit className="h-3.5 w-3.5" />
                   Edit
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleDelete(cat)}
-                  className="p-1 rounded-lg text-[#EF4444] hover:bg-[#EF4444]/20 transition-colors"
+                  onClick={() => setDeletingCategory(cat)}
+                  className="p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
                   title="Delete Category"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -201,32 +202,48 @@ export default function CategoriesAdminPage() {
             </div>
           ))
         ) : (
-          <div className="col-span-full p-12 text-center text-xs text-[#A8B3C7]">
-            No categories defined. Click "Add Category" to create one.
+          <div className="col-span-full p-12 text-center text-sm text-[#9CA3AF]">
+            No categories defined. Click &quot;Add Category&quot; to create one.
           </div>
         )}
       </div>
 
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={!!deletingCategory}
+        onClose={() => setDeletingCategory(null)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Directory Category?"
+        description={
+          deletingCategory?.websiteCount && deletingCategory.websiteCount > 0
+            ? `Warning: This category currently contains ${deletingCategory.websiteCount} active website(s). Deleting it may impact visitor discovery.`
+            : 'Are you sure you want to remove this category? Websites under this category will need to be recategorized.'
+        }
+        itemName={deletingCategory ? deletingCategory.name : undefined}
+        confirmLabel="Delete Category"
+        loading={deleteLoading}
+      />
+
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="rounded-3xl border border-[#1A2442] bg-[#0A1226] max-w-md w-full p-6 space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#1A2442] pb-3">
-              <h2 className="text-base font-bold text-[#F1F5F9]">
+          <div className="rounded-2xl border border-[#33373D] bg-[#1E2024] max-w-md w-full p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#33373D] pb-3">
+              <h2 className="text-base font-bold text-[#F3F4F6]">
                 {editingCategory ? 'Edit Category' : 'Create Category'}
               </h2>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="text-[#A8B3C7] hover:text-[#F1F5F9]"
+                className="text-[#9CA3AF] hover:text-white transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            <form onSubmit={handleSubmit} className="space-y-4 text-sm">
               <div>
-                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                <label className="block text-xs font-medium text-[#9CA3AF] uppercase mb-1.5">
                   Category Name *
                 </label>
                 <input
@@ -245,12 +262,12 @@ export default function CategoriesAdminPage() {
                     }
                   }}
                   placeholder="e.g. Free Anime & Manga"
-                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
+                  className="w-full h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-sm text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                <label className="block text-xs font-medium text-[#9CA3AF] uppercase mb-1.5">
                   URL Slug *
                 </label>
                 <input
@@ -259,37 +276,51 @@ export default function CategoriesAdminPage() {
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                   placeholder="e.g. anime"
-                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs font-mono text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
+                  className="w-full h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-sm font-mono text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                <label className="block text-xs font-medium text-[#9CA3AF] uppercase mb-1.5">
                   Description
                 </label>
                 <textarea
-                  rows={2}
+                  rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Short explanation for category cards..."
-                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
+                  className="w-full rounded-lg border border-[#33373D] bg-[#16181B] p-3 text-sm text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7]"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-[#1A2442]">
+              <div>
+                <label className="block text-xs font-medium text-[#9CA3AF] uppercase mb-1.5">
+                  Home Display Limit (default 10)
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={homeLimit}
+                  onChange={(e) => setHomeLimit(parseInt(e.target.value, 10) || 10)}
+                  className="w-full h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-sm text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7]"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#33373D]">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-3 py-1.5 rounded-lg border border-[#1A2442] bg-[#070D1E] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]"
+                  className="px-4 h-11 rounded-lg border border-[#33373D] bg-[#16181B] text-sm font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-1.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all shadow-md shadow-[#2563EB]/25 disabled:opacity-50 inline-flex items-center gap-1.5"
+                  className="px-5 h-11 rounded-lg bg-[#0B9DF7] hover:bg-[#0987d6] text-white text-sm font-medium transition-colors disabled:opacity-50 inline-flex items-center gap-2"
                 >
-                  {submitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                  {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
                   {editingCategory ? 'Save Changes' : 'Create Category'}
                 </button>
               </div>

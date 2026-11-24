@@ -29,7 +29,7 @@ export async function ensureTestData(prisma: PrismaService) {
   // 2. Super Admin User
   const adminPasswordHash = await argon2.hash('SuperAdminSecretPass123!');
   const superAdmin = await prisma.user.upsert({
-    where: { email: 'admin@findfunlinks.com' },
+    where: { email: 'admin@finallinks.com' },
     update: {
       passwordHash: adminPasswordHash,
       roleId: superAdminRole.id,
@@ -38,7 +38,7 @@ export async function ensureTestData(prisma: PrismaService) {
       lockedUntil: null,
     },
     create: {
-      email: 'admin@findfunlinks.com',
+      email: 'admin@finallinks.com',
       name: 'Platform Super Admin',
       passwordHash: adminPasswordHash,
       status: UserStatus.ACTIVE,

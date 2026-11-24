@@ -1,290 +1,161 @@
 import React from 'react';
+import { BRAND } from '@finallinks/config';
 import { cn } from '../utils';
 
-export interface LogoProps extends React.SVGProps<SVGSVGElement> {
-  variant?: 'light' | 'dark' | 'auto';
-  iconOnly?: boolean;
+export interface LogoProps extends Omit<React.SVGProps<SVGSVGElement>, 'size'> {
+  variant?: 'full' | 'mark' | 'auto' | 'light' | 'dark'; // 'auto' | 'light' | 'dark' supported for backwards compatibility
+  theme?: 'auto' | 'dark' | 'light';
+  size?: 'sm' | 'md' | 'lg' | number;
+  iconOnly?: boolean; // backwards-compatible alias for variant="mark"
   className?: string;
+  priority?: boolean;
 }
 
 export const Logo: React.FC<LogoProps> = ({
-  variant = 'auto',
-  iconOnly = false,
+  variant = 'full',
+  theme = 'auto',
+  size = 'md',
+  iconOnly,
   className,
+  priority: _priority,
+  style,
   ...props
 }) => {
-  const isDark = variant === 'dark';
-  const isLight = variant === 'light';
-  const isAuto = variant === 'auto';
+  // Normalize variant and theme for backward compatibility
+  const resolvedVariant: 'full' | 'mark' =
+    iconOnly || variant === 'mark'
+      ? 'mark'
+      : 'full';
 
-  if (iconOnly) {
+  const resolvedTheme: 'auto' | 'dark' | 'light' =
+    variant === 'dark' || variant === 'light' || variant === 'auto'
+      ? variant
+      : theme;
+
+  const isMark = resolvedVariant === 'mark';
+  const isDark = resolvedTheme === 'dark';
+  const isLight = resolvedTheme === 'light';
+
+  // Height mappings
+  const heightClass =
+    typeof size === 'string'
+      ? size === 'sm'
+        ? 'h-6'
+        : size === 'lg'
+          ? 'h-10'
+          : 'h-8'
+      : undefined;
+
+  const dynamicStyle: React.CSSProperties = {
+    ...(typeof size === 'number' ? { height: `${size}px` } : {}),
+    ...style,
+  };
+
+  if (isMark) {
     return (
       <svg
-        viewBox="0 0 120 120"
+        viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className={cn('h-9 w-9 shrink-0', className)}
+        className={cn(heightClass, 'w-auto shrink-0', className)}
+        style={dynamicStyle}
         role="img"
-        aria-label="FindFunLinks Icon"
+        aria-label={BRAND.name}
         {...props}
       >
         <path
-          d="M28 82L10 100C7 103 7 108 10 111L11 112C14 115 19 115 22 112L40 94"
-          stroke={isDark ? '#2563EB' : isLight ? '#0B57D9' : undefined}
-          className={isAuto ? 'stroke-[#0B57D9] dark:stroke-[#2563EB]' : undefined}
-          strokeWidth="12"
+          d="M52 40L66 26C71.5228 20.4772 80.4772 20.4772 86 26C91.5228 31.5228 91.5228 40.4772 86 46L72 60C66.4772 65.5228 57.5228 65.5228 52 60"
+          stroke={isDark ? '#0B9DF7' : isLight ? '#0A8FE0' : undefined}
+          className="stroke-[#0A8FE0] dark:stroke-[#0B9DF7]"
+          strokeWidth="9"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <circle
-          cx="62"
-          cy="52"
-          r="42"
-          stroke={isDark ? '#3B82F6' : isLight ? '#0B57D9' : undefined}
-          fill={isDark ? '#0B132B' : isLight ? '#FFFFFF' : undefined}
-          className={
-            isAuto
-              ? 'stroke-[#0B57D9] dark:stroke-[#3B82F6] fill-white dark:fill-[#0B132B]'
-              : undefined
-          }
-          strokeWidth="12"
-        />
-        <circle cx="49" cy="40" r="10" fill="#F59E0B" />
-        <line
-          x1="49"
-          y1="24"
-          x2="49"
-          y2="19"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="49"
-          y1="56"
-          x2="49"
-          y2="61"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="33"
-          y1="40"
-          x2="28"
-          y2="40"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="65"
-          y1="40"
-          x2="70"
-          y2="40"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="38"
-          y1="29"
-          x2="34"
-          y2="25"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="60"
-          y1="51"
-          x2="64"
-          y2="55"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="38"
-          y1="51"
-          x2="34"
-          y2="55"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="60"
-          y1="29"
-          x2="64"
-          y2="25"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <path d="M54 44L77 74C73 77 66 79 59 74L50 47Z" fill="#F59E0B" opacity="0.95" />
         <path
-          d="M60 78C58 71 62 67 69 63C72 67 76 69 77 74C78 78 74 81 69 81C63 81 60 79 60 78Z"
-          fill="#EA580C"
-        />
-        <path
-          d="M65 79C64 76 66 74 70 72C72 74 73 76 73 78C73 79 71 80 69 80C67 80 65 79 65 79Z"
-          fill="#FFFFFF"
+          d="M48 60L34 74C28.4772 79.5228 19.5228 79.5228 14 74C8.47715 68.4772 8.47715 59.5228 14 54L28 40C33.5228 34.4772 42.4772 34.4772 48 40"
+          stroke={isDark ? '#0B9DF7' : isLight ? '#0A8FE0' : undefined}
+          className="stroke-[#0A8FE0] dark:stroke-[#0B9DF7]"
+          strokeWidth="9"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <line
-          x1="56"
-          y1="83"
-          x2="82"
-          y2="83"
-          stroke="#EA580C"
-          strokeWidth="3"
+          x1="39"
+          y1="61"
+          x2="61"
+          y2="39"
+          stroke={isDark ? '#0B9DF7' : isLight ? '#0A8FE0' : undefined}
+          className="stroke-[#0A8FE0] dark:stroke-[#0B9DF7]"
+          strokeWidth="9"
           strokeLinecap="round"
         />
       </svg>
     );
   }
 
+  // Full variant: Chain mark + two-tone wordmark
   return (
     <svg
-      viewBox="0 0 540 120"
+      viewBox="0 0 420 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={cn('h-9 w-auto shrink-0', className)}
+      className={cn(heightClass, 'w-auto shrink-0', className)}
+      style={dynamicStyle}
       role="img"
-      aria-label="FindFunLinks Logo"
+      aria-label={BRAND.name}
       {...props}
     >
-      <g transform="translate(10, 10)">
+      <g transform="translate(4, 0)">
         <path
-          d="M26 74L8 92C5 95 5 100 8 103L9 104C12 107 17 107 20 104L38 86"
-          stroke={isDark ? '#2563EB' : isLight ? '#0B57D9' : undefined}
-          className={isAuto ? 'stroke-[#0B57D9] dark:stroke-[#2563EB]' : undefined}
-          strokeWidth="12"
+          d="M52 40L66 26C71.5228 20.4772 80.4772 20.4772 86 26C91.5228 31.5228 91.5228 40.4772 86 46L72 60C66.4772 65.5228 57.5228 65.5228 52 60"
+          stroke={isDark ? '#0B9DF7' : isLight ? '#0A8FE0' : undefined}
+          className="stroke-[#0A8FE0] dark:stroke-[#0B9DF7]"
+          strokeWidth="9"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <circle
-          cx="56"
-          cy="46"
-          r="38"
-          stroke={isDark ? '#3B82F6' : isLight ? '#0B57D9' : undefined}
-          fill={isDark ? '#0B132B' : isLight ? '#FFFFFF' : undefined}
-          className={
-            isAuto
-              ? 'stroke-[#0B57D9] dark:stroke-[#3B82F6] fill-white dark:fill-[#0B132B]'
-              : undefined
-          }
-          strokeWidth="11"
-        />
-        <circle cx="44" cy="35" r="9" fill="#F59E0B" />
-        <line
-          x1="44"
-          y1="21"
-          x2="44"
-          y2="16"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="44"
-          y1="49"
-          x2="44"
-          y2="54"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="30"
-          y1="35"
-          x2="25"
-          y2="35"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="58"
-          y1="35"
-          x2="63"
-          y2="35"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="34"
-          y1="25"
-          x2="30"
-          y2="21"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="54"
-          y1="45"
-          x2="58"
-          y2="49"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="34"
-          y1="45"
-          x2="30"
-          y2="49"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <line
-          x1="54"
-          y1="25"
-          x2="58"
-          y2="21"
-          stroke="#F59E0B"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <path d="M49 39L69 66C66 69 60 70 54 66L45 42Z" fill="#F59E0B" opacity="0.95" />
         <path
-          d="M54 70C52 64 56 60 62 56C65 60 69 62 70 66C71 70 67 73 62 73C57 73 54 71 54 70Z"
-          fill="#EA580C"
-        />
-        <path
-          d="M59 71C58 68 60 66 63 64C65 66 66 68 66 70C66 71 64 72 62 72C60 72 59 71 59 71Z"
-          fill="#FFFFFF"
+          d="M48 60L34 74C28.4772 79.5228 19.5228 79.5228 14 74C8.47715 68.4772 8.47715 59.5228 14 54L28 40C33.5228 34.4772 42.4772 34.4772 48 40"
+          stroke={isDark ? '#0B9DF7' : isLight ? '#0A8FE0' : undefined}
+          className="stroke-[#0A8FE0] dark:stroke-[#0B9DF7]"
+          strokeWidth="9"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <line
-          x1="50"
-          y1="74"
-          x2="74"
-          y2="74"
-          stroke="#EA580C"
-          strokeWidth="3"
+          x1="39"
+          y1="61"
+          x2="61"
+          y2="39"
+          stroke={isDark ? '#0B9DF7' : isLight ? '#0A8FE0' : undefined}
+          className="stroke-[#0A8FE0] dark:stroke-[#0B9DF7]"
+          strokeWidth="9"
           strokeLinecap="round"
         />
       </g>
       <text
-        x="130"
-        y="78"
-        fontFamily="var(--font-heading, 'Poppins', system-ui, sans-serif)"
-        fontSize="64"
+        x="116"
+        y="68"
+        fontFamily="var(--font-heading, system-ui, -apple-system, sans-serif)"
+        fontSize="54"
         fontWeight="800"
-        fill={isDark ? '#FFFFFF' : isLight ? '#0B1220' : undefined}
+        fill={isDark ? '#FFFFFF' : isLight ? '#0F172A' : undefined}
         className={
           isDark
             ? 'fill-white'
             : isLight
-              ? 'fill-slate-900'
-              : 'fill-slate-900 dark:fill-white transition-colors'
+              ? 'fill-[#0F172A]'
+              : 'fill-[#0F172A] dark:fill-white transition-colors'
         }
         letterSpacing="-1.5"
       >
-        FindFun<tspan fill="#3B82F6">Links</tspan>
+        {BRAND.wordmark.first}
+        <tspan
+          fill={isDark ? '#0B9DF7' : isLight ? '#0A8FE0' : undefined}
+          className="fill-[#0A8FE0] dark:fill-[#0B9DF7]"
+        >
+          {BRAND.wordmark.second}
+        </tspan>
       </text>
     </svg>
   );

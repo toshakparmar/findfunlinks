@@ -1,8 +1,8 @@
-# FindFunLinks — Reference Analysis & Original UX Design Specification
+# FinalLinks — Reference Analysis & Original UX Design Specification
 
 ## 1. Executive Summary & Objective
 
-This document analyzes **EverythingMoe** (`everythingmoe.com`) to extract the core functional concepts of a high-utility, community-trusted directory for websites and their active mirrors/domains. FindFunLinks adopts the **core conceptual strengths** (transparent mirror tracking, categorized directory discovery, status health tracking, and fast tag-based filtering) while creating a completely **original visual identity, superior architectural foundation, and modern user experience**.
+This document analyzes **EverythingMoe** (`everythingmoe.com`) to extract the core functional concepts of a high-utility, community-trusted directory for websites and their active mirrors/domains. FinalLinks adopts the **core conceptual strengths** (transparent mirror tracking, categorized directory discovery, status health tracking, and fast tag-based filtering) while creating a completely **original visual identity, superior architectural foundation, and modern user experience**.
 
 No code, copywriting, or graphical assets are copied from the reference site.
 
@@ -32,7 +32,7 @@ No code, copywriting, or graphical assets are copied from the reference site.
 
 ### 2.3 Strengths & Limitations of Reference Site
 
-| Dimension              | Reference Site (EverythingMoe)                                         | Opportunity for FindFunLinks                                                                                                                                                    |
+| Dimension              | Reference Site (EverythingMoe)                                         | Opportunity for FinalLinks                                                                                                                                                    |
 | ---------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Visual Design**      | Utilitarian, dated, somewhat plain developer-centric styling.          | **Original, modern, vibrant visual design** with brand colors (`#0B57D9`, `#F59E0B`, `#EA580C`), glass/soft shadows, light/dark themes, and smooth micro-interactions.          |
 | **Animation & Feel**   | Pure static web styling; minimal micro-interactions.                   | Fluid animations powered by Framer Motion and GSAP scroll triggers while strictly respecting `prefers-reduced-motion`.                                                          |
@@ -43,11 +43,11 @@ No code, copywriting, or graphical assets are copied from the reference site.
 
 ---
 
-## 3. Original UX & Visual Identity for FindFunLinks
+## 3. Original UX & Visual Identity for FinalLinks
 
 ### 3.1 Brand & Palette
 
-FindFunLinks uses an energetic, trustworthy palette derived directly from the official logo:
+FinalLinks uses an energetic, trustworthy palette derived directly from the official logo:
 
 - **Primary Brand Blue (`#0B57D9` / `hsl(218, 90%, 45%)`):** Represents reliability, discovery, and clarity.
 - **Accent Sunny Orange (`#F59E0B` / `hsl(38, 92%, 50%)`):** Warmth, vitality, and optimism.
@@ -57,7 +57,7 @@ FindFunLinks uses an energetic, trustworthy palette derived directly from the of
 
 ### 3.2 Directory Card & Domain Mirror Component Design
 
-Each card on FindFunLinks displays:
+Each card on FinalLinks displays:
 
 1. **Header:** Verified website logo, title, primary category pill, rating badge (`ALL` vs `MATURE`), and bookmark/copy action.
 2. **Body:** Crisp tagline, sanitized summary, tags (e.g. `Free`, `Fast CDN`, `No Ads`, `PWA`).

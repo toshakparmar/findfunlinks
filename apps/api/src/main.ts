@@ -16,7 +16,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const allowedOrigins = (
-    process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:3001,http://localhost:3002'
+    process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:3001'
   )
     .split(',')
     .map((o) => o.trim());
@@ -47,9 +47,9 @@ async function bootstrap() {
   // Swagger Documentation
   if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_SWAGGER === 'true') {
     const config = new DocumentBuilder()
-      .setTitle('FindFunLinks API')
+      .setTitle('FinalLinks API')
       .setDescription(
-        'Production REST API for FindFunLinks directory, Super Admin, and Website Owner portals',
+        'Production REST API for FinalLinks directory, Super Admin, and Website Owner portals',
       )
       .setVersion('1.0')
       .addBearerAuth()
@@ -61,7 +61,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 4000;
   await app.listen(port);
-  console.log(`🚀 FindFunLinks API running on http://localhost:${port}/api/v1`);
+  console.log(`🚀 FinalLinks API running on http://localhost:${port}/api/v1`);
   console.log(`📄 Swagger documentation at http://localhost:${port}/docs`);
 }
 

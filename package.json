@@ -1,5 +1,5 @@
 {
-  "name": "findfunlinks-monorepo",
+  "name": "finallinks-monorepo",
   "private": true,
   "packageManager": "pnpm@10.17.0",
   "scripts": {
@@ -9,7 +9,9 @@
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\""
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\"",
+    "audit:brand": "ts-node -P scripts/tsconfig.json scripts/brand-audit.ts",
+    "audit:font": "ts-node -P scripts/tsconfig.json scripts/font-audit.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",

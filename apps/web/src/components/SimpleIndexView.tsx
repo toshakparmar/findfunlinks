@@ -54,7 +54,7 @@ export function SimpleIndexView({ websites }: SimpleIndexViewProps) {
       <div className="bg-surface-1 border border-token/10 rounded-card shadow-warm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-surface-2/60 border-b border-token/10 text-token-text-faint font-mono text-[11px] uppercase tracking-wider">
+            <thead className="bg-surface-2/60 border-b border-token/10 text-token-text-faint font-mono text-fs-xs uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4 font-semibold w-12 text-center">#</th>
                 <th className="py-3 px-4 font-semibold">Website</th>
@@ -90,7 +90,7 @@ export function SimpleIndexView({ websites }: SimpleIndexViewProps) {
                       {/* Site Name + Favicon */}
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-6 h-6 rounded-chip bg-surface-2 border border-token/10 flex items-center justify-center font-bold text-[10px] shrink-0 overflow-hidden">
+                          <div className="w-6 h-6 rounded-chip bg-surface-2 border border-token/10 flex items-center justify-center font-bold text-fs-xs shrink-0 overflow-hidden">
                             {faviconUrl ? (
                               <img
                                 src={faviconUrl}
@@ -111,7 +111,7 @@ export function SimpleIndexView({ websites }: SimpleIndexViewProps) {
                             >
                               {site.name}
                             </Link>
-                            <span className="text-[11px] text-token/50 line-clamp-1">
+                            <span className="text-fs-xs text-token/50 line-clamp-1">
                               {site.tagline || site.description}
                             </span>
                           </div>
@@ -120,7 +120,7 @@ export function SimpleIndexView({ websites }: SimpleIndexViewProps) {
 
                       {/* Category */}
                       <td className="py-3 px-4 hidden md:table-cell">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-surface-2 text-token/70 border border-token/10">
+                        <span className="px-2 py-0.5 rounded-full text-fs-xs font-mono bg-surface-2 text-token/70 border border-token/10">
                           {site.categoryName}
                         </span>
                       </td>
@@ -133,12 +133,12 @@ export function SimpleIndexView({ websites }: SimpleIndexViewProps) {
                       {/* Status */}
                       <td className="py-3 px-4 text-center">
                         {hasActive ? (
-                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium text-status-online bg-status-online/10">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-fs-xs font-mono font-medium text-status-online bg-status-online/10">
                             <span className="w-1.5 h-1.5 rounded-full bg-status-online status-dot-pulse" />
                             Online
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium text-token-text-faint bg-surface-2">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-fs-xs font-mono font-medium text-token-text-faint bg-surface-2">
                             Unknown
                           </span>
                         )}

@@ -1,5 +1,5 @@
 /**
- * FindFunLinks — Client Design Tokens
+ * FinalLinks — Client Design Tokens
  * Synced with packages/ui/tokens.md and packages/ui/styles/tokens.css
  */
 
@@ -25,6 +25,16 @@ export const DesignTokens = {
   typography: {
     fontHeading: "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     fontBody: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    scale: {
+      xs: '0.8125rem', // 13px (minimum allowed for tags, badges, helper text)
+      sm: '0.875rem',  // 14px (secondary text, pills, meta)
+      base: '1rem',    // 16px (body, row names, sidebar items, inputs, buttons)
+      md: '1.0625rem', // 17px (card subtitles, tile labels, nav pills)
+      lg: '1.25rem',   // 20px (card titles)
+      xl: '1.5rem',    // 24px (section/page titles mobile)
+      '2xl': 'clamp(1.75rem, 3vw, 2.25rem)', // 28-36px (H1 desktop)
+      '3xl': 'clamp(2rem, 4vw, 2.75rem)',    // 32-44px (Categories page title)
+    },
   },
   brand: {
     primary: '#2563EB',

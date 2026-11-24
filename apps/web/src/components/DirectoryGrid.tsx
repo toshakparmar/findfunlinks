@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { DirectoryCard, WebsiteCardData } from './DirectoryCard';
-import { ContentRating } from '@findfunlinks/contracts';
+import { ContentRating } from '@finallinks/contracts';
 import { Folder, Search, Shield, Layers } from 'lucide-react';
 import { CustomSelect } from './ui/CustomSelect';
 
@@ -99,7 +99,7 @@ export function DirectoryGrid({ initialCategories, websites, searchQuery }: Dire
           <Layers className="h-3.5 w-3.5" />
           <span>All Categories</span>
           <span
-            className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+            className={`text-fs-xs px-1.5 py-0.2 rounded-full ${
               selectedCategory === 'all'
                 ? 'bg-primary-foreground/20 text-primary-foreground'
                 : 'bg-muted text-muted-foreground'
@@ -125,7 +125,7 @@ export function DirectoryGrid({ initialCategories, websites, searchQuery }: Dire
             <Folder className="h-3.5 w-3.5" />
             <span>{cat.name}</span>
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+              className={`text-fs-xs px-1.5 py-0.2 rounded-full ${
                 selectedCategory === cat.slug
                   ? 'bg-primary-foreground/20 text-primary-foreground'
                   : 'bg-muted text-muted-foreground'

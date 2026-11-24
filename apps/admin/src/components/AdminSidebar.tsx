@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { api } from '../lib/api';
+import { useAuth } from '../lib/auth-context';
 import {
   LayoutDashboard,
   ClipboardCheck,
@@ -12,13 +13,19 @@ import {
   Radio,
   FolderKanban,
   Tag,
-  Flag,
+  Inbox,
+  Mail,
+  FileText,
   Users,
   History,
   Settings,
-  Shield,
+  KeyRound,
   ExternalLink,
+  BarChart3,
+  LifeBuoy,
+  ArrowUpDown,
 } from 'lucide-react';
+import { BRAND } from '@finallinks/config';
 
 interface AdminSidebarProps {
   onCloseMobile?: () => void;
@@ -26,136 +33,228 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
   const pathname = usePathname();
+  const { user } = useAuth();
   const [pendingCount, setPendingCount] = useState<number | null>(null);
+  const [openQueriesCount, setOpenQueriesCount] = useState<number | null>(null);
 
   useEffect(() => {
     let mounted = true;
-    api.admin
-      .getPendingRegistrationsCount()
-      .then((res) => {
-        if (mounted && typeof res.count === 'number') {
-          setPendingCount(res.count);
-        }
-      })
-      .catch(() => {});
+    const currentRole = user?.role?.type;
+    if (currentRole !== 'SUPER_ADMIN' && currentRole !== 'ADMIN') return;
+
+    const fetchBadges = () => {
+      api.admin
+        .getPendingRegistrationsCount()
+        .then((res) => {
+          if (mounted && typeof res.count === 'number') {
+            setPendingCount(res.count);
+          }
+        })
+        .catch(() => {});
+
+      api.admin
+        .getReports({ limit: 1, status: 'PENDING' })
+        .then((res) => {
+          if (mounted && typeof res.total === 'number') {
+            setOpenQueriesCount(res.total);
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchBadges();
+    const timer = setInterval(fetchBadges, 60000);
+
     return () => {
       mounted = false;
+      clearInterval(timer);
     };
-  }, [pathname]);
-
-  const navItems = [
-    { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-    {
-      href: '/registrations',
-      label: 'Owner Requests',
-      icon: ClipboardCheck,
-      badge: pendingCount && pendingCount > 0 ? pendingCount : null,
-    },
-    { href: '/websites', label: 'Websites Directory', icon: Globe },
-    { href: '/domains', label: 'Domains & Mirrors', icon: Radio },
-    { href: '/categories', label: 'Categories', icon: FolderKanban },
-    { href: '/tags', label: 'Tags', icon: Tag },
-    { href: '/reports', label: 'Reports & Issues', icon: Flag },
-    { href: '/users', label: 'Users & Roles', icon: Users },
-    { href: '/audit-logs', label: 'Audit Logs', icon: History },
-    { href: '/settings', label: 'Platform Settings', icon: Settings },
-  ];
+  }, [user?.role?.type]);
 
   const publicWebUrl = process.env.NEXT_PUBLIC_PUBLIC_WEB_URL || 'http://localhost:3000';
 
+  const roleType = user?.role?.type;
+  const isOwner = roleType === 'WEBSITE_OWNER' || roleType === 'OWNER';
+  const isSuperAdmin = roleType === 'SUPER_ADMIN';
+
+  let navSections = [];
+
+  if (isOwner) {
+    navSections = [
+      {
+        title: 'My Website',
+        items: [
+          { href: '/my-websites', label: 'Dashboard', icon: LayoutDashboard },
+          { href: '/my-websites/domains', label: 'Mirrors & Links', icon: Radio },
+          { href: '/my-websites/edit', label: 'Website Profile', icon: Globe },
+          { href: '/my-websites/analytics', label: 'Analytics', icon: BarChart3 },
+          { href: '/my-websites/support', label: 'Support & Tickets', icon: LifeBuoy },
+        ],
+      },
+      {
+        title: 'Account & Security',
+        items: [
+          { href: '/change-password', label: 'Change Password', icon: KeyRound },
+          { href: '/settings', label: 'Profile & Sessions', icon: Settings },
+        ],
+      },
+    ];
+  } else {
+    // Admin & Super Admin
+    navSections = [
+      {
+        title: 'Overview',
+        items: [
+          { href: '/', label: 'Executive Dashboard', icon: LayoutDashboard },
+        ],
+      },
+      {
+        title: 'Directory & Moderation',
+        items: [
+          { href: '/websites', label: 'Websites Directory', icon: Globe },
+          {
+            href: '/registrations',
+            label: 'Owner Registrations',
+            icon: ClipboardCheck,
+            badge: pendingCount && pendingCount > 0 ? pendingCount : null,
+          },
+          { href: '/ranking', label: 'Website Ranking', icon: ArrowUpDown },
+          { href: '/categories', label: 'Categories', icon: FolderKanban },
+          { href: '/tags', label: 'Tags', icon: Tag },
+          {
+            href: '/inbox',
+            label: 'Queries & Reports',
+            icon: Inbox,
+            badge: openQueriesCount && openQueriesCount > 0 ? openQueriesCount : null,
+          },
+        ],
+      },
+      {
+        title: 'Content & Messaging',
+        items: [
+          { href: '/email-templates', label: 'Email Templates', icon: Mail },
+          { href: '/pages', label: 'CMS Pages', icon: FileText },
+        ],
+      },
+      {
+        title: 'System Management',
+        items: [
+          ...(isSuperAdmin ? [{ href: '/users', label: 'Users & Roles', icon: Users }] : []),
+          { href: '/audit-logs', label: 'Audit Logs', icon: History },
+          ...(isSuperAdmin
+            ? [{ href: '/settings', label: 'Platform Settings', icon: Settings }]
+            : []),
+        ],
+      },
+    ];
+  }
+
+  // Role display badge
+  const roleBadge = isOwner
+    ? { label: 'Owner', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' }
+    : isSuperAdmin
+      ? { label: 'Super Admin', color: 'bg-[#0B9DF7]/10 text-[#0B9DF7] border-[#0B9DF7]/30' }
+      : { label: 'Moderator', color: 'bg-amber-500/10 text-amber-400 border-amber-500/30' };
+
   return (
-    <aside className="w-64 shrink-0 border-r border-[#1A2442] bg-[#070D1E] flex flex-col justify-between h-full select-none">
+    <aside className="w-64 shrink-0 border-r border-[#33373D] bg-[#1E2024] flex flex-col justify-between h-full select-none">
       <div>
         {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-[#1A2442]">
-          <Link href="/" className="flex items-center gap-2.5" onClick={onCloseMobile}>
-            <div className="relative w-8 h-8 flex-shrink-0">
+        <div className="h-16 flex items-center justify-between px-5 border-b border-[#33373D]">
+          <Link
+            href={isOwner ? '/my-websites' : '/'}
+            className="flex items-center gap-2.5"
+            onClick={onCloseMobile}
+          >
+            <div className="relative w-7 h-7 flex-shrink-0">
               <Image
-                src="/logo-mark.svg"
-                alt="FindFunLinks"
-                fill
+                src="/mark-blue.svg"
+                alt={BRAND.name}
+                width={28}
+                height={28}
                 className="object-contain"
                 priority
               />
             </div>
             <div>
-              <span className="font-bold text-sm tracking-tight text-[#F1F5F9] block">
-                FindFunLinks
+              <span className="font-bold text-sm tracking-tight text-[#F3F4F6] block">
+                {BRAND.name}
               </span>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#3B82F6] block -mt-1">
-                Admin Console
+              <span className="text-[11px] font-medium text-[#9CA3AF] block -mt-0.5">
+                {isOwner ? 'Owner Console' : 'Admin Console'}
               </span>
             </div>
           </Link>
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#2563EB]/15 text-[#3B82F6] uppercase tracking-wider border border-[#2563EB]/30">
-            <Shield className="h-2.5 w-2.5" />
-            Super
+
+          <span
+            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${roleBadge.color}`}
+          >
+            {roleBadge.label}
           </span>
         </div>
 
-        {/* Navigation */}
-        <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-140px)]">
-          <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#6B7893]">
-            Operations
-          </div>
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+        {/* Navigation Sections */}
+        <nav className="p-3 space-y-5 overflow-y-auto max-h-[calc(100vh-140px)]">
+          {navSections.map((section, idx) => (
+            <div key={idx} className="space-y-1">
+              <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[#9CA3AF]/70 mb-1.5">
+                {section.title}
+              </p>
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onCloseMobile}
-                className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                  isActive
-                    ? 'bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/30'
-                    : 'text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]'
-                }`}
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <Icon
-                    className={`h-4 w-4 shrink-0 ${isActive ? 'text-white' : 'text-[#6B7893]'}`}
-                  />
-                  <span className="truncate">{item.label}</span>
-                </div>
-                {item.badge && (
-                  <span
-                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const isActive =
+                  item.href === '/' || item.href === '/my-websites'
+                    ? pathname === item.href
+                    : pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onCloseMobile}
+                    className={`flex items-center justify-between px-3 h-11 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-white/20 text-white'
-                        : 'bg-[#2563EB]/20 text-[#3B82F6] border border-[#2563EB]/30'
+                        ? 'bg-[#26292F] text-white font-semibold shadow-sm'
+                        : 'text-[#D1D5DB] hover:bg-[#26292F]/60 hover:text-white'
                     }`}
                   >
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
+                    <div className="flex items-center gap-2.5">
+                      <Icon
+                        className={`h-4 w-4 ${
+                          isActive ? 'text-[#0B9DF7]' : 'text-[#9CA3AF]'
+                        }`}
+                      />
+                      <span>{item.label}</span>
+                    </div>
 
-          <div className="pt-3 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#6B7893]">
-            Directory View
-          </div>
-          <a
-            href={publicWebUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-all group"
-          >
-            <div className="flex items-center gap-3">
-              <ExternalLink className="h-4 w-4 text-[#3B82F6]" />
-              <span>Open Public Site</span>
+                    {item.badge !== undefined && item.badge !== null && item.badge > 0 && (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-[#0B9DF7] text-white">
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
             </div>
-            <span className="text-[10px] text-[#6B7893] group-hover:text-[#A8B3C7]">↗</span>
-          </a>
+          ))}
         </nav>
       </div>
 
-      {/* Footer Info */}
-      <div className="p-4 border-t border-[#1A2442] text-[11px] text-[#6B7893] flex items-center justify-between">
-        <span>FindFunLinks v0.1.0</span>
-        <span className="w-2 h-2 rounded-full bg-[#22C55E]" title="API Connected" />
+      {/* Footer / Public Directory Link */}
+      <div className="p-3 border-t border-[#33373D]">
+        <a
+          href={publicWebUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between px-3 h-11 rounded-lg text-xs font-medium text-[#9CA3AF] hover:bg-[#26292F] hover:text-[#F3F4F6] transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 text-[#0B9DF7]" />
+            <span>Open Public Directory</span>
+          </div>
+          <ExternalLink className="h-3.5 w-3.5 text-[#6B7280]" />
+        </a>
       </div>
     </aside>
   );

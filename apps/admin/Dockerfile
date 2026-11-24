@@ -28,9 +28,9 @@ COPY apps/admin/ ./apps/admin/
 RUN pnpm install --frozen-lockfile
 
 # Build shared contracts, api-client, ui, and admin app
-RUN pnpm --filter @findfunlinks/contracts build
-RUN pnpm --filter @findfunlinks/api-client build
-RUN pnpm --filter @findfunlinks/admin build
+RUN pnpm --filter @finallinks/contracts build
+RUN pnpm --filter @finallinks/api-client build
+RUN pnpm --filter @finallinks/admin build
 
 # Stage 3: Runner
 FROM node:22-alpine AS runner

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/register/edit'],
     },
-    sitemap: 'https://findfunlinks.com/sitemap.xml',
+    sitemap: 'https://finallinks.com/sitemap.xml',
   };
 }

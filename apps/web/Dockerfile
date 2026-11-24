@@ -28,9 +28,9 @@ COPY apps/web/ ./apps/web/
 RUN pnpm install --frozen-lockfile
 
 # Build shared contracts, api-client, ui, and web app
-RUN pnpm --filter @findfunlinks/contracts build
-RUN pnpm --filter @findfunlinks/api-client build
-RUN pnpm --filter @findfunlinks/web build
+RUN pnpm --filter @finallinks/contracts build
+RUN pnpm --filter @finallinks/api-client build
+RUN pnpm --filter @finallinks/web build
 
 # Stage 3: Runner
 FROM node:22-alpine AS runner

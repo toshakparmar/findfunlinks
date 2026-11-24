@@ -8,6 +8,7 @@ export const CategorySchema = z.object({
   description: z.string().trim().max(300).nullable().optional(),
   icon: z.string().trim().max(50).nullable().optional(),
   sortOrder: z.number().int().default(0),
+  homeLimit: z.number().int().min(1).max(50).default(10).optional(),
   isActive: z.boolean().default(true),
   websiteCount: z.number().int().default(0).optional(),
 });
@@ -19,6 +20,7 @@ export const CreateCategorySchema = CategorySchema.pick({
   description: true,
   icon: true,
   sortOrder: true,
+  homeLimit: true,
   isActive: true,
 });
 export type CreateCategoryInput = z.infer<typeof CreateCategorySchema>;

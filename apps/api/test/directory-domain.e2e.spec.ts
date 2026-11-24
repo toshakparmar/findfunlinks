@@ -65,7 +65,7 @@ describe('Phase 3: Directory Domain & Complete Workflow (E2E)', () => {
 
     // Authenticate Super Admin
     const loginRes = await request(app.getHttpServer()).post('/api/v1/auth/login').send({
-      email: 'admin@findfunlinks.com',
+      email: 'admin@finallinks.com',
       password: 'SuperAdminSecretPass123!',
     });
     superAdminAccessToken = loginRes.body.data.accessToken;
@@ -110,7 +110,7 @@ describe('Phase 3: Directory Domain & Complete Workflow (E2E)', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data.site_name).toBe('FindFunLinks');
+      expect(res.body.data.site_name).toBe('FinalLinks');
       expect(res.body.data.registrations_enabled).toBe(true);
     });
   });
@@ -509,7 +509,7 @@ describe('Phase 3: Directory Domain & Complete Workflow (E2E)', () => {
 
       expect(updateRes.status).toBe(200);
       expect(updateRes.body.data.status).toBe('RESOLVED');
-      expect(updateRes.body.data.handledBy.email).toBe('admin@findfunlinks.com');
+      expect(updateRes.body.data.handledBy.email).toBe('admin@finallinks.com');
     });
   });
 

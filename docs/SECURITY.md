@@ -1,14 +1,14 @@
-# FindFunLinks — Security & Threat Modeling Specification
+# FinalLinks — Security & Threat Modeling Specification
 
 ## 1. Overview & Security Philosophy
 
-FindFunLinks operates under the principle of **Defense-in-Depth** and aligns with **OWASP Application Security Verification Standard (ASVS) Level 2**. All user input is considered untrusted, zero trust is assumed between internal components, and cryptographic routines utilize industry-standard, battle-tested algorithms.
+FinalLinks operates under the principle of **Defense-in-Depth** and aligns with **OWASP Application Security Verification Standard (ASVS) Level 2**. All user input is considered untrusted, zero trust is assumed between internal components, and cryptographic routines utilize industry-standard, battle-tested algorithms.
 
 ---
 
 ## 2. STRIDE Threat Model & Mitigations
 
-| Threat Category            | Potential Attack Vector                                                         | Countermeasure in FindFunLinks                                                                                                                                                                           |
+| Threat Category            | Potential Attack Vector                                                         | Countermeasure in FinalLinks                                                                                                                                                                           |
 | -------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Spoofing**               | Credential brute-forcing, credential stuffing, token replay                     | **Argon2id** password hashing with salt, progressive account lockout (exponential delay), dual-token JWT architecture with rotating refresh token families, and instant revocation upon reuse detection. |
 | **Tampering**              | Insecure Direct Object References (IDOR), parameter tampering, mirror hijacking | Strict NestJS `OwnerScopeGuard` verifying owner relationship against database records before modifying websites or domains; contracts-first Zod validation schemas (`forbidNonWhitelisted: true`).       |
@@ -41,7 +41,7 @@ All user passwords are encrypted using Argon2id (`argon2` algorithm variant 2):
 
 ## 4. Role-Based Access Control (RBAC) Matrix
 
-FindFunLinks enforces four primary system roles:
+FinalLinks enforces four primary system roles:
 
 | Module / Permission                 | Super Admin | Moderator | Auditor | Website Owner |
 | ----------------------------------- | :---------: | :-------: | :-----: | :-----------: |
@@ -100,4 +100,4 @@ Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
 
 ## 7. Vulnerability Disclosure & Incident Response
 
-Security issues should be submitted to `security@findfunlinks.com`. Security reports are acknowledged within 24 hours and critical patches are deployed under our expedited incident response protocol.
+Security issues should be submitted to `security@finallinks.com`. Security reports are acknowledged within 24 hours and critical patches are deployed under our expedited incident response protocol.

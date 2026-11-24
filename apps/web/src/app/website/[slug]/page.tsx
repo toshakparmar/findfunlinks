@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { api } from '../../../lib/api';
 import { WebsiteDetailView } from '../../../components/WebsiteDetailView';
 import { FALLBACK_WEBSITES } from '../../../lib/directory-data';
-import { ContentRating, DomainStatus, DomainType } from '@findfunlinks/contracts';
+import { ContentRating, DomainStatus, DomainType } from '@finallinks/contracts';
 
 interface WebsitePageProps {
   params: Promise<{ slug: string }>;
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: WebsitePageProps): Promise<Me
   const { slug } = await params;
   const fallback = FALLBACK_WEBSITES.find((w) => w.slug === slug);
   const title = fallback ? `${fallback.name} — Verified Working Mirrors` : 'Website Details';
-  const description = fallback?.tagline || 'Working domains and live mirrors on FindFunLinks.';
+  const description = fallback?.tagline || 'Working domains and live mirrors on FinalLinks.';
 
   return {
     title,
@@ -89,7 +89,7 @@ export default async function WebsiteDetailPage({ params }: WebsitePageProps) {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: websiteData.name,
-    url: `https://findfunlinks.com/website/${websiteData.slug}`,
+    url: `https://finallinks.com/website/${websiteData.slug}`,
     description: websiteData.description,
     alternateName: websiteData.domains.map((d) => d.hostname),
   };

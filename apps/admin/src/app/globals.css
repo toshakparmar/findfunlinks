@@ -5,44 +5,43 @@
 @layer base {
   :root,
   .dark {
-    /* FindFunLinks Dark Navy Palette (Main Website Theme) */
-    --bg: #050A18;
-    --header: #070D1E;
-    --sidebar: #070D1E;
-    --card: #0A1226;
-    --card-hover: #0E182F;
-    --surface-1: #0A1226;
-    --surface-2: #0E182F;
-    --line: #1A2442;
-    --border: #1A2442;
-    --border-strong: rgba(59, 130, 246, 0.4);
+    /* FinalLinks Console — Dark-Grey Professional UI Palette */
+    --bg: #16181B;
+    --header: #1E2024;
+    --sidebar: #1E2024;
+    --card: #1E2024;
+    --card-hover: #26292F;
+    --surface-1: #1E2024;
+    --surface-2: #26292F;
+    --surface-3: #2F333B;
+    --line: #33373D;
+    --border: #33373D;
+    --border-strong: #0B9DF7;
 
-    --text: #F1F5F9;
-    --text-muted: #A8B3C7;
-    --text-faint: #6B7893;
-    --text-2: #A8B3C7;
-    --text-3: #6B7893;
+    --text: #F3F4F6;
+    --text-muted: #9CA3AF;
+    --text-faint: #6B7280;
 
-    --primary: 221 83% 53%; /* #2563EB */
+    --primary: 204 94% 51%; /* #0B9DF7 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 38 92% 50%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 220 9% 46%;
+    --secondary-foreground: 0 0% 100%;
 
-    --background: 224 67% 6%; /* #050A18 */
-    --foreground: 210 40% 96%; /* #F1F5F9 */
-    --card-bg: 224 57% 9%; /* #0A1226 */
-    --card-foreground: 210 40% 96%;
-    --popover: 224 57% 9%;
-    --popover-foreground: 210 40% 96%;
-    --muted: 224 43% 18%; /* #1A2442 */
-    --muted-foreground: 217 19% 72%; /* #A8B3C7 */
-    --accent: 224 43% 18%;
-    --accent-foreground: 210 40% 96%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --input: 224 43% 18%;
-    --ring: 221 83% 53%;
-    --radius: 0.75rem;
+    --background: 220 10% 10%; /* #16181B */
+    --foreground: 210 20% 96%; /* #F3F4F6 */
+    --card-bg: 220 9% 13%; /* #1E2024 */
+    --card-foreground: 210 20% 96%;
+    --popover: 220 9% 13%;
+    --popover-foreground: 210 20% 96%;
+    --muted: 215 9% 22%; /* #33373D */
+    --muted-foreground: 218 11% 65%; /* #9CA3AF */
+    --accent: 215 9% 22%;
+    --accent-foreground: 210 20% 96%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --input: 215 9% 22%;
+    --ring: 204 94% 51%;
+    --radius: 0.5rem;
 
     --status-online: #22C55E;
     --status-slow: #F59E0B;
@@ -52,12 +51,12 @@
 
 @layer base {
   * {
-    border-color: #1A2442;
+    border-color: #33373D;
   }
   body {
-    background-color: #050A18;
-    color: #F1F5F9;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+    background-color: #16181B;
+    color: #F3F4F6;
+    font-family: var(--font-sans), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -69,12 +68,82 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #050A18;
+  background: #16181B;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1A2442;
+  background: #33373D;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2563EB;
+  background: #0B9DF7;
+}
+
+/* Base button and input sizing overrides for touch and enterprise readability */
+.panel-input {
+  height: 44px;
+  border-radius: 0.5rem;
+  border: 1px solid #33373D;
+  background-color: #16181B;
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
+  font-size: 0.875rem;
+  color: #F3F4F6;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.panel-input:focus {
+  border-color: #0B9DF7;
+  box-shadow: 0 0 0 1px #0B9DF7;
+}
+
+.panel-input::placeholder {
+  color: #6B7280;
+}
+
+.panel-btn-primary {
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: #0B9DF7;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.panel-btn-primary:hover:not(:disabled) {
+  background-color: #0A8FE0;
+}
+
+.panel-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.panel-btn-secondary {
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #33373D;
+  background-color: #1E2024;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #F3F4F6;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.panel-btn-secondary:hover:not(:disabled) {
+  background-color: #26292F;
+  border-color: #4B5563;
 }

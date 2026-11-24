@@ -9,7 +9,7 @@ import {
   SubmitRegistrationSchema,
   SubmitRegistrationInput,
   ContentRating,
-} from '@findfunlinks/contracts';
+} from '@finallinks/contracts';
 import { CategoryTab } from './DirectoryGrid';
 import { CustomSelect } from './ui/CustomSelect';
 import { Globe, User, Plus, X, Loader2, CheckCircle2, Info, ArrowRight } from 'lucide-react';

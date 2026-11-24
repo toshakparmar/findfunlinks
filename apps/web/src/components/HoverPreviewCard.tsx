@@ -27,15 +27,15 @@ export function HoverPreviewCard({ site, children }: HoverPreviewCardProps) {
             </div>
             <div className="truncate">
               <span className="font-semibold text-token text-xs block truncate">{site.name}</span>
-              <span className="text-[10px] text-token/40 font-mono block">{site.categoryName}</span>
+              <span className="text-fs-xs text-token/40 font-mono block">{site.categoryName}</span>
             </div>
           </div>
 
-          <p className="text-[11px] text-token/70 leading-relaxed line-clamp-2 mb-2.5">
+          <p className="text-fs-xs text-token/70 leading-relaxed line-clamp-2 mb-2.5">
             {site.tagline || site.description}
           </p>
 
-          <div className="flex items-center justify-between pt-2 border-t border-token/10 text-[10px] font-mono">
+          <div className="flex items-center justify-between pt-2 border-t border-token/10 text-fs-xs font-mono">
             <span className="text-status-online flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-status-online" />
               Verified Active

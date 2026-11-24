@@ -1,18 +1,18 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: findfunlinks_postgres
+    container_name: finallinks_postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-findfunlinks_prod}
+      POSTGRES_DB: ${POSTGRES_DB:-finallinks_prod}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d ${POSTGRES_DB:-findfunlinks_prod}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ${POSTGRES_DB:-finallinks_prod}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -21,7 +21,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: findfunlinks_redis
+    container_name: finallinks_redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -37,7 +37,7 @@ services:
 
   mailpit:
     image: axllent/mailpit:latest
-    container_name: findfunlinks_mailpit
+    container_name: finallinks_mailpit
     restart: unless-stopped
     ports:
       - "1025:1025"
@@ -54,12 +54,12 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    container_name: findfunlinks_api
+    container_name: finallinks_api
     restart: unless-stopped
     environment:
       PORT: 4000
       NODE_ENV: production
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-findfunlinks_prod}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-finallinks_prod}?schema=public
       REDIS_HOST: redis
       REDIS_PORT: 6379
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change_this_to_a_secure_random_string_in_production_32_chars}
@@ -68,9 +68,9 @@ services:
       REFRESH_TOKEN_EXPIRES_IN: 7d
       MAIL_HOST: mailpit
       MAIL_PORT: 1025
-      MAIL_FROM: "FindFunLinks <noreply@findfunlinks.com>"
+      MAIL_FROM: "FinalLinks <noreply@finallinks.com>"
       ENABLE_SWAGGER: "false"
-      CORS_ORIGIN: "https://findfunlinks.com,https://www.findfunlinks.com,https://admin.findfunlinks.com,https://owner.findfunlinks.com,http://localhost:3000,http://localhost:3001,http://localhost:3002"
+      CORS_ORIGIN: "https://finallinks.com,https://www.finallinks.com,https://admin.finallinks.com,http://localhost:3000,http://localhost:3001"
     depends_on:
       postgres:
         condition: service_healthy
@@ -85,8 +85,8 @@ services:
       dockerfile: apps/web/Dockerfile
       args:
         NEXT_PUBLIC_API_URL: http://api:4000
-        NEXT_PUBLIC_SITE_URL: https://findfunlinks.com
-    container_name: findfunlinks_web
+        NEXT_PUBLIC_SITE_URL: https://finallinks.com
+    container_name: finallinks_web
     restart: unless-stopped
     environment:
       PORT: 3000
@@ -103,33 +103,14 @@ services:
       dockerfile: apps/admin/Dockerfile
       args:
         NEXT_PUBLIC_API_URL: http://api:4000
-        NEXT_PUBLIC_PUBLIC_WEB_URL: https://findfunlinks.com
-    container_name: findfunlinks_admin
+        NEXT_PUBLIC_PUBLIC_WEB_URL: https://finallinks.com
+    container_name: finallinks_admin
     restart: unless-stopped
     environment:
       PORT: 3001
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: http://api:4000
-      NEXT_PUBLIC_PUBLIC_WEB_URL: https://findfunlinks.com
-    depends_on:
-      - api
-    networks:
-      - internal
-
-  owner:
-    build:
-      context: .
-      dockerfile: apps/owner/Dockerfile
-      args:
-        NEXT_PUBLIC_API_URL: http://api:4000
-        NEXT_PUBLIC_PUBLIC_WEB_URL: https://findfunlinks.com
-    container_name: findfunlinks_owner
-    restart: unless-stopped
-    environment:
-      PORT: 3002
-      NODE_ENV: production
-      NEXT_PUBLIC_API_URL: http://api:4000
-      NEXT_PUBLIC_PUBLIC_WEB_URL: https://findfunlinks.com
+      NEXT_PUBLIC_PUBLIC_WEB_URL: https://finallinks.com
     depends_on:
       - api
     networks:
@@ -137,7 +118,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: findfunlinks_nginx
+    container_name: finallinks_nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -148,7 +129,6 @@ services:
     depends_on:
       - web
       - admin
-      - owner
       - api
     networks:
       - internal

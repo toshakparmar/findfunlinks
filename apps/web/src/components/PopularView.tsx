@@ -1,18 +1,15 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import {
-  Flame,
-  TrendingUp,
-  Search,
   Trophy,
-  ChevronRight,
-  PlusCircle,
-  ArrowRight,
+  Star,
 } from 'lucide-react';
+import { api } from '../lib/api';
 import { CLIENT_18_CATEGORIES } from '../lib/client-catalog';
-import { SiteDomainsDrawer, SiteDetailModalData } from './SiteDomainsDrawer';
+import { PageHeader, FilterGroup } from './PageHeader';
+import { SiteRow } from './SiteRow';
 
 type PopularRange = '24h' | '7d' | '30d' | 'all';
 
@@ -27,16 +24,104 @@ interface PopularSiteItem {
   faviconUrl?: string | null;
   bestDomainUrl?: string;
   domains: any[];
+  stars: number;
   clicks: number;
   clicksFormatted: string;
   trendPercent: number;
 }
 
+const POPULAR_FILTER_GROUPS: FilterGroup[] = [
+  {
+    id: 'range',
+    label: 'Time Range',
+    options: [
+      { value: 'all', label: 'All time' },
+      { value: '30d', label: 'Last 30 days' },
+      { value: '7d', label: 'Last 7 days' },
+      { value: '24h', label: 'Last 24 hours' },
+    ],
+  },
+  {
+    id: 'category',
+    label: 'Category',
+    options: [
+      { value: 'all', label: 'All categories' },
+      ...CLIENT_18_CATEGORIES.map((cat) => ({
+        value: cat.slug,
+        label: cat.name,
+      })),
+    ],
+  },
+];
+
 export function PopularView() {
-  const [range, setRange] = useState<PopularRange>('7d');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDrawerSite, setSelectedDrawerSite] = useState<SiteDetailModalData | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const initialRange = (searchParams?.get('range') || '7d') as PopularRange;
+  const initialCategory = searchParams?.get('category') || 'all';
+  const initialQ = searchParams?.get('q') || '';
+
+  const [range, setRange] = useState<PopularRange>(initialRange);
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
+  const [searchQuery, setSearchQuery] = useState(initialQ);
+  const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
+  const [liveWebsites, setLiveWebsites] = useState<any[]>([]);
+
+  const syncToUrl = useCallback(
+    (q: string, rng: string, category: string) => {
+      const params = new URLSearchParams();
+      if (q.trim()) params.set('q', q.trim());
+      if (rng && rng !== '7d') params.set('range', rng);
+      if (category && category !== 'all') params.set('category', category);
+
+      const qs = params.toString();
+      const newUrl = qs ? `${pathname}?${qs}` : pathname;
+      router.replace(newUrl, { scroll: false });
+    },
+    [pathname, router],
+  );
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    syncToUrl(val, range, selectedCategory);
+  };
+
+  const handleFilterChange = (groupId: string, val: string) => {
+    if (groupId === 'range') {
+      const newRange = val as PopularRange;
+      setRange(newRange);
+      syncToUrl(searchQuery, newRange, selectedCategory);
+    } else if (groupId === 'category') {
+      setSelectedCategory(val);
+      syncToUrl(searchQuery, range, val);
+    }
+  };
+
+  useEffect(() => {
+    api.public
+      .getWebsitesGrouped()
+      .then((res: any) => {
+        if (Array.isArray(res)) {
+          const allSites: any[] = [];
+          res.forEach((group: any) => {
+            if (group.websites && Array.isArray(group.websites)) {
+              group.websites.forEach((w: any) => {
+                allSites.push({
+                  ...w,
+                  categoryName: group.category?.name || 'Curated',
+                  categorySlug: group.category?.slug || 'curated',
+                  accentColor: '#3B82F6',
+                });
+              });
+            }
+          });
+          if (allSites.length > 0) setLiveWebsites(allSites);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Generate popular sites ranked across catalog
   const rankedSites = useMemo<PopularSiteItem[]>(() => {
@@ -71,6 +156,7 @@ export function PopularView() {
           faviconUrl: site.faviconUrl,
           bestDomainUrl: site.bestDomainUrl,
           domains: site.domains || [],
+          stars: 0,
           clicks,
           clicksFormatted,
           trendPercent,
@@ -78,9 +164,48 @@ export function PopularView() {
       });
     });
 
-    list.sort((a, b) => b.clicks - a.clicks);
+    // Merge live database websites and their stars
+    liveWebsites.forEach((w) => {
+      const existingIdx = list.findIndex((s) => s.slug === w.slug || s.id === w.id);
+      const stars = typeof w.stars === 'number' ? w.stars : 0;
+      const clicks = (w.viewCount || 0) + stars * 100;
+      const item: PopularSiteItem = {
+        id: w.id,
+        name: w.name,
+        displayName: w.name,
+        slug: w.slug,
+        categoryName: w.categoryName || 'Curated',
+        categorySlug: w.categorySlug || 'curated',
+        accentColor: '#3B82F6',
+        faviconUrl: w.logoUrl,
+        bestDomainUrl: w.domains?.[0]?.url,
+        domains: w.domains || [],
+        stars,
+        clicks,
+        clicksFormatted: clicks >= 1000 ? `${(clicks / 1000).toFixed(1)}K` : `${clicks}`,
+        trendPercent: 14.8,
+      };
+
+      if (existingIdx !== -1 && list[existingIdx]) {
+        list[existingIdx] = {
+          ...list[existingIdx]!,
+          ...item,
+          stars: Math.max(list[existingIdx]!.stars || 0, stars),
+        };
+      } else {
+        list.unshift(item);
+      }
+    });
+
+    list.sort((a, b) => {
+      // Sort primarily by stars (highest stars first)
+      if ((b.stars || 0) !== (a.stars || 0)) {
+        return (b.stars || 0) - (a.stars || 0);
+      }
+      return b.clicks - a.clicks;
+    });
     return list;
-  }, [range]);
+  }, [range, liveWebsites]);
 
   // Filter based on category and search
   const filteredSites = useMemo(() => {
@@ -129,201 +254,77 @@ export function PopularView() {
 
   return (
     <div className="w-full space-y-6">
-      {/* 1. Breadcrumbs */}
-      <nav
-        aria-label="Breadcrumb"
-        className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium"
-      >
-        <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
-          Home
-        </Link>
-        <ChevronRight className="w-3.5 h-3.5 text-[var(--line,#1A2442)]" />
-        <span className="text-slate-900 dark:text-white font-semibold">Popular Websites</span>
-      </nav>
+      {/* 1. Page Header (No banner, no visible breadcrumb) */}
+      <PageHeader
+        title="Most Popular Websites"
+        count={filteredSites.length}
+        countLabel="websites"
+        subtitle="Ranked by community stars and overall visitor popularity"
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        searchPlaceholder="Search popular websites…"
+        filterGroups={POPULAR_FILTER_GROUPS}
+        selectedFilters={{
+          range,
+          category: selectedCategory,
+        }}
+        onFilterChange={handleFilterChange}
+      />
 
-      {/* 2. Header Banner (Matching Category Detail Style) */}
-      <div className="rounded-[16px] p-4 sm:p-5 md:p-6 bg-[var(--card,#0A1226)] border border-[var(--primary,#2563EB)]/50 shadow-[0_0_24px_-8px_rgba(37,99,235,0.35)] relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-start sm:items-center gap-3.5">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-[12px] bg-[var(--primary,#2563EB)]/15 border border-[var(--primary,#2563EB)]/40 flex items-center justify-center text-[var(--brand-link,#3B82F6)] shrink-0">
-              <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--primary,#2563EB)]" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white font-heading">
-                  Most Popular Websites
-                </h1>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[var(--primary,#2563EB)]/15 border border-[var(--primary,#2563EB)]/30 text-[var(--brand-link,#3B82F6)]">
-                  Top Ranked Traffic
-                </span>
-              </div>
-              <p className="text-xs text-[var(--text-2,#A8B3C7)] mt-1 max-w-2xl">
-                Highest-traffic destinations and trending web platforms across all 18 curated
-                directory categories.
-              </p>
-            </div>
-          </div>
-
-          <Link
-            href="/register"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-[12px] text-xs font-semibold bg-[var(--primary,#2563EB)] hover:bg-[var(--primary-hover,#1D4ED8)] text-white shadow-sm transition-colors shrink-0 self-start md:self-auto cursor-pointer"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            <span>List Your Website</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* 3. Controls Toolbar (Matching Category View Toolbar) */}
-      <div className="sticky top-14 md:top-16 z-20 py-2.5 bg-[var(--bg,#050A18)]/95 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-y border-[var(--line,#1A2442)]/60">
-        {/* Time Range Toggle */}
-        <div className="grid grid-cols-4 sm:flex items-center p-1 rounded-[10px] bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] text-xs font-medium w-full sm:w-auto shrink-0 gap-0.5">
-          {(
-            [
-              { id: '24h', label: 'Last 24h' },
-              { id: '7d', label: '7 Days' },
-              { id: '30d', label: '30 Days' },
-              { id: 'all', label: 'All Time' },
-            ] as const
-          ).map((seg) => (
-            <button
-              key={seg.id}
-              type="button"
-              onClick={() => setRange(seg.id)}
-              className={`px-1.5 sm:px-3 py-1.5 rounded-[8px] text-[11px] sm:text-xs text-center justify-center transition-all cursor-pointer ${
-                range === seg.id
-                  ? 'bg-[var(--primary,#2563EB)] text-white font-semibold shadow-sm'
-                  : 'text-[var(--text-2,#A8B3C7)] hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              {seg.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Search Box */}
-        <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-3,#6B7893)]" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search popular websites..."
-            className="w-full bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] focus:border-[var(--primary,#2563EB)] rounded-[10px] pl-9 pr-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-[var(--text-3,#6B7893)] outline-none transition-colors"
-          />
-        </div>
-      </div>
-
-      {/* Category Chips Horizontal Filter */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
-        <button
-          type="button"
-          onClick={() => setSelectedCategory('all')}
-          className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-colors cursor-pointer text-xs ${
-            selectedCategory === 'all'
-              ? 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white font-semibold border border-slate-300 dark:border-white/20'
-              : 'text-[var(--text-2,#A8B3C7)] hover:text-slate-900 dark:hover:text-white border border-transparent'
-          }`}
-        >
-          All Categories
-        </button>
-        {CLIENT_18_CATEGORIES.map((cat) => (
-          <button
-            key={cat.slug}
-            type="button"
-            onClick={() => setSelectedCategory(cat.slug)}
-            className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-colors cursor-pointer text-xs ${
-              selectedCategory === cat.slug
-                ? 'bg-[var(--primary,#2563EB)] text-white font-semibold border border-[var(--primary,#2563EB)]'
-                : 'text-[var(--text-2,#A8B3C7)] hover:text-slate-900 dark:hover:text-white border border-[var(--line,#1A2442)] bg-[var(--card,#0A1226)]'
-            }`}
-          >
-            {cat.name}
-          </button>
-        ))}
-      </div>
-
-      {/* 4. Top 3 Highlighted Cards (Structured like CategoryCards) */}
+      {/* 2. Top 3 Spotlight Podium */}
       {top3.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {top3.map((site, index) => {
-            const style = (top3Styles[index] || top3Styles[0])!;
+            const style = top3Styles[index] ?? top3Styles[0]!;
             return (
               <div
                 key={site.id}
-                onClick={() =>
-                  setSelectedDrawerSite({
-                    id: site.id,
-                    name: site.name,
-                    displayName: site.displayName,
-                    slug: site.slug,
-                    faviconUrl: site.faviconUrl,
-                    categoryName: site.categoryName,
-                    accentColor: site.accentColor,
-                    domains: site.domains,
-                  })
-                }
-                className={`rounded-[16px] bg-[var(--card,#0A1226)] border ${style.borderColor} p-4 sm:p-5 flex flex-col justify-between transition-all cursor-pointer group`}
+                onClick={() => router.push(`/site/${site.slug}`)}
+                className={`relative rounded-[16px] bg-[var(--card,#0A1226)] border ${style.borderColor} p-5 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 group`}
               >
-                <div>
-                  {/* Card Header */}
-                  <div className="flex items-center justify-between pb-3 mb-3 border-b border-[var(--line,#1A2442)]">
-                    <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${style.pillBg}`}
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-fs-xs font-semibold border ${style.pillBg}`}
+                  >
+                    <Trophy className="w-3.5 h-3.5" />
+                    <span>{style.badge}</span>
+                  </span>
+                  <span className="text-fs-xs text-[var(--text-3,#6B7893)]">{site.categoryName}</span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {site.faviconUrl ? (
+                    <img
+                      src={site.faviconUrl}
+                      alt={site.name}
+                      className="w-10 h-10 rounded-[8px] object-contain shrink-0 bg-[var(--card-hover,#0E182F)] p-1 border border-[var(--line,#1A2442)]"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div
+                      className="w-10 h-10 rounded-[8px] flex items-center justify-center text-fs-md font-bold text-white shrink-0"
+                      style={{ backgroundColor: style.accentColor }}
                     >
-                      <Trophy className="w-3.5 h-3.5" />
-                      <span>{style.badge}</span>
-                    </span>
-                    <span className="text-[11px] font-semibold text-[var(--text-3,#6B7893)]">
-                      {style.title}
-                    </span>
-                  </div>
+                      {site.name.charAt(0)}
+                    </div>
+                  )}
 
-                  {/* Site Info */}
-                  <div className="flex items-center gap-3 my-2">
-                    {site.faviconUrl ? (
-                      <img
-                        src={site.faviconUrl}
-                        alt={site.name}
-                        className="w-10 h-10 rounded-[10px] object-contain p-1 bg-white/5 border border-white/10 shrink-0"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div
-                        className="w-10 h-10 rounded-[10px] flex items-center justify-center text-sm font-bold text-white shrink-0"
-                        style={{ backgroundColor: site.accentColor }}
-                      >
-                        {site.name.charAt(0)}
-                      </div>
-                    )}
-
-                    <div className="min-w-0">
-                      <h2 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[var(--brand-link,#3B82F6)] transition-colors truncate">
-                        {site.displayName || site.name}
-                      </h2>
-                      <span className="text-[11px] text-[var(--text-2,#A8B3C7)] block truncate">
-                        {site.categoryName}
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-fs-base font-bold text-slate-900 dark:text-white truncate group-hover:text-[var(--brand-link,#3B82F6)] transition-colors">
+                      {site.displayName || site.name}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      {site.stars > 0 && (
+                        <span className="inline-flex items-center gap-1 text-fs-xs font-semibold text-amber-400 tabular-nums">
+                          <Star className="w-3 h-3 fill-amber-400 stroke-amber-400" />
+                          <span>{site.stars}</span>
+                        </span>
+                      )}
+                      <span className="text-fs-xs text-[var(--text-2,#A8B3C7)] tabular-nums">
+                        {site.clicksFormatted} views
                       </span>
                     </div>
                   </div>
-                </div>
-
-                {/* Footer Metrics */}
-                <div className="pt-3 mt-3 border-t border-[var(--line,#1A2442)] flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-900 dark:text-white">
-                      {site.clicksFormatted}
-                    </span>
-                    <span className="text-[var(--text-3,#6B7893)] text-[11px]">clicks</span>
-                    <span className="inline-flex items-center text-[10px] text-emerald-500 dark:text-emerald-400 font-semibold gap-0.5">
-                      <TrendingUp className="w-3 h-3" />+{site.trendPercent}%
-                    </span>
-                  </div>
-
-                  <span className="inline-flex items-center gap-1 text-[var(--primary,#2563EB)] group-hover:text-slate-900 dark:group-hover:text-white font-semibold transition-colors text-xs">
-                    <span>View Mirrors</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </span>
                 </div>
               </div>
             );
@@ -331,89 +332,59 @@ export function PopularView() {
         </div>
       )}
 
-      {/* 5. Complete Traffic Rankings (Clean Category Style) */}
-      <div className="rounded-[16px] bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] overflow-hidden shadow-sm">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--line,#1A2442)] bg-[var(--card-hover,#0E182F)]/30">
-          <div className="flex items-center gap-2">
-            <Flame className="w-4 h-4 text-[var(--primary,#2563EB)]" />
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white font-heading">
-              Complete Traffic Rankings ({filteredSites.length})
-            </h2>
-          </div>
-          <span className="text-[11px] text-[var(--text-3,#6B7893)]">Verified Analytics</span>
+      {/* 3. Numbered Ranking List */}
+      <div className="rounded-[16px] bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] p-4 md:p-6 shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-2 items-start">
+          {(top3.length === 0 ? filteredSites : remaining).map((site, index) => {
+            const actualRank = (top3.length === 0 ? 0 : 3) + index + 1;
+            const isExpanded = expandedSlug === site.slug;
+            return (
+              <div
+                key={site.id || site.slug || index}
+                className={isExpanded ? 'col-span-1 md:col-span-2 xl:col-span-3 transition-all' : ''}
+              >
+                <SiteRow
+                  rank={actualRank}
+                  name={site.name}
+                  displayName={site.displayName}
+                  slug={site.slug}
+                  faviconUrl={site.faviconUrl}
+                  bestDomainUrl={site.bestDomainUrl}
+                  domainsCount={site.domains?.length || 1}
+                  accentColor={site.accentColor || '#2563EB'}
+                  categoryName={site.categoryName}
+                  categorySlug={site.categorySlug}
+                  expanded={isExpanded}
+                  onToggle={() => setExpandedSlug((prev) => (prev === site.slug ? null : site.slug))}
+                  onExternalClick={(url) => {
+                    window.open(url, '_blank');
+                  }}
+                />
+              </div>
+            );
+          })}
         </div>
 
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
-          {remaining.map((site, index) => (
-            <div
-              key={site.id}
-              onClick={() =>
-                setSelectedDrawerSite({
-                  id: site.id,
-                  name: site.name,
-                  displayName: site.displayName,
-                  slug: site.slug,
-                  faviconUrl: site.faviconUrl,
-                  categoryName: site.categoryName,
-                  accentColor: site.accentColor,
-                  domains: site.domains,
-                })
-              }
-              className="flex items-center justify-between p-2.5 rounded-[12px] bg-[var(--card-hover,#0E182F)]/40 hover:bg-[var(--card-hover,#0E182F)] border border-[var(--line,#1A2442)] hover:border-[var(--primary,#2563EB)]/40 transition-all cursor-pointer group"
+        {filteredSites.length === 0 && (
+          <div className="py-16 text-center space-y-2">
+            <p className="text-fs-base text-[var(--text-2,#A8B3C7)]">
+              No popular websites found matching your filter.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('all');
+                setRange('7d');
+                syncToUrl('', '7d', 'all');
+              }}
+              className="text-fs-sm text-[var(--brand-link,#3B82F6)] hover:underline font-medium"
             >
-              <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                <span className="text-xs font-mono font-bold text-[var(--text-3,#6B7893)] w-7 text-right shrink-0">
-                  #{index + 4}
-                </span>
-
-                {site.faviconUrl ? (
-                  <img
-                    src={site.faviconUrl}
-                    alt={site.name}
-                    className="w-5 h-5 rounded-sm object-contain shrink-0"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div
-                    className="w-5 h-5 rounded-sm flex items-center justify-center text-[10px] font-bold text-white shrink-0"
-                    style={{ backgroundColor: site.accentColor }}
-                  >
-                    {site.name.charAt(0)}
-                  </div>
-                )}
-
-                <div className="min-w-0">
-                  <span className="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-[var(--brand-link,#3B82F6)] transition-colors truncate block">
-                    {site.displayName || site.name}
-                  </span>
-                  <span className="text-[10px] text-[var(--text-3,#6B7893)] block truncate">
-                    {site.categoryName}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2.5 shrink-0 text-right">
-                <div className="flex flex-col items-end">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white">
-                    {site.clicksFormatted}
-                  </span>
-                  <span className="text-[9px] text-emerald-400 font-semibold inline-flex items-center gap-0.5">
-                    +{site.trendPercent}%
-                  </span>
-                </div>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]" />
-              </div>
-            </div>
-          ))}
-        </div>
+              Reset filters
+            </button>
+          </div>
+        )}
       </div>
-
-      {/* 6. Domains Drawer */}
-      <SiteDomainsDrawer
-        isOpen={!!selectedDrawerSite}
-        onClose={() => setSelectedDrawerSite(null)}
-        site={selectedDrawerSite}
-      />
     </div>
   );
 }

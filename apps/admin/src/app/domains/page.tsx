@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { api } from '../../lib/api';
 import { StatusBadge } from '../../components/StatusBadge';
 import { formatTimeAgo } from '../../lib/utils';
-import type { DomainItem } from '@findfunlinks/contracts';
+import type { DomainItem } from '@finallinks/contracts';
 import { Search, ExternalLink, Activity, RotateCcw, Loader2 } from 'lucide-react';
 
 export default function DomainsAdminPage() {
@@ -20,10 +20,9 @@ export default function DomainsAdminPage() {
       const res = await api.admin.getWebsites({ limit: 100 });
       const extracted: DomainItem[] = [];
       if (res && res.items) {
-        for (const site of res.items) {
-          const detail = await api.public.getWebsiteBySlug(site.slug).catch(() => null);
-          if (detail && detail.domains) {
-            extracted.push(...detail.domains);
+        for (const site of (res.items as any[])) {
+          if (site.domains && Array.isArray(site.domains)) {
+            extracted.push(...site.domains);
           }
         }
       }
@@ -61,10 +60,10 @@ export default function DomainsAdminPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">
+          <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">
             Domains & Working Mirrors
           </h1>
-          <p className="text-xs text-[#A8B3C7] mt-1">
+          <p className="text-sm text-[#9CA3AF] mt-1">
             Real-time status inspector for all hostnames, DNS entries, and ping latencies.
           </p>
         </div>
@@ -72,61 +71,61 @@ export default function DomainsAdminPage() {
         <button
           type="button"
           onClick={fetchDomains}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-4 h-11 rounded-lg border border-[#33373D] bg-[#1E2024] text-sm font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white transition-colors self-start sm:self-auto"
         >
-          <RotateCcw className="h-3.5 w-3.5" />
+          <RotateCcw className="h-4 w-4" />
           Refresh
         </button>
       </div>
 
       {/* Search Bar */}
       <div className="relative max-w-md">
-        <Search className="h-4 w-4 text-[#6B7893] absolute left-3 top-2.5" />
+        <Search className="h-4 w-4 text-[#6B7280] absolute left-3.5 top-3.5" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Filter by hostname..."
-          className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] pl-9 pr-3.5 py-2 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-colors"
+          className="w-full h-11 rounded-lg border border-[#33373D] bg-[#1E2024] pl-10 pr-4 text-sm text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] transition-colors"
         />
       </div>
 
       {/* Table */}
-      <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-[#33373D] bg-[#1E2024] overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
+            <Loader2 className="h-7 w-7 animate-spin text-[#0B9DF7]" />
           </div>
         ) : filteredDomains.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-[#1A2442] bg-[#070D1E] text-[#A8B3C7]">
-                  <th className="py-3 px-4 font-semibold">Hostname</th>
-                  <th className="py-3 px-4 font-semibold">Type</th>
-                  <th className="py-3 px-4 font-semibold">Status</th>
-                  <th className="py-3 px-4 font-semibold">Latency</th>
-                  <th className="py-3 px-4 font-semibold">Last Checked</th>
-                  <th className="py-3 px-4 font-semibold text-right">Action</th>
+                <tr className="border-b border-[#33373D] bg-[#16181B] text-[#9CA3AF]">
+                  <th className="py-3 px-4 font-medium">Hostname</th>
+                  <th className="py-3 px-4 font-medium">Type</th>
+                  <th className="py-3 px-4 font-medium">Status</th>
+                  <th className="py-3 px-4 font-medium">Latency</th>
+                  <th className="py-3 px-4 font-medium">Last Checked</th>
+                  <th className="py-3 px-4 font-medium text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1A2442]/60">
+              <tbody className="divide-y divide-[#33373D]">
                 {filteredDomains.map((dom) => (
-                  <tr key={dom.id} className="hover:bg-[#0E182F] transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-medium text-[#F1F5F9]">
+                  <tr key={dom.id} className="hover:bg-[#26292F] transition-colors">
+                    <td className="py-3.5 px-4 font-mono font-medium text-[#F3F4F6]">
                       <a
                         href={dom.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:underline text-[#3B82F6] inline-flex items-center gap-1"
+                        className="hover:underline text-[#0B9DF7] inline-flex items-center gap-1.5"
                       >
                         {dom.hostname}
-                        <ExternalLink className="h-2.5 w-2.5 text-[#6B7893]" />
+                        <ExternalLink className="h-3 w-3 text-[#6B7280]" />
                       </a>
                     </td>
 
                     <td className="py-3.5 px-4">
-                      <span className="px-2 py-0.5 rounded-lg bg-[#070D1E] border border-[#1A2442] font-semibold text-[11px] text-[#A8B3C7]">
+                      <span className="px-2.5 py-1 rounded-md bg-[#26292F] border border-[#33373D] font-medium text-xs text-[#D1D5DB]">
                         {dom.type}
                       </span>
                     </td>
@@ -135,15 +134,15 @@ export default function DomainsAdminPage() {
                       <StatusBadge status={dom.status} />
                     </td>
 
-                    <td className="py-3.5 px-4 font-mono text-[#F1F5F9]">
+                    <td className="py-3.5 px-4 font-mono text-sm">
                       {dom.lastResponseMs ? (
-                        <span className="text-[#22C55E]">{dom.lastResponseMs}ms</span>
+                        <span className="text-emerald-400 font-semibold">{dom.lastResponseMs}ms</span>
                       ) : (
-                        <span className="text-[#6B7893]">N/A</span>
+                        <span className="text-[#6B7280]">N/A</span>
                       )}
                     </td>
 
-                    <td className="py-3.5 px-4 text-[#A8B3C7]">
+                    <td className="py-3.5 px-4 text-[#9CA3AF] text-xs font-mono">
                       {dom.lastCheckedAt ? formatTimeAgo(dom.lastCheckedAt) : 'Never'}
                     </td>
 
@@ -152,7 +151,7 @@ export default function DomainsAdminPage() {
                         type="button"
                         disabled={checkingId === dom.id}
                         onClick={() => handleCheckDomain(dom.id, dom.hostname)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#2563EB]/15 text-[#3B82F6] font-semibold hover:bg-[#2563EB] hover:text-white transition-colors border border-[#2563EB]/30 disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 px-3.5 h-9 rounded-lg bg-[#26292F] text-[#0B9DF7] font-medium hover:bg-[#33373D] hover:text-white transition-colors border border-[#33373D] disabled:opacity-50"
                       >
                         {checkingId === dom.id ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -168,7 +167,7 @@ export default function DomainsAdminPage() {
             </table>
           </div>
         ) : (
-          <div className="p-12 text-center text-xs text-[#A8B3C7]">
+          <div className="p-12 text-center text-sm text-[#9CA3AF]">
             No domains discovered or matching search query.
           </div>
         )}

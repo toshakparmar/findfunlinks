@@ -1,4 +1,4 @@
-# FindFunLinks — Operations & Deployment Runbook
+# FinalLinks — Operations & Deployment Runbook
 
 ## 1. System Requirements & Prerequisites
 
@@ -30,10 +30,10 @@ pnpm install
 
 ```bash
 # Run Prisma migrations against local database
-pnpm --filter @findfunlinks/api db:migrate
+pnpm --filter @finallinks/api db:migrate
 
 # Seed categories, default admin user, initial tags, and system settings
-pnpm --filter @findfunlinks/api db:seed
+pnpm --filter @finallinks/api db:seed
 ```
 
 ### Step 4: Start Development Servers
@@ -48,8 +48,8 @@ pnpm dev
 | Service                   | URL / Port                     | Credentials / Notes                                   |
 | ------------------------- | ------------------------------ | ----------------------------------------------------- |
 | **Public Directory**      | `http://localhost:3000`        | Public consumer portal                                |
-| **Super Admin Console**   | `http://localhost:3001`        | `admin@findfunlinks.com` / `SuperAdminSecretPass123!` |
-| **Website Owner Portal**  | `http://localhost:3002`        | Owner credentials                                     |
+| **Super Admin Console**   | `http://localhost:3001`        | `admin@finallinks.com` / `SuperAdminSecretPass123!` |
+| **Management Console**    | `http://localhost:3001`        | Unified Console (Super Admin, Admin & Owner credentials) |
 | **NestJS REST API**       | `http://localhost:4000/api/v1` | Core API                                              |
 | **Swagger Documentation** | `http://localhost:4000/docs`   | Interactive OpenAPI UI                                |
 | **Mailpit Web UI**        | `http://localhost:8025`        | Local transactional email inspector                   |
@@ -60,7 +60,7 @@ pnpm dev
 
 ## 3. Production Deployment with Docker Compose
 
-FindFunLinks provides a fully containerized, production-grade Docker Compose stack:
+FinalLinks provides a fully containerized, production-grade Docker Compose stack:
 
 ### Step 1: Configure Environment Variables
 
@@ -95,7 +95,7 @@ docker compose exec api npx prisma migrate deploy --schema=apps/api/prisma/schem
 docker compose ps
 ```
 
-All containers (`postgres`, `redis`, `api`, `web`, `admin`, `owner`, `nginx`) should report `healthy` or `running`.
+All containers (`postgres`, `redis`, `api`, `web`, `admin`, `nginx`) should report `healthy` or `running`.
 
 ---
 
@@ -106,10 +106,10 @@ All containers (`postgres`, `redis`, `api`, `web`, `admin`, `owner`, `nginx`) sh
 ```bash
 #!/bin/bash
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-BACKUP_DIR="/var/backups/findfunlinks"
+BACKUP_DIR="/var/backups/finallinks"
 mkdir -p "$BACKUP_DIR"
 
-docker compose exec -T postgres pg_dump -U postgres -d findfunlinks_prod -F c > "$BACKUP_DIR/db_backup_$TIMESTAMP.dump"
+docker compose exec -T postgres pg_dump -U postgres -d finallinks_prod -F c > "$BACKUP_DIR/db_backup_$TIMESTAMP.dump"
 
 # Retain last 14 days of backups
 find "$BACKUP_DIR" -type f -name "*.dump" -mtime +14 -exec rm {} +
@@ -122,7 +122,7 @@ find "$BACKUP_DIR" -type f -name "*.dump" -mtime +14 -exec rm {} +
 docker compose stop api
 
 # 2. Restore database from dump
-docker compose exec -T postgres pg_restore -U postgres -d findfunlinks_prod --clean --if-exists /path/to/backup.dump
+docker compose exec -T postgres pg_restore -U postgres -d finallinks_prod --clean --if-exists /path/to/backup.dump
 
 # 3. Restart API
 docker compose start api
@@ -132,7 +132,7 @@ docker compose start api
 
 1. Always apply schema modifications via Prisma migrations:
    ```bash
-   pnpm --filter @findfunlinks/api db:migrate
+   pnpm --filter @finallinks/api db:migrate
    ```
 2. For production environments, run `prisma migrate deploy` (never `prisma db push` in production).
 
@@ -182,7 +182,7 @@ To enable temporary maintenance mode at the Nginx edge:
 
 1. Edit `infra/nginx/nginx.conf` and set:
    ```nginx
-   return 503 "FindFunLinks is undergoing scheduled maintenance. Please check back shortly.";
+   return 503 "FinalLinks is undergoing scheduled maintenance. Please check back shortly.";
    ```
 2. Reload Nginx without dropping connections:
    ```bash

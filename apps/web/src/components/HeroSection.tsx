@@ -96,7 +96,7 @@ export function HeroSection({
 
         {/* Subtitle */}
         <p className="hero-subtext mx-auto max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed mb-10">
-          FindFunLinks tracks your favorite entertainment destinations and monitors all their live
+          FinalLinks tracks your favorite entertainment destinations and monitors all their live
           working domains in real-time. If one domain goes down, jump straight to the mirror.
         </p>
 

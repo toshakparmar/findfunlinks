@@ -10,7 +10,7 @@ import {
   ResubmitRegistrationSchema,
   ResubmitRegistrationInput,
   ContentRating,
-} from '@findfunlinks/contracts';
+} from '@finallinks/contracts';
 import { CategoryTab } from './DirectoryGrid';
 import { CustomSelect } from './ui/CustomSelect';
 import { Globe, User, AlertCircle, Plus, X, Loader2, CheckCircle2, ArrowRight } from 'lucide-react';
@@ -185,39 +185,39 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
       {/* Review Note Alert Banner */}
       {reviewNote && (
         <div className="rounded-2xl border border-brand-orange-500/30 bg-brand-orange-500/10 p-5 space-y-2">
-          <div className="flex items-center gap-2 text-brand-orange-700 dark:text-brand-orange-300 font-bold text-sm">
-            <AlertCircle className="h-4 w-4" />
+          <div className="flex items-center gap-2 text-brand-orange-700 dark:text-brand-orange-300 font-bold text-fs-sm sm:text-fs-base">
+            <AlertCircle className="h-5 w-5" />
             <span>Admin Review Feedback</span>
           </div>
-          <p className="text-xs text-foreground/90 leading-relaxed font-medium">
+          <p className="text-fs-sm text-foreground/90 leading-relaxed font-medium">
             &ldquo;{reviewNote}&rdquo;
           </p>
         </div>
       )}
 
       {/* Website Details */}
-      <div className="space-y-5">
-        <div className="flex items-center gap-2 pb-2 border-b border-border/60 text-foreground font-bold text-lg">
+      <div className="space-y-6">
+        <div className="flex items-center gap-2 pb-3 border-b border-border/60 text-foreground font-bold text-xl">
           <Globe className="h-5 w-5 text-primary" />
           <span>Update Website Details</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
             <label
               htmlFor="edit-site-name"
-              className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5"
+              className="block text-fs-sm font-semibold text-foreground tracking-wide mb-2"
             >
               Website Name *
             </label>
             <input
               id="edit-site-name"
               type="text"
-              className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full h-11 sm:h-12 rounded-xl border border-input bg-background px-4 py-3 text-fs-sm sm:text-fs-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               {...register('websiteName')}
             />
             {errors.websiteName && (
-              <p className="text-xs text-rose-500 mt-1">
+              <p className="text-fs-sm text-rose-500 mt-1.5">
                 {String(errors.websiteName?.message || '')}
               </p>
             )}
@@ -226,29 +226,29 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
           <div>
             <label
               htmlFor="edit-primary-url"
-              className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5"
+              className="block text-fs-sm font-semibold text-foreground tracking-wide mb-2"
             >
               Primary Working URL *
             </label>
             <input
               id="edit-primary-url"
               type="url"
-              className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full h-11 sm:h-12 rounded-xl border border-input bg-background px-4 py-3 text-fs-sm sm:text-fs-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               {...register('primaryUrl')}
             />
             {errors.primaryUrl && (
-              <p className="text-xs text-rose-500 mt-1">
+              <p className="text-fs-sm text-rose-500 mt-1.5">
                 {String(errors.primaryUrl?.message || '')}
               </p>
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
             <label
               htmlFor="edit-category"
-              className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5"
+              className="block text-fs-sm font-semibold text-foreground tracking-wide mb-2"
             >
               Primary Category *
             </label>
@@ -266,7 +266,7 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
           <div>
             <label
               htmlFor="edit-content-rating"
-              className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5"
+              className="block text-fs-sm font-semibold text-foreground tracking-wide mb-2"
             >
               Content Rating *
             </label>
@@ -285,18 +285,18 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
         <div>
           <label
             htmlFor="edit-description"
-            className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5"
+            className="block text-fs-sm font-semibold text-foreground tracking-wide mb-2"
           >
             Website Description *
           </label>
           <textarea
             id="edit-description"
             rows={4}
-            className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full rounded-xl border border-input bg-background px-4 py-3 text-fs-sm sm:text-fs-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             {...register('description')}
           />
           {errors.description && (
-            <p className="text-xs text-rose-500 mt-1">
+            <p className="text-fs-sm text-rose-500 mt-1.5">
               {String(errors.description?.message || '')}
             </p>
           )}
@@ -305,47 +305,47 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
         <div>
           <label
             htmlFor="edit-logo-url"
-            className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5"
+            className="block text-fs-sm font-semibold text-foreground tracking-wide mb-2"
           >
             Logo URL (Optional)
           </label>
           <input
             id="edit-logo-url"
             type="url"
-            className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full h-11 sm:h-12 rounded-xl border border-input bg-background px-4 py-3 text-fs-sm sm:text-fs-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             {...register('logoUrl')}
           />
         </div>
 
         {/* Tags */}
         <div>
-          <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">
+          <label className="block text-fs-sm font-semibold text-foreground tracking-wide mb-2">
             Proposed Tags
           </label>
-          <div className="flex gap-2 mb-2">
+          <div className="flex gap-2.5 mb-2.5">
             <input
               type="text"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleAddTag}
               placeholder="Add tag..."
-              className="flex-1 rounded-xl border border-input bg-background px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="flex-1 h-11 rounded-xl border border-input bg-background px-4 py-2 text-fs-sm sm:text-fs-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <button
               type="button"
               onClick={handleAddTag}
-              className="px-4 py-2 rounded-xl bg-muted text-xs font-semibold text-foreground hover:bg-muted/80 transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-muted text-fs-sm font-semibold text-foreground hover:bg-muted/80 transition-colors"
             >
-              <Plus className="h-3.5 w-3.5 inline mr-1" />
+              <Plus className="h-4 w-4 inline mr-1" />
               Add
             </button>
           </div>
 
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {proposedTags.map((t) => (
               <span
                 key={t}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 text-primary text-xs font-semibold"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-fs-sm font-semibold"
               >
                 #{t}
                 <button
@@ -353,7 +353,7 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
                   onClick={() => handleRemoveTag(t)}
                   className="hover:text-rose-500"
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               </span>
             ))}
@@ -362,24 +362,24 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
       </div>
 
       {/* Applicant Details */}
-      <div className="space-y-5 pt-4 border-t border-border/60">
-        <div className="flex items-center gap-2 pb-2 border-b border-border/60 text-foreground font-bold text-lg">
+      <div className="space-y-6 pt-5 border-t border-border/60">
+        <div className="flex items-center gap-2 pb-3 border-b border-border/60 text-foreground font-bold text-xl">
           <User className="h-5 w-5 text-brand-orange-500" />
           <span>Applicant Details</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
             <label
               htmlFor="edit-applicant-name"
-              className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5"
+              className="block text-fs-sm font-semibold text-foreground tracking-wide mb-2"
             >
               Full Name *
             </label>
             <input
               id="edit-applicant-name"
               type="text"
-              className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full h-11 sm:h-12 rounded-xl border border-input bg-background px-4 py-3 text-fs-sm sm:text-fs-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               {...register('applicantName')}
             />
           </div>
@@ -387,14 +387,14 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
           <div>
             <label
               htmlFor="edit-applicant-email"
-              className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5"
+              className="block text-fs-sm font-semibold text-foreground tracking-wide mb-2"
             >
               Email *
             </label>
             <input
               id="edit-applicant-email"
               type="email"
-              className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full h-11 sm:h-12 rounded-xl border border-input bg-background px-4 py-3 text-fs-sm sm:text-fs-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               {...register('applicantEmail')}
             />
           </div>
@@ -402,21 +402,21 @@ export function RegistrationEditForm({ categories }: RegistrationEditFormProps) 
       </div>
 
       {/* Submit Button */}
-      <div className="pt-4 border-t border-border/60 flex justify-end">
+      <div className="pt-5 border-t border-border/60 flex justify-end">
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3 text-sm font-bold text-primary-foreground shadow hover:bg-primary/90 transition-all disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-fs-base font-bold text-primary-foreground shadow hover:bg-primary/90 transition-all disabled:opacity-50"
         >
           {submitting ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-5 w-5 animate-spin" />
               Submitting Changes...
             </>
           ) : (
             <>
               Resubmit Changes for Review
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-5 w-5" />
             </>
           )}
         </button>

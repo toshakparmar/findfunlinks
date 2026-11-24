@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, CornerDownLeft } from 'lucide-react';
+import { Logo } from '@finallinks/ui';
 
 export interface SearchResultItem {
   id: string;
@@ -101,7 +102,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
               <X className="w-4 h-4" />
             </button>
           ) : (
-            <div className="hidden md:flex items-center gap-1 px-1.5 py-0.5 rounded border border-[var(--line,#1A2442)] text-[10px] text-[var(--text-3,#6B7893)] font-mono">
+            <div className="hidden md:flex items-center gap-1 px-1.5 py-0.5 rounded border border-[var(--line,#1A2442)] text-fs-xs text-[var(--text-3,#6B7893)] font-mono">
               ESC
             </div>
           )}
@@ -121,16 +122,14 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                   onSelectSite?.(site);
                   onClose();
                 }}
-                className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--card-hover,#0E182F)] cursor-pointer transition-colors group select-none text-left"
+                className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[var(--card-hover,#0E182F)] cursor-pointer transition-colors group select-none text-left"
               >
                 <div className="flex items-center gap-2.5 min-w-0 mr-2">
-                  <div className="w-6 h-6 rounded flex items-center justify-center bg-[var(--line,#1A2442)] overflow-hidden shrink-0">
+                  <div className="w-6 h-6 rounded flex items-center justify-center bg-slate-200 dark:bg-[var(--line,#1A2442)] overflow-hidden shrink-0">
                     {site.faviconUrl ? (
                       <img src={site.faviconUrl} alt="" className="w-4 h-4 object-contain" />
                     ) : (
-                      <span className="text-[10px] font-bold text-white">
-                        {site.name.charAt(0).toUpperCase()}
-                      </span>
+                      <Logo variant="mark" size={14} className="w-3.5 h-3.5" />
                     )}
                   </div>
                   <div className="truncate">
@@ -138,7 +137,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                       {site.displayName || site.name}
                     </span>
                     {site.categoryName && (
-                      <span className="text-[11px] text-[var(--text-3,#6B7893)] ml-2">
+                      <span className="text-fs-xs text-[var(--text-3,#6B7893)] ml-2">
                         · {site.categoryName}
                       </span>
                     )}
@@ -155,7 +154,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
           ) : (
             <div className="p-6 text-center text-xs text-[var(--text-3,#6B7893)] space-y-2">
               <p>Type to search across all verified directories and mirrors.</p>
-              <div className="flex items-center justify-center gap-2 text-[11px] text-[var(--text-2,#A8B3C7)]">
+              <div className="flex items-center justify-center gap-2 text-fs-xs text-[var(--text-2,#A8B3C7)]">
                 <span className="px-2 py-0.5 rounded bg-[var(--header,#070D1E)] border border-[var(--line,#1A2442)]">
                   Movies
                 </span>

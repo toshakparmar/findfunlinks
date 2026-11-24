@@ -1,12 +1,43 @@
 {
-  "name": "@findfunlinks/config",
+  "name": "@finallinks/config",
   "version": "0.1.0",
   "private": true,
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 0",
+    "test": "echo 0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./brand": {
+      "types": "./dist/brand.d.ts",
+      "default": "./dist/brand.js"
+    },
+    "./tailwind": "./tailwind.preset.js",
+    "./tailwind.preset.js": "./tailwind.preset.js",
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./tsconfig.next.json": "./tsconfig.next.json",
+    "./tsconfig.nest.json": "./tsconfig.nest.json",
+    "./package.json": "./package.json"
+  },
   "files": [
+    "dist",
+    "src",
     "tsconfig.base.json",
     "tsconfig.next.json",
     "tsconfig.nest.json",
-    "tailwind.preset.js"
-  ]
+    "tailwind.preset.js",
+    "tailwind.preset.d.ts"
+  ],
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "typescript": "^5.7.3"
+  }
 }

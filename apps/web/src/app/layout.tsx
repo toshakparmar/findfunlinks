@@ -4,10 +4,10 @@ import { Providers } from '../components/Providers';
 import { MainLayout } from '../components/MainLayout';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://findfunlinks.com'),
+  metadataBase: new URL('https://finallinks.com'),
   title: {
-    default: 'FindFunLinks — Curated Web Directory & Working Mirrors',
-    template: '%s | FindFunLinks',
+    default: 'FinalLinks — Curated Web Directory & Working Mirrors',
+    template: '%s | FinalLinks',
   },
   description:
     'Discover curated, entertaining websites and all their live working domains and mirrors so you never get stuck behind a broken link.',
@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     'utilities',
     'curated links',
   ],
-  authors: [{ name: 'FindFunLinks Team' }],
-  creator: 'FindFunLinks',
+  authors: [{ name: 'FinalLinks Team' }],
+  creator: 'FinalLinks',
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
@@ -31,15 +31,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://findfunlinks.com',
-    title: 'FindFunLinks — Curated Web Directory & Working Mirrors',
+    url: 'https://finallinks.com',
+    title: 'FinalLinks — Curated Web Directory & Working Mirrors',
     description:
       'Discover curated, entertaining websites and all their live working domains and mirrors.',
-    siteName: 'FindFunLinks',
+    siteName: 'FinalLinks',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FindFunLinks — Curated Web Directory & Working Mirrors',
+    title: 'FinalLinks — Curated Web Directory & Working Mirrors',
     description:
       'Discover curated, entertaining websites and all their live working domains and mirrors.',
   },

@@ -2,7 +2,8 @@
 
 import React, { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { CircularLoader } from './ui/CircularLoader';
 
 export interface ViewMoreButtonProps {
   href: string;
@@ -15,7 +16,7 @@ export interface ViewMoreButtonProps {
 export const ViewMoreButton: React.FC<ViewMoreButtonProps> = ({
   href,
   accentColor = '#3B82F6',
-  label = 'View More',
+  label = 'View All',
   onClick,
   className = '',
 }) => {
@@ -23,7 +24,7 @@ export const ViewMoreButton: React.FC<ViewMoreButtonProps> = ({
   const [isPending, startTransition] = useTransition();
 
   // Strip any accidental arrow characters passed in the label (Section 3.3 fix)
-  const cleanLabel = label.replace(/[→\->\u2192]+/g, '').trim() || 'View More';
+  const cleanLabel = label.replace(/[→\->\u2192]+/g, '').trim() || 'View All';
 
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) onClick();
@@ -40,7 +41,7 @@ export const ViewMoreButton: React.FC<ViewMoreButtonProps> = ({
       href={href}
       onClick={handleClick}
       aria-busy={isPending}
-      className={`group relative w-full py-2 px-3 rounded-[10px] text-xs font-semibold text-slate-900 dark:text-white flex items-center justify-center gap-1.5 overflow-hidden transition-all duration-200 mt-2 bg-[var(--card,#0A1226)] hover:brightness-105 dark:hover:brightness-110 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring,rgba(59,130,246,0.6))] select-none cursor-pointer ${className}`}
+      className={`group relative w-full py-2 sm:py-2.5 px-3 rounded-[8px] sm:rounded-[10px] text-xs sm:text-sm font-semibold text-slate-900 dark:text-white flex items-center justify-center gap-1.5 overflow-hidden transition-all duration-200 mt-2 bg-[var(--card,#0A1226)] hover:brightness-105 dark:hover:brightness-110 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring,rgba(59,130,246,0.6))] select-none cursor-pointer ${className}`}
       style={{
         border: `1.5px solid ${accentColor}`,
         boxShadow: `0 0 12px -4px color-mix(in srgb, ${accentColor} 40%, transparent)`,
@@ -58,9 +59,9 @@ export const ViewMoreButton: React.FC<ViewMoreButtonProps> = ({
       <span className="relative z-10">{cleanLabel}</span>
 
       {isPending ? (
-        <Loader2 className="relative z-10 w-3.5 h-3.5 animate-spin" />
+        <CircularLoader size="xs" color={accentColor} />
       ) : (
-        <ArrowRight className="relative z-10 w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200 motion-reduce:transform-none" />
+        <ArrowRight className="relative z-10 w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 motion-reduce:transform-none" />
       )}
     </a>
   );

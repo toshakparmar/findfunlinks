@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Logo } from '@findfunlinks/ui';
+import { Logo } from '@finallinks/ui';
 import { ShieldCheck, Heart, ExternalLink } from 'lucide-react';
 
 export function Footer() {
@@ -10,11 +10,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Info */}
           <div className="md:col-span-1 space-y-4">
-            <Link href="/" className="inline-block" aria-label="FindFunLinks Home">
-              <Logo variant="auto" className="h-7 w-auto" />
+            <Link href="/" className="inline-block" aria-label="FinalLinks Home">
+              <Logo variant="full" theme="auto" className="h-7 w-auto" />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              FindFunLinks is a curated directory for discovering fun, creative, and entertaining
+              FinalLinks is a curated directory for discovering fun, creative, and entertaining
               websites alongside their active, verified working mirrors.
             </p>
             <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-500/10 w-fit px-2.5 py-1 rounded-full border border-emerald-500/20">
@@ -70,12 +70,12 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="http://localhost:3002"
+                  href="http://localhost:3001"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-primary transition-colors inline-flex items-center gap-1"
                 >
-                  Owner Portal
+                  Console & Owner Portal
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </li>
@@ -90,7 +90,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/about" className="hover:text-primary transition-colors">
-                  About FindFunLinks
+                  About FinalLinks
                 </Link>
               </li>
               <li>
@@ -115,13 +115,13 @@ export function Footer() {
         {/* Disclaimer & Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border/40 text-xs text-muted-foreground/80 space-y-4">
           <p className="leading-relaxed">
-            <strong>Disclaimer:</strong> FindFunLinks is a curated directory index. FindFunLinks
+            <strong>Disclaimer:</strong> FinalLinks is a curated directory index. FinalLinks
             does not host, stream, or store any third-party files or content. All links, trademarks,
             and logos belong to their respective owners. Users are solely responsible for compliance
             with local regulations when navigating external links.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>© {new Date().getFullYear()} FindFunLinks. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} FinalLinks. All rights reserved.</p>
             <p className="flex items-center gap-1 text-muted-foreground">
               Built with precision for web explorers{' '}
               <Heart className="h-3 w-3 text-brand-flame-500 fill-brand-flame-500" />

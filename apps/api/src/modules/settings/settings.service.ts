@@ -20,7 +20,7 @@ export class SettingsService {
     });
 
     const result: Record<string, unknown> = {
-      site_name: 'FindFunLinks',
+      site_name: 'FinalLinks',
       site_description: 'Discover fun websites and their live working mirrors.',
       registrations_enabled: true,
       announcement_banner: null,

@@ -3,9 +3,9 @@ import type { Metadata } from 'next';
 import { Lock } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | FindFunLinks',
+  title: 'Privacy Policy | FinalLinks',
   description:
-    'How FindFunLinks collects, uses, and safeguards personal data and respects user privacy.',
+    'How FinalLinks collects, uses, and safeguards personal data and respects user privacy.',
 };
 
 export default function PrivacyPage() {
@@ -24,7 +24,7 @@ export default function PrivacyPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">1. Our Commitment to Privacy</h2>
           <p>
-            FindFunLinks is designed with privacy-first principles. We do not engage in third-party
+            FinalLinks is designed with privacy-first principles. We do not engage in third-party
             behavioral tracking, cross-site fingerprinting, or user surveillance. We believe
             discovery should be open, private, and frictionless.
           </p>
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
           <h2 className="text-lg font-bold text-foreground">5. Contact Us</h2>
           <p>
             If you have questions regarding this Privacy Policy or wish to request data deletion,
-            contact our privacy officer at <strong>privacy@findfunlinks.com</strong>.
+            contact our privacy officer at <strong>privacy@finallinks.com</strong>.
           </p>
         </section>
       </div>

@@ -1,7 +1,15 @@
 'use client';
 
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { AnimatePresence } from 'framer-motion';
+import { SiteRowHeader } from './SiteRowHeader';
+
+// Dynamically import SiteRowPanel lazily when expanded
+const SiteRowPanel = dynamic(
+  () => import('./SiteRowPanel').then((mod) => mod.SiteRowPanel),
+  { ssr: false },
+);
 
 export interface SiteRowProps {
   rank: number;
@@ -11,108 +19,85 @@ export interface SiteRowProps {
   faviconUrl?: string | null;
   bestDomainUrl?: string;
   domainsCount?: number;
+  tags?: Array<{ id: string; name: string; slug: string }>;
+  isNew?: boolean;
   accentColor?: string;
-  onClick?: () => void;
+  categoryName?: string;
+  categorySlug?: string;
+  expanded?: boolean;
+  panelId?: string;
+  headerId?: string;
+  onClick?: () => void; // Legacy support
+  onToggle?: () => void;
   onExternalClick?: (url: string) => void;
+  onReport?: (slug: string) => void;
 }
 
 export const SiteRow: React.FC<SiteRowProps> = ({
   rank,
   name,
   displayName,
-  slug: _slug,
+  slug,
   faviconUrl,
   bestDomainUrl,
-  domainsCount: _domainsCount = 1,
-  accentColor = '#3B82F6',
+  domainsCount = 1,
+  tags = [],
+  isNew = false,
+  accentColor = '#2563EB',
+  categoryName,
+  categorySlug,
+  expanded = false,
+  panelId = `panel-${slug}`,
+  headerId = `header-${slug}`,
   onClick,
+  onToggle,
   onExternalClick,
+  onReport,
 }) => {
-  const label = displayName || name;
-  const isMirror = label.toLowerCase().includes('(mirror)');
-
-  const handleExternalClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const targetUrl = bestDomainUrl || `https://${name.toLowerCase().replace(/\s+/g, '')}.com`;
-    if (onExternalClick) {
-      onExternalClick(targetUrl);
-    } else {
-      window.open(targetUrl, '_blank', 'noopener,noreferrer,nofollow');
+  const handleToggle = () => {
+    if (onToggle) {
+      onToggle();
+    } else if (onClick) {
+      onClick();
     }
   };
 
-  const firstLetter = name.charAt(0).toUpperCase();
-
   return (
-    <div
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClick?.();
-        }
-      }}
-      className="group w-full flex items-center justify-between py-1 px-1.5 rounded-lg hover:bg-[var(--card-hover,#0E182F)] cursor-pointer transition-colors duration-150 select-none text-left"
-    >
-      <div className="flex items-center min-w-0 flex-1 mr-2">
-        {/* Number marker */}
-        <span className="w-5 text-right font-medium text-xs text-[var(--text-3,#6B7893)] mr-2 shrink-0 tabular-nums">
-          {rank}.
-        </span>
+    <div className="w-full transition-all duration-150">
+      {/* Row Header */}
+      <SiteRowHeader
+        rank={rank}
+        name={name}
+        displayName={displayName}
+        slug={slug}
+        faviconUrl={faviconUrl}
+        bestDomainUrl={bestDomainUrl}
+        domainsCount={domainsCount}
+        tags={tags}
+        isNew={isNew}
+        accentColor={accentColor}
+        expanded={expanded}
+        panelId={panelId}
+        headerId={headerId}
+        onToggle={handleToggle}
+        onExternalClick={onExternalClick}
+      />
 
-        {/* Favicon / Letter fallback */}
-        <div
-          className="w-5 h-5 rounded-[4px] mr-2 shrink-0 flex items-center justify-center overflow-hidden bg-[var(--line,#1A2442)]"
-          style={{
-            border: `1px solid color-mix(in srgb, ${accentColor} 30%, transparent)`,
-          }}
-        >
-          {faviconUrl ? (
-            <img
-              src={faviconUrl}
-              alt=""
-              width={20}
-              height={20}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-contain"
-              onError={(e) => {
-                // Fallback to letter avatar on broken image
-                (e.target as HTMLElement).style.display = 'none';
-              }}
-            />
-          ) : (
-            <span className="text-[10px] font-bold" style={{ color: accentColor }}>
-              {firstLetter}
-            </span>
-          )}
-        </div>
-
-        {/* Name and optional mirror suffix */}
-        <span className="truncate font-medium text-[13px] text-slate-900 dark:text-[var(--text,#F1F5F9)] group-hover:text-[var(--primary,#2563EB)] dark:group-hover:text-white transition-colors">
-          {isMirror ? (
-            <>
-              {label.replace(/\(mirror\)/i, '').trim()}{' '}
-              <span className="text-[11px] text-[var(--text-3,#6B7893)] font-normal">(Mirror)</span>
-            </>
-          ) : (
-            label
-          )}
-        </span>
-      </div>
-
-      {/* External Link Icon */}
-      <button
-        type="button"
-        onClick={handleExternalClick}
-        aria-label={`Open ${name} in a new tab`}
-        className="p-1 rounded text-[var(--text-3,#6B7893)] hover:text-white transition-colors shrink-0"
-        title="Open working mirror"
-      >
-        <ExternalLink className="w-3.5 h-3.5 group-hover:stroke-[var(--accent,#3B82F6)] transition-colors" />
-      </button>
+      {/* Inline Expandable Dropdown Panel */}
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <SiteRowPanel
+            slug={slug}
+            categoryName={categoryName}
+            categorySlug={categorySlug}
+            accentColor={accentColor}
+            panelId={panelId}
+            headerId={headerId}
+            onClose={handleToggle}
+            onReport={onReport}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

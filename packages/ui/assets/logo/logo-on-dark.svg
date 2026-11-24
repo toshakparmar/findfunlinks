@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" fill="none">
+  <g transform="translate(4, 0)">
+    <path d="M52 40L66 26C71.5228 20.4772 80.4772 20.4772 86 26C91.5228 31.5228 91.5228 40.4772 86 46L72 60C66.4772 65.5228 57.5228 65.5228 52 60" stroke="#0B9DF7" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M48 60L34 74C28.4772 79.5228 19.5228 79.5228 14 74C8.47715 68.4772 8.47715 59.5228 14 54L28 40C33.5228 34.4772 42.4772 34.4772 48 40" stroke="#0B9DF7" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="39" y1="61" x2="61" y2="39" stroke="#0B9DF7" stroke-width="9" stroke-linecap="round"/>
+  </g>
+  <text x="116" y="68" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="54" font-weight="800" fill="#FFFFFF" letter-spacing="-1.5">
+    Final<tspan fill="#0B9DF7">Links</tspan>
+  </text>
+</svg>

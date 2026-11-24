@@ -18,6 +18,8 @@ export const WebsiteCardSchema = z.object({
   contentRating: z.nativeEnum(ContentRating),
   isFeatured: z.boolean(),
   viewCount: z.number().int(),
+  stars: z.number().int().optional().default(0),
+  sortOrder: z.number().int().optional().default(0),
   activeDomainsCount: z.number().int(),
   primaryDomainUrl: z.string().nullable().optional(),
   updatedAt: z.string(),
@@ -46,6 +48,8 @@ export interface OwnerWebsiteDetails {
   seoDescription?: string | null;
   socialLinks?: Record<string, string> | null;
   viewCount: number;
+  stars?: number;
+  sortOrder?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -80,7 +84,80 @@ export type WebsiteFilterParams = z.infer<typeof WebsiteFilterParamsSchema>;
 export const PublicWebsitesQuerySchema = PaginationQuerySchema.extend({
   category: z.string().trim().optional(),
   tag: z.string().trim().optional(),
-  sort: z.enum(['popular', 'newest', 'recently_verified', 'alpha']).default('popular'),
+  sort: z.enum(['popular', 'newest', 'recently_verified', 'alpha', 'most_starred']).default('popular'),
   rating: z.nativeEnum(ContentRating).optional(),
 });
 export type PublicWebsitesQuery = z.infer<typeof PublicWebsitesQuerySchema>;
+
+export const MirrorPreviewItemSchema = z.object({
+  id: z.string().uuid(),
+  label: z.string().nullable().optional(),
+  url: z.string(),
+  type: z.string(),
+  status: z.string(),
+  responseMs: z.number().nullable().optional(),
+});
+export type MirrorPreviewItem = z.infer<typeof MirrorPreviewItemSchema>;
+
+export const WebsitePreviewSchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string(),
+  name: z.string(),
+  faviconUrl: z.string().nullable().optional(),
+  shortDescription: z.string().nullable().optional(),
+  highlights: z.array(z.string()).default([]),
+  note: z.string().nullable().optional(),
+  category: z.object({
+    id: z.string().uuid(),
+    slug: z.string(),
+    name: z.string(),
+    accentKey: z.string().optional(),
+  }),
+  rankInCategory: z.number().int(),
+  starCount: z.number().int(),
+  domainsCount: z.number().int(),
+  onlineCount: z.number().int(),
+  fastestMirror: z
+    .object({
+      url: z.string(),
+      ms: z.number().nullable().optional(),
+    })
+    .nullable()
+    .optional(),
+  mirrors: z.array(MirrorPreviewItemSchema).default([]),
+  lastVerifiedAt: z.string().nullable().optional(),
+  tags: z.array(z.object({ id: z.string().uuid(), name: z.string(), slug: z.string() })).default([]),
+  isNew: z.boolean().default(false),
+});
+export type WebsitePreview = z.infer<typeof WebsitePreviewSchema>;
+
+export const WebsiteScreenshotItemSchema = z.object({
+  id: z.string().uuid(),
+  url: z.string(),
+  thumbnailUrl: z.string().nullable().optional(),
+  altText: z.string(),
+  sortOrder: z.number().int().default(0),
+});
+export type WebsiteScreenshotItem = z.infer<typeof WebsiteScreenshotItemSchema>;
+
+export const WebsiteDetailSchema = WebsitePreviewSchema.extend({
+  description: z.string(),
+  allHighlights: z.array(z.string()).default([]),
+  screenshots: z.array(WebsiteScreenshotItemSchema).default([]),
+  stats: z.object({
+    clicks30d: z.number().int().default(0),
+    uptime30d: z.number().default(100),
+    addedAt: z.string(),
+    language: z.string(),
+    contentRating: z.string(),
+  }),
+  related: z.array(WebsitePreviewSchema).default([]),
+});
+export type WebsiteDetail = z.infer<typeof WebsiteDetailSchema>;
+
+export const EngagementSchema = z.object({
+  starCount: z.number().int(),
+  starred: z.boolean(),
+});
+export type Engagement = z.infer<typeof EngagementSchema>;
+

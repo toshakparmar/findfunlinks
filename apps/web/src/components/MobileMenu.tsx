@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { X, Sun, Moon, ShieldAlert, FileText, Info, PlusCircle } from 'lucide-react';
-import { Logo } from '@findfunlinks/ui';
+import { Logo } from '@finallinks/ui';
 
 export interface MobileMenuProps {
   isOpen: boolean;
@@ -35,7 +35,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-[var(--line,#1A2442)] mb-4">
             <Link href="/" onClick={onClose}>
-              <Logo variant="auto" className="h-7 w-auto" />
+              <Logo variant="full" theme="auto" className="h-7 w-auto" />
             </Link>
             <button
               type="button"
@@ -67,7 +67,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
             </Link>
 
             <div className="space-y-1">
-              <span className="text-[11px] font-semibold text-[var(--text-3,#6B7893)] uppercase tracking-wider px-2">
+              <span className="text-fs-xs font-semibold text-[var(--text-3,#6B7893)] uppercase tracking-wider px-2">
                 Navigation
               </span>
               <Link
@@ -108,7 +108,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
             </div>
 
             <div className="space-y-1 pt-3 border-t border-[var(--line,#1A2442)]">
-              <span className="text-[11px] font-semibold text-[var(--text-3,#6B7893)] uppercase tracking-wider px-2">
+              <span className="text-fs-xs font-semibold text-[var(--text-3,#6B7893)] uppercase tracking-wider px-2">
                 Information & Legal
               </span>
               <Link
@@ -164,8 +164,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
             </button>
           )}
 
-          <div className="mt-4 text-[10px] text-[var(--text-3,#6B7893)] text-center">
-            FindFunLinks v2.0
+          <div className="mt-4 text-fs-xs text-[var(--text-3,#6B7893)] text-center">
+            FinalLinks v2.0
           </div>
         </div>
       </div>

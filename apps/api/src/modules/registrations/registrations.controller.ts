@@ -26,7 +26,7 @@ import {
   ReviewRegistrationInput,
   ResubmitRegistrationSchema,
   ResubmitRegistrationInput,
-} from '@findfunlinks/contracts';
+} from '@finallinks/contracts';
 import { Request } from 'express';
 
 @ApiTags('Registrations')

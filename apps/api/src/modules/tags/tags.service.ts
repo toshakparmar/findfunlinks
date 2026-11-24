@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateTagInput, UpdateTagInput } from '@findfunlinks/contracts';
+import { CreateTagInput, UpdateTagInput } from '@finallinks/contracts';
 import { WebsiteStatus } from '@prisma/client';
 
 @Injectable()
@@ -35,18 +35,26 @@ export class TagsService {
   }
 
   async create(input: CreateTagInput) {
+    const slug = (
+      input.slug ||
+      input.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+    ).toLowerCase();
+
     const existing = await this.prisma.tag.findUnique({
-      where: { slug: input.slug.toLowerCase() },
+      where: { slug },
     });
 
     if (existing) {
-      throw new ConflictException(`Tag with slug "${input.slug}" already exists`);
+      throw new ConflictException(`Tag with slug "${slug}" already exists`);
     }
 
     return this.prisma.tag.create({
       data: {
         name: input.name,
-        slug: input.slug.toLowerCase(),
+        slug,
       },
     });
   }

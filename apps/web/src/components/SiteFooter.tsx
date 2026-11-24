@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Logo } from '@findfunlinks/ui';
+import { Logo } from '@finallinks/ui';
 
 export const SiteFooter: React.FC = () => {
   return (
@@ -11,7 +11,7 @@ export const SiteFooter: React.FC = () => {
         {/* Left: Logo & Tagline */}
         <div className="flex flex-col items-center md:items-start gap-1">
           <Link href="/" className="inline-block">
-            <Logo variant="auto" className="h-7 w-auto" />
+            <Logo variant="full" theme="auto" className="h-7 w-auto" />
           </Link>
           <p className="text-xs text-[var(--text-3,#6B7893)] font-medium text-center md:text-left mt-1">
             Your Hub for Movies, Shows, OTT, Anime and More.
@@ -61,8 +61,8 @@ export const SiteFooter: React.FC = () => {
         </nav>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-6 pt-4 border-t border-[var(--line,#1A2442)]/60 text-center text-[11px] text-[var(--text-3,#6B7893)]">
-        © {new Date().getFullYear()} FindFunLinks. All trademarks and logos belong to their
+      <div className="max-w-7xl mx-auto mt-6 pt-4 border-t border-[var(--line,#1A2442)]/60 text-center text-fs-xs text-[var(--text-3,#6B7893)]">
+        © {new Date().getFullYear()} FinalLinks. All trademarks and logos belong to their
         respective owners.
       </div>
     </footer>

@@ -54,21 +54,21 @@
   }
 
   .light {
-    --bg: #F3F6FC;
+    --bg: #F8FAFC;
     --header: #FFFFFF;
     --sidebar: #FFFFFF;
     --card: #FFFFFF;
-    --card-hover: #F8FAFC;
+    --card-hover: #F1F5F9;
     --surface-1: #FFFFFF;
-    --surface-2: #F1F5F9;
-    --line: #D9E1F0;
-    --border: #D9E1F0;
+    --surface-2: #F8FAFC;
+    --line: #CBD5E1;
+    --border: #CBD5E1;
     --border-strong: rgba(37, 99, 235, 0.4);
 
-    --text: #0B1220;
-    --text-muted: #475569;
+    --text: #0F172A;
+    --text-muted: #334155;
     --text-faint: #64748B;
-    --text-2: #475569;
+    --text-2: #334155;
     --text-3: #64748B;
 
     --primary: #2563EB;
@@ -98,6 +98,7 @@
   }
 
   html {
+    font-size: 100%;
     color-scheme: light dark;
     scroll-behavior: smooth;
   }

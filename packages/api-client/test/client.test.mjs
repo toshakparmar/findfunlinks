@@ -4,7 +4,7 @@ import { ApiClient, ApiError } from '../dist/index.js';
 
 describe('ApiClient Unit Tests', () => {
   test('initializes with baseUrl', () => {
-    const client = new ApiClient({ baseUrl: 'https://api.findfunlinks.com/' });
+    const client = new ApiClient({ baseUrl: 'https://api.finallinks.com/' });
     assert.ok(client);
     assert.ok(client.auth);
     assert.ok(client.public);

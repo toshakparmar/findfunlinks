@@ -1,5 +1,5 @@
 {
-  "extends": "@findfunlinks/config/tsconfig.next.json",
+  "extends": "@finallinks/config/tsconfig.next.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

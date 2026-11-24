@@ -12,7 +12,7 @@ import {
   RegistrationStatus,
   ReviewRegistrationInput,
   ResubmitRegistrationInput,
-} from '@findfunlinks/contracts';
+} from '@finallinks/contracts';
 import {
   RegistrationStatus as PrismaRegistrationStatus,
   TokenType,
@@ -58,11 +58,33 @@ export class RegistrationsService {
   private generateReferenceId(): string {
     const year = new Date().getFullYear();
     const randomNum = Math.floor(100000 + Math.random() * 900000);
-    return `FFL-${year}-${randomNum}`;
+    return `FL-${year}-${randomNum}`;
   }
 
   private generateVerificationToken(): string {
-    return `ffl-verify-${randomBytes(8).toString('hex')}`;
+    return `fl-verify-${randomBytes(8).toString('hex')}`;
+  }
+
+  private generateTempPassword(length = 14): string {
+    const uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const lowercase = 'abcdefghijkmnpqrstuvwxyz';
+    const numbers = '23456789';
+    const symbols = '!@#$%&*';
+    const allChars = uppercase + lowercase + numbers + symbols;
+
+    const bytes = randomBytes(length);
+    const chars: string[] = [
+      uppercase.charAt(bytes.readUInt8(0) % uppercase.length),
+      lowercase.charAt(bytes.readUInt8(1) % lowercase.length),
+      numbers.charAt(bytes.readUInt8(2) % numbers.length),
+      symbols.charAt(bytes.readUInt8(3) % symbols.length),
+    ];
+
+    for (let i = 4; i < length; i++) {
+      chars.push(allChars.charAt(bytes.readUInt8(i) % allChars.length));
+    }
+
+    return chars.sort(() => 0.5 - Math.random()).join('');
   }
 
   // ---------------------------------------------------------------------------
@@ -84,7 +106,7 @@ export class RegistrationsService {
     });
     if (existingDomain) {
       throw new ConflictException(
-        `A website with domain "${normalizedHostname}" is already listed on FindFunLinks.`,
+        `A website with domain "${normalizedHostname}" is already listed on FinalLinks.`,
       );
     }
 
@@ -507,13 +529,14 @@ export class RegistrationsService {
       throw new BadRequestException('System role "Website Owner" not found. Run db:seed.');
     }
 
-    // 24h Invite Token generation
+    // Generate secure temporary password (14 characters) and argon2id hash
+    const rawTempPassword = this.generateTempPassword(14);
+    const tempPasswordHash = await argon2.hash(rawTempPassword, { type: argon2.argon2id });
+
+    // 72h Invite Token generation (for optional direct-setup link)
     const rawInviteToken = randomBytes(32).toString('hex');
     const tokenHash = this.hashToken(rawInviteToken);
-    const inviteExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-    const tempPasswordHash = !existingUser
-      ? await argon2.hash(randomBytes(32).toString('hex'))
-      : '';
+    const inviteExpiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000); // 72 hours matching temp credentials
 
     // Execute atomic transaction for user, website, domains, invite token, and request update
     const result = await this.prisma.$transaction(
@@ -526,13 +549,23 @@ export class RegistrationsService {
               email: reg.applicantEmail,
               name: reg.applicantName,
               passwordHash: tempPasswordHash,
-              status: UserStatus.INVITED,
-              mustChangePassword: false,
+              status: UserStatus.ACTIVE,
+              mustChangePassword: true,
               roleId: ownerRole.id,
             },
           });
           userId = newUser.id;
         } else {
+          await tx.user.update({
+            where: { id: existingUser.id },
+            data: {
+              passwordHash: tempPasswordHash,
+              status: UserStatus.ACTIVE,
+              mustChangePassword: true,
+              failedLoginCount: 0,
+              lockedUntil: null,
+            },
+          });
           userId = existingUser.id;
         }
 
@@ -641,7 +674,7 @@ export class RegistrationsService {
       { maxWait: 15000, timeout: 30000 },
     );
 
-    // 7. Audit log
+    // 7. Audit log (never log plain password)
     await this.auditService.log({
       actorId: reviewerId,
       action: 'REGISTRATION_APPROVED',
@@ -656,25 +689,45 @@ export class RegistrationsService {
       req,
     });
 
-    // 8. Send transactional invite email with 24h setup link
-    const ownerPanelUrl = process.env.OWNER_PANEL_URL || 'http://localhost:3002';
-    const inviteUrl = `${ownerPanelUrl}/setup-password?token=${rawInviteToken}`;
-    await this.mailService.sendInviteEmail(
-      reg.applicantEmail,
-      reg.applicantName,
-      reg.websiteName,
-      inviteUrl,
-    );
+    // 8. Dispatch transactional credentials/invite email
+    const panelUrl =
+      process.env.ADMIN_PANEL_URL || process.env.OWNER_PANEL_URL || 'http://localhost:3001';
+    const loginUrl = `${panelUrl}/login`;
+    const inviteUrl = `${panelUrl}/accept-invite?token=${rawInviteToken}`;
+    const allowTempPasswordEmail = process.env.ALLOW_TEMP_PASSWORD_EMAIL !== 'false';
+
+    try {
+      if (allowTempPasswordEmail) {
+        await this.mailService.sendRegistrationApprovedWithCredentialsEmail({
+          to: reg.applicantEmail,
+          applicantName: reg.applicantName,
+          websiteName: reg.websiteName,
+          tempPassword: rawTempPassword,
+          loginUrl,
+          inviteUrl,
+        });
+      } else {
+        await this.mailService.sendInviteEmail(
+          reg.applicantEmail,
+          reg.applicantName,
+          reg.websiteName,
+          inviteUrl,
+        );
+      }
+    } catch {
+      // Handled and logged inside MailService
+    }
 
     return {
       message: 'Registration request approved. Owner account and directory entries created.',
       userId: result.userId,
       websiteId: result.website.id,
       slug: result.website.slug,
+      loginUrl,
+      tempPassword: rawTempPassword,
       inviteUrl,
       website: result.website,
       domain: result.domain,
-      rawInviteToken,
     };
   }
 

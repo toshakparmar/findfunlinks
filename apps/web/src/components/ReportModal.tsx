@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { api } from '../lib/api';
-import { ReportReason } from '@findfunlinks/contracts';
-import { AlertCircle, X, Loader2, CheckCircle2 } from 'lucide-react';
+import { ReportReason } from '@finallinks/contracts';
+import { AlertCircle, X, CheckCircle2 } from 'lucide-react';
 import { CustomSelect } from './ui/CustomSelect';
+import { CircularLoader } from './ui/CircularLoader';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -81,7 +82,7 @@ export function ReportModal({
             <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto" />
             <h3 className="text-lg font-bold text-foreground">Report Received</h3>
             <p className="text-sm text-muted-foreground">
-              Our moderation team reviews every report. Thank you for helping keep FindFunLinks
+              Our moderation team reviews every report. Thank you for helping keep FinalLinks
               reliable.
             </p>
             <button
@@ -173,7 +174,7 @@ export function ReportModal({
                 disabled={submitting}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-flame-600 text-xs font-semibold text-white hover:bg-brand-flame-700 transition-colors disabled:opacity-50"
               >
-                {submitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                {submitting && <CircularLoader size="xs" color="#ffffff" />}
                 Submit Report
               </button>
             </div>

@@ -1,4 +1,4 @@
-import { ContentRating, DomainStatus, DomainType } from '@findfunlinks/contracts';
+import { ContentRating, DomainStatus, DomainType } from '@finallinks/contracts';
 import { WebsiteCardData } from '../components/DirectoryCard';
 import { CategoryTab } from '../components/DirectoryGrid';
 

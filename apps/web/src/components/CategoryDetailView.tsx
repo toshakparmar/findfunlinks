@@ -1,12 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { ChevronRight, Search, PlusCircle } from 'lucide-react';
-import * as Icons from 'lucide-react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { SiteRow } from './SiteRow';
-import { SiteDomainsDrawer, SiteDetailModalData } from './SiteDomainsDrawer';
-import { CustomSelect } from './ui/CustomSelect';
+import { PageHeader, DEFAULT_CATEGORY_FILTER_GROUPS } from './PageHeader';
 
 export interface CategoryDetailSite {
   id: string;
@@ -36,23 +33,54 @@ export interface CategoryDetailViewProps {
   sites: CategoryDetailSite[];
 }
 
-// Map Lucide icons gracefully with fallback
-const getIconComponent = (iconName?: string | null): React.ElementType => {
-  if (!iconName) return Icons.LayoutGrid;
-  const normalized = iconName.trim();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const found = (Icons as Record<string, any>)[normalized];
-  return found || Icons.LayoutGrid;
-};
-
 export function CategoryDetailView({ category, sites }: CategoryDetailViewProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'rank' | 'newest' | 'az' | 'fastest'>('rank');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'online' | 'mirrors'>('all');
-  const [selectedDrawerSite, setSelectedDrawerSite] = useState<SiteDetailModalData | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Initialize state from URL params
+  const initialQ = searchParams?.get('q') || '';
+  const initialSort = (searchParams?.get('sort') || 'featured') as 'featured' | 'starred' | 'newest' | 'az';
+  const initialShow = (searchParams?.get('show') || 'all') as 'all' | 'online' | 'mirrors';
+
+  const [searchQuery, setSearchQuery] = useState(initialQ);
+  const [sortBy, setSortBy] = useState<'featured' | 'starred' | 'newest' | 'az'>(initialSort);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'online' | 'mirrors'>(initialShow);
+  const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
 
   const accentColor = category.themeColor || '#3B82F6';
-  const IconComponent = getIconComponent(category.iconName);
+
+  // Sync state to URL params (replace without scroll)
+  const syncToUrl = useCallback(
+    (q: string, sort: string, show: string) => {
+      const params = new URLSearchParams();
+      if (q.trim()) params.set('q', q.trim());
+      if (sort && sort !== 'featured') params.set('sort', sort);
+      if (show && show !== 'all') params.set('show', show);
+
+      const qs = params.toString();
+      const newUrl = qs ? `${pathname}?${qs}` : pathname;
+      router.replace(newUrl, { scroll: false });
+    },
+    [pathname, router],
+  );
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    syncToUrl(val, sortBy, statusFilter);
+  };
+
+  const handleFilterChange = (groupId: string, value: string) => {
+    if (groupId === 'sort') {
+      const newSort = value as any;
+      setSortBy(newSort);
+      syncToUrl(searchQuery, newSort, statusFilter);
+    } else if (groupId === 'show') {
+      const newShow = value as any;
+      setStatusFilter(newShow);
+      syncToUrl(searchQuery, sortBy, newShow);
+    }
+  };
 
   // Filter & sort sites
   const processedSites = useMemo(() => {
@@ -79,166 +107,32 @@ export function CategoryDetailView({ category, sites }: CategoryDetailViewProps)
       result.sort((a, b) => a.name.localeCompare(b.name));
     } else if (sortBy === 'newest') {
       result.reverse();
+    } else if (sortBy === 'starred') {
+      result.sort((a, b) => ((b as any).stars || 0) - ((a as any).stars || 0));
     }
 
     return result;
   }, [sites, searchQuery, sortBy, statusFilter]);
 
-  const handleOpenDrawer = (site: CategoryDetailSite) => {
-    setSelectedDrawerSite({
-      id: site.id,
-      name: site.name,
-      displayName: site.displayName,
-      slug: site.slug,
-      faviconUrl: site.faviconUrl,
-      categoryName: category.name,
-      accentColor,
-      domains:
-        site.domains && site.domains.length > 0
-          ? site.domains
-          : [
-              {
-                id: `${site.id}-primary`,
-                domainName: site.bestDomainUrl?.replace(/^https?:\/\//, '') || `${site.slug}.com`,
-                url: site.bestDomainUrl || `https://${site.slug}.com`,
-                domainType: 'PRIMARY',
-                status: 'ACTIVE',
-                lastResponseMs: 95,
-              },
-            ],
-    });
-  };
-
   return (
-    <div className="w-full space-y-5">
-      {/* 1. Breadcrumbs */}
-      <nav
-        aria-label="Breadcrumb"
-        className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium"
-      >
-        <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
-          Home
-        </Link>
-        <ChevronRight className="w-3.5 h-3.5 text-[var(--line,#1A2442)]" />
-        <Link
-          href="/categories"
-          className="hover:text-slate-900 dark:hover:text-white transition-colors"
-        >
-          Categories
-        </Link>
-        <ChevronRight className="w-3.5 h-3.5 text-[var(--line,#1A2442)]" />
-        <span className="text-slate-900 dark:text-white font-semibold">{category.name}</span>
-      </nav>
-
-      {/* 2. Page Header Banner */}
-      <div
-        className="rounded-[16px] p-4 sm:p-5 md:p-6 bg-[var(--card,#0A1226)] border transition-all duration-200 relative overflow-hidden"
-        style={{
-          borderColor: `color-mix(in srgb, ${accentColor} 80%, transparent)`,
-          boxShadow: `0 0 28px -8px color-mix(in srgb, ${accentColor} 45%, transparent)`,
+    <div className="w-full space-y-6">
+      {/* 1. Page Header (H1 + count, search + filter dropdown) */}
+      <PageHeader
+        title={category.name}
+        count={category.total ?? sites.length}
+        countLabel="websites"
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        searchPlaceholder={`Search in ${category.name}…`}
+        filterGroups={DEFAULT_CATEGORY_FILTER_GROUPS}
+        selectedFilters={{
+          sort: sortBy,
+          show: statusFilter,
         }}
-      >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-start sm:items-center gap-3.5">
-            {/* Category Icon Badge */}
-            <div
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-[12px] flex items-center justify-center shrink-0"
-              style={{
-                background: `color-mix(in srgb, ${accentColor} 20%, transparent)`,
-                border: `1.5px solid color-mix(in srgb, ${accentColor} 60%, transparent)`,
-                color: accentColor,
-              }}
-            >
-              <IconComponent className="w-5 h-5 sm:w-6 sm:h-6" />
-            </div>
+        onFilterChange={handleFilterChange}
+      />
 
-            <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">
-                  {category.name}
-                </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-[#0A1226] border border-[var(--line,#1A2442)] text-slate-700 dark:text-[var(--text-2,#A8B3C7)]">
-                  {category.total ?? sites.length} Sites
-                </span>
-              </div>
-              <p className="text-xs md:text-sm text-[var(--text-2,#A8B3C7)] mt-1 max-w-2xl">
-                {category.description ||
-                  `Verified directory of official ${category.name} websites and working mirrors.`}
-              </p>
-            </div>
-          </div>
-
-          {/* Quick Stats or CTA */}
-          <div className="flex items-center gap-2 shrink-0 self-start md:self-auto">
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[10px] text-xs font-semibold bg-[var(--primary,#2563EB)] text-white shadow-sm hover:bg-[var(--primary-hover,#1D4ED8)] transition-all select-none"
-            >
-              <PlusCircle className="w-3.5 h-3.5" />
-              <span>List Website</span>
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Sticky Filter Toolbar */}
-      <div className="sticky top-14 md:top-16 z-20 py-2.5 bg-[var(--bg,#050A18)]/95 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-y border-[var(--line,#1A2442)]/60">
-        {/* Search within category */}
-        <div className="relative w-full sm:flex-1 sm:max-w-md">
-          <Search className="w-4 h-4 text-[var(--text-3,#6B7893)] absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={`Search ${category.name}...`}
-            className="w-full bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] focus:border-[var(--primary,#2563EB)] rounded-[10px] pl-9 pr-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-[var(--text-3,#6B7893)] focus:outline-none transition-colors"
-          />
-        </div>
-
-        {/* Sort & Status Controls */}
-        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto text-xs">
-          {/* Status Segmented Filter */}
-          <div className="flex items-center bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] rounded-[10px] p-0.5">
-            <button
-              type="button"
-              onClick={() => setStatusFilter('all')}
-              className={`px-2.5 py-1 rounded-[8px] font-medium transition-colors ${
-                statusFilter === 'all'
-                  ? 'bg-[var(--primary,#2563EB)] text-white shadow-sm'
-                  : 'text-[var(--text-2,#A8B3C7)] hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              All
-            </button>
-            <button
-              type="button"
-              onClick={() => setStatusFilter('mirrors')}
-              className={`px-2.5 py-1 rounded-[8px] font-medium transition-colors ${
-                statusFilter === 'mirrors'
-                  ? 'bg-[var(--primary,#2563EB)] text-white shadow-sm'
-                  : 'text-[var(--text-2,#A8B3C7)] hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              Has Mirrors
-            </button>
-          </div>
-
-          {/* Sort Select */}
-          <CustomSelect
-            size="sm"
-            className="w-36"
-            value={sortBy}
-            onChange={(val) => setSortBy(val as any)}
-            options={[
-              { value: 'rank', label: 'Popular Rank' },
-              { value: 'az', label: 'A – Z' },
-              { value: 'newest', label: 'Newest First' },
-            ]}
-          />
-        </div>
-      </div>
-
-      {/* 4. Main Body: Wide Category Card with 3 Columns on Desktop */}
+      {/* 2. Main Body: Accent-Bordered Category Card with Multi-Column Grid */}
       <div
         className="rounded-[16px] bg-[var(--card,#0A1226)] border p-4 md:p-6 transition-all"
         style={{
@@ -246,18 +140,9 @@ export function CategoryDetailView({ category, sites }: CategoryDetailViewProps)
           boxShadow: `0 0 24px -10px color-mix(in srgb, ${accentColor} 30%, transparent)`,
         }}
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 mb-4 border-b border-[var(--line,#1A2442)]">
-          <span className="text-xs font-semibold text-[var(--text-2,#A8B3C7)]">
-            Showing {processedSites.length} of {sites.length} sites
-          </span>
-          <span className="text-[11px] text-[var(--text-3,#6B7893)] hidden sm:inline">
-            Click row for mirrors · Click icon to open
-          </span>
-        </div>
-
         {processedSites.length === 0 ? (
           <div className="py-16 text-center space-y-3">
-            <p className="text-sm text-[var(--text-2,#A8B3C7)]">
+            <p className="text-fs-base text-[var(--text-2,#A8B3C7)]">
               No websites match your current filter.
             </p>
             <button
@@ -265,42 +150,56 @@ export function CategoryDetailView({ category, sites }: CategoryDetailViewProps)
               onClick={() => {
                 setSearchQuery('');
                 setStatusFilter('all');
+                setSortBy('featured');
+                syncToUrl('', 'featured', 'all');
               }}
-              className="text-xs text-[var(--brand-link,#3B82F6)] hover:underline font-medium"
+              className="text-fs-sm text-[var(--brand-link,#3B82F6)] hover:underline font-medium"
             >
               Clear filters
             </button>
           </div>
         ) : (
-          /* Multi-column grid: 3 cols on desktop (>=1280), 2 cols on tablet/laptop, 1 col on mobile */
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-1">
-            {processedSites.map((site, index) => (
-              <SiteRow
-                key={site.id || index}
-                rank={site.rank ?? index + 1}
-                name={site.name}
-                displayName={site.displayName}
-                slug={site.slug}
-                faviconUrl={site.faviconUrl}
-                bestDomainUrl={site.bestDomainUrl}
-                domainsCount={site.domainsCount ?? site.domains?.length ?? 1}
-                accentColor={accentColor}
-                onClick={() => handleOpenDrawer(site)}
-                onExternalClick={(url) => {
-                  window.open(url, '_blank', 'noopener,noreferrer,nofollow');
-                }}
-              />
-            ))}
-          </div>
+          <>
+            {/* Multi-column grid: 3 cols on desktop (>=1280), 2 cols on tablet/laptop, 1 col on mobile */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-1.5 items-start">
+              {processedSites.map((site, index) => {
+                const isExpanded = expandedSlug === site.slug;
+                return (
+                  <div
+                    key={site.id || site.slug || index}
+                    className={isExpanded ? 'col-span-1 md:col-span-2 xl:col-span-3 transition-all' : ''}
+                  >
+                    <SiteRow
+                      rank={site.rank ?? index + 1}
+                      name={site.name}
+                      displayName={site.displayName}
+                      slug={site.slug}
+                      faviconUrl={site.faviconUrl}
+                      bestDomainUrl={site.bestDomainUrl}
+                      domainsCount={site.domainsCount ?? site.domains?.length ?? 1}
+                      accentColor={accentColor}
+                      categoryName={category.name}
+                      categorySlug={category.slug}
+                      expanded={isExpanded}
+                      onToggle={() => setExpandedSlug((prev) => (prev === site.slug ? null : site.slug))}
+                      onExternalClick={(url) => {
+                        window.open(url, '_blank');
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Quiet result summary at bottom */}
+            <div className="pt-4 mt-4 border-t border-[var(--line,#1A2442)] flex items-center justify-between text-fs-sm text-[var(--text-3,#6B7893)]">
+              <span>
+                Showing 1–{processedSites.length} of {sites.length}
+              </span>
+            </div>
+          </>
         )}
       </div>
-
-      {/* 5. Working Mirrors Drawer */}
-      <SiteDomainsDrawer
-        isOpen={!!selectedDrawerSite}
-        onClose={() => setSelectedDrawerSite(null)}
-        site={selectedDrawerSite}
-      />
     </div>
   );
 }

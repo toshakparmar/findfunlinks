@@ -18,13 +18,13 @@ test.describe('Phase 1: Routing and State Root-Cause Verification', () => {
     const ottCard = page.locator('#category-ott-platforms');
     await expect(ottCard).toBeVisible();
 
-    // Verify "View More" button text does NOT have duplicated arrows (Bug b fix)
-    const viewMoreBtn = ottCard.locator('a', { hasText: 'View More' });
+    // Verify "View All" button text does NOT have duplicated arrows (Iteration 3 Section 6)
+    const viewMoreBtn = ottCard.locator('a', { hasText: 'View All' });
     await expect(viewMoreBtn).toBeVisible();
     const btnText = await viewMoreBtn.innerText();
-    expect(btnText.trim()).toBe('View More');
+    expect(btnText.trim()).toBe('View All');
 
-    // 3. Click View More
+    // 3. Click View All
     await viewMoreBtn.click();
 
     // 4. Verify URL navigated to /category/ott-platforms

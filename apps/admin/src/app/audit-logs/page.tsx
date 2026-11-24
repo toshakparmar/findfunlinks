@@ -69,25 +69,24 @@ export default function AuditLogsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">System Audit Logs</h1>
-          <p className="text-xs text-[#A8B3C7] mt-1">
-            Immutable security ledger tracking platform operations, status mutations, and approval
-            events.
+          <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">System Audit Logs</h1>
+          <p className="text-sm text-[#9CA3AF] mt-1">
+            Immutable security ledger tracking platform operations, status mutations, and approval events.
           </p>
         </div>
 
         <button
           type="button"
           onClick={fetchLogs}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-4 h-11 rounded-lg border border-[#33373D] bg-[#1E2024] text-sm font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white transition-colors self-start sm:self-auto"
         >
-          <RefreshCw className="h-3.5 w-3.5" />
+          <RefreshCw className="h-4 w-4" />
           Refresh
         </button>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
         {entityTypes.map((type) => (
           <button
             key={type}
@@ -96,10 +95,10 @@ export default function AuditLogsPage() {
               setEntityTypeFilter(type);
               setPage(1);
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
+            className={`px-4 h-11 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
               entityTypeFilter === type
-                ? 'bg-[#2563EB] text-white shadow-sm'
-                : 'border border-[#1A2442] bg-[#0A1226] text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]'
+                ? 'bg-[#0B9DF7] text-white'
+                : 'border border-[#33373D] bg-[#1E2024] text-[#9CA3AF] hover:bg-[#26292F] hover:text-white'
             }`}
           >
             {type}
@@ -108,63 +107,63 @@ export default function AuditLogsPage() {
       </div>
 
       {/* Table */}
-      <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-[#33373D] bg-[#1E2024] overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
+            <Loader2 className="h-7 w-7 animate-spin text-[#0B9DF7]" />
           </div>
         ) : logs.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-[#1A2442] bg-[#070D1E] text-[#A8B3C7]">
-                  <th className="py-3 px-4 font-semibold">Timestamp</th>
-                  <th className="py-3 px-4 font-semibold">Actor</th>
-                  <th className="py-3 px-4 font-semibold">Action</th>
-                  <th className="py-3 px-4 font-semibold">Target Entity</th>
-                  <th className="py-3 px-4 font-semibold text-right">Payload</th>
+                <tr className="border-b border-[#33373D] bg-[#16181B] text-[#9CA3AF]">
+                  <th className="py-3 px-4 font-medium">Timestamp</th>
+                  <th className="py-3 px-4 font-medium">Actor</th>
+                  <th className="py-3 px-4 font-medium">Action</th>
+                  <th className="py-3 px-4 font-medium">Target Entity</th>
+                  <th className="py-3 px-4 font-medium text-right">Payload</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1A2442]/60">
+              <tbody className="divide-y divide-[#33373D]">
                 {logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-[#0E182F] transition-colors">
-                    <td className="py-3 px-4 text-[#A8B3C7] whitespace-nowrap">
+                  <tr key={log.id} className="hover:bg-[#26292F] transition-colors">
+                    <td className="py-3.5 px-4 text-[#9CA3AF] whitespace-nowrap font-mono text-xs">
                       {new Date(log.createdAt).toLocaleString()}
                     </td>
 
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-4">
                       {log.actor ? (
                         <div>
-                          <div className="font-semibold text-[#F1F5F9]">{log.actor.name}</div>
-                          <div className="text-[10px] font-mono text-[#A8B3C7]">
+                          <div className="font-semibold text-[#F3F4F6]">{log.actor.name}</div>
+                          <div className="text-xs font-mono text-[#9CA3AF]">
                             {log.actor.email}
                           </div>
                         </div>
                       ) : (
-                        <span className="text-[#6B7893] font-mono">System / Internal</span>
+                        <span className="text-[#6B7280] font-mono text-xs">System / Internal</span>
                       )}
                     </td>
 
-                    <td className="py-3 px-4">
-                      <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-[#070D1E] border border-[#1A2442] text-[#3B82F6] font-semibold">
+                    <td className="py-3.5 px-4">
+                      <span className="font-mono text-xs px-2.5 py-1 rounded bg-[#26292F] border border-[#33373D] text-[#0B9DF7] font-medium">
                         {log.action}
                       </span>
                     </td>
 
-                    <td className="py-3 px-4 text-[#F1F5F9]">
-                      <span className="font-semibold">{log.entityType}</span>
-                      <span className="text-[#6B7893] ml-1.5 font-mono text-[11px]">
+                    <td className="py-3.5 px-4 text-[#F3F4F6]">
+                      <span className="font-medium">{log.entityType}</span>
+                      <span className="text-[#6B7280] ml-2 font-mono text-xs">
                         #{log.entityId.slice(0, 8)}
                       </span>
                     </td>
 
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-3.5 px-4 text-right">
                       <button
                         type="button"
                         onClick={() => setSelectedLog(log)}
-                        className="px-2.5 py-1 rounded-lg bg-[#2563EB]/15 text-[#3B82F6] font-semibold hover:bg-[#2563EB] hover:text-white transition-colors border border-[#2563EB]/30 inline-flex items-center gap-1"
+                        className="px-3 h-8 rounded-lg bg-[#26292F] text-[#0B9DF7] font-medium hover:bg-[#33373D] hover:text-white transition-colors border border-[#33373D] inline-flex items-center gap-1.5 text-xs"
                       >
-                        <Code className="h-3 w-3" />
+                        <Code className="h-3.5 w-3.5" />
                         Diff
                       </button>
                     </td>
@@ -174,13 +173,13 @@ export default function AuditLogsPage() {
             </table>
           </div>
         ) : (
-          <div className="p-12 text-center text-xs text-[#A8B3C7]">
+          <div className="p-12 text-center text-sm text-[#9CA3AF]">
             No audit log records found for selected entity type.
           </div>
         )}
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#1A2442] bg-[#070D1E] text-xs text-[#A8B3C7]">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#33373D] bg-[#16181B] text-sm text-[#9CA3AF]">
             <span>
               Page {page} of {totalPages}
             </span>
@@ -189,7 +188,7 @@ export default function AuditLogsPage() {
                 type="button"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="px-2.5 py-1 rounded-lg border border-[#1A2442] bg-[#0A1226] text-[#F1F5F9] disabled:opacity-40 hover:bg-[#0E182F]"
+                className="px-3 h-8 rounded-lg border border-[#33373D] bg-[#1E2024] text-[#D1D5DB] disabled:opacity-40 hover:bg-[#26292F]"
               >
                 Previous
               </button>
@@ -197,7 +196,7 @@ export default function AuditLogsPage() {
                 type="button"
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => p + 1)}
-                className="px-2.5 py-1 rounded-lg border border-[#1A2442] bg-[#0A1226] text-[#F1F5F9] disabled:opacity-40 hover:bg-[#0E182F]"
+                className="px-3 h-8 rounded-lg border border-[#33373D] bg-[#1E2024] text-[#D1D5DB] disabled:opacity-40 hover:bg-[#26292F]"
               >
                 Next
               </button>
@@ -209,25 +208,25 @@ export default function AuditLogsPage() {
       {/* Diff / Details Modal */}
       {selectedLog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="rounded-3xl border border-[#1A2442] bg-[#0A1226] max-w-xl w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#1A2442] pb-3">
-              <h2 className="text-base font-bold text-[#F1F5F9]">
+          <div className="rounded-2xl border border-[#33373D] bg-[#1E2024] max-w-xl w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#33373D] pb-3">
+              <h2 className="text-base font-bold text-[#F3F4F6]">
                 Audit Payload — {selectedLog.action}
               </h2>
               <button
                 type="button"
                 onClick={() => setSelectedLog(null)}
-                className="text-[#A8B3C7] hover:text-[#F1F5F9]"
+                className="text-[#9CA3AF] hover:text-white transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs max-h-[60vh] overflow-y-auto">
+            <div className="space-y-4 text-sm max-h-[60vh] overflow-y-auto">
               {selectedLog.before && (
                 <div>
-                  <span className="font-semibold text-[#EF4444]">State Before:</span>
-                  <pre className="p-3 rounded-xl bg-[#050A18] border border-[#1A2442] text-[11px] font-mono text-[#F1F5F9] overflow-x-auto mt-1">
+                  <span className="font-semibold text-red-400 text-xs uppercase tracking-wider">State Before:</span>
+                  <pre className="p-3.5 rounded-lg bg-[#16181B] border border-[#33373D] text-xs font-mono text-[#D1D5DB] overflow-x-auto mt-1.5 leading-relaxed">
                     {JSON.stringify(selectedLog.before, null, 2)}
                   </pre>
                 </div>
@@ -235,25 +234,25 @@ export default function AuditLogsPage() {
 
               {selectedLog.after && (
                 <div>
-                  <span className="font-semibold text-[#22C55E]">State After:</span>
-                  <pre className="p-3 rounded-xl bg-[#050A18] border border-[#1A2442] text-[11px] font-mono text-[#F1F5F9] overflow-x-auto mt-1">
+                  <span className="font-semibold text-emerald-400 text-xs uppercase tracking-wider">State After:</span>
+                  <pre className="p-3.5 rounded-lg bg-[#16181B] border border-[#33373D] text-xs font-mono text-[#D1D5DB] overflow-x-auto mt-1.5 leading-relaxed">
                     {JSON.stringify(selectedLog.after, null, 2)}
                   </pre>
                 </div>
               )}
 
               {!selectedLog.before && !selectedLog.after && (
-                <p className="text-[#A8B3C7] text-center py-6">
+                <p className="text-[#9CA3AF] text-center py-6 text-sm">
                   No before/after snapshot attached to this audit event.
                 </p>
               )}
             </div>
 
-            <div className="flex justify-end pt-3 border-t border-[#1A2442]">
+            <div className="flex justify-end pt-3 border-t border-[#33373D]">
               <button
                 type="button"
                 onClick={() => setSelectedLog(null)}
-                className="px-4 py-1.5 rounded-xl bg-[#1A2442] hover:bg-[#0E182F] text-xs font-semibold text-[#F1F5F9]"
+                className="px-4 h-11 rounded-lg bg-[#26292F] hover:bg-[#33373D] text-sm font-medium text-[#F3F4F6] transition-colors"
               >
                 Close
               </button>

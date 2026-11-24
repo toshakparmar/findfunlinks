@@ -31,6 +31,6 @@
     <line x1="50" y1="74" x2="74" y2="74" stroke="#EA580C" stroke-width="3" stroke-linecap="round"/>
   </g>
 
-  <!-- Wordmark "FindFunLinks" -->
+  <!-- Wordmark "FinalLinks" -->
   <text x="130" y="78" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="64" font-weight="800" fill="#0B57D9" letter-spacing="-1.5">Find<tspan fill="#0B57D9">Fun</tspan><tspan fill="#0B57D9">Links</tspan></text>
 </svg>

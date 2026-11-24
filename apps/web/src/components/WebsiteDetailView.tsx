@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { api, getLatencyBadge, formatTimeAgo } from '../lib/api';
 import { ReportModal } from './ReportModal';
 import { DomainItemData } from './DirectoryCard';
-import { DomainStatus, DomainType, ContentRating } from '@findfunlinks/contracts';
+import { DomainStatus, DomainType, ContentRating } from '@finallinks/contracts';
 import {
   ExternalLink,
   Copy,
@@ -49,8 +49,16 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
   >(undefined);
 
   const activeDomains = website.domains.filter((d) => d.status === DomainStatus.ACTIVE);
+  const sortedDomains = useMemo(() => {
+    return [...website.domains].sort((a, b) => {
+      if (a.type === DomainType.PRIMARY && b.type !== DomainType.PRIMARY) return -1;
+      if (b.type === DomainType.PRIMARY && a.type !== DomainType.PRIMARY) return 1;
+      return (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+    });
+  }, [website.domains]);
+
   const primaryDomain =
-    website.domains.find(
+    sortedDomains.find(
       (d) => d.type === DomainType.PRIMARY && d.status === DomainStatus.ACTIVE,
     ) || activeDomains[0];
 
@@ -65,15 +73,15 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
 
   const handleOpenDomain = (domain: DomainItemData) => {
     api.public.trackDomainClick(domain.id).catch(() => {});
-    window.open(domain.url, '_blank', 'noopener,noreferrer');
+    window.open(domain.url, '_blank');
   };
 
   const handleShare = async () => {
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
-          title: `${website.name} — Working Mirrors on FindFunLinks`,
-          text: `Check out ${website.name} and all its working mirrors on FindFunLinks!`,
+          title: `${website.name} — Working Mirrors on FinalLinks`,
+          text: `Check out ${website.name} and all its working mirrors on FinalLinks!`,
           url: window.location.href,
         });
       } catch {
@@ -260,7 +268,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/40">
-                    {website.domains.map((dom) => {
+                    {sortedDomains.map((dom) => {
                       const isActive = dom.status === DomainStatus.ACTIVE;
                       const latency = getLatencyBadge(dom.lastResponseMs);
 
@@ -288,14 +296,14 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                           <td className="py-3 font-mono text-foreground font-medium">
                             <span className="select-all">{dom.hostname}</span>
                             {dom.label && (
-                              <span className="block text-[10px] font-sans text-muted-foreground">
+                              <span className="block text-fs-xs font-sans text-muted-foreground">
                                 {dom.label}
                               </span>
                             )}
                           </td>
 
                           <td className="py-3">
-                            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground uppercase">
+                            <span className="px-2 py-0.5 rounded text-fs-xs font-medium bg-muted text-muted-foreground uppercase">
                               {dom.type}
                             </span>
                           </td>
@@ -303,7 +311,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                           <td className="py-3">
                             {dom.lastResponseMs !== null && (
                               <span
-                                className={`px-1.5 py-0.5 rounded font-mono text-[10px] border ${latency.className}`}
+                                className={`px-1.5 py-0.5 rounded font-mono text-fs-xs border ${latency.className}`}
                               >
                                 {latency.label}
                               </span>
@@ -392,7 +400,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
           <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 space-y-3">
             <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
               <ShieldCheck className="h-5 w-5" />
-              <span>FindFunLinks Guarantee</span>
+              <span>FinalLinks Guarantee</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Every domain listed is continuously checked for DNS availability, HTTP health, and
@@ -402,7 +410,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
 
           {/* Metadata Card */}
           <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3 text-xs">
-            <h3 className="font-semibold text-foreground uppercase tracking-wider text-[11px]">
+            <h3 className="font-semibold text-foreground uppercase tracking-wider text-fs-xs">
               Listing Details
             </h3>
 

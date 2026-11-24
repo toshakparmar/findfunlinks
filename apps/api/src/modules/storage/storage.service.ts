@@ -23,7 +23,7 @@ export class StorageService {
     const serviceKey =
       this.config.get<string>('SUPABASE_SERVICE_ROLE_KEY') ||
       this.config.get<string>('SUPABASE_ANON_KEY');
-    this.bucket = this.config.get<string>('SUPABASE_STORAGE_BUCKET') || 'findfunlinks-media';
+    this.bucket = this.config.get<string>('SUPABASE_STORAGE_BUCKET') || 'finallinks-media';
 
     if (
       this.supabaseUrl &&

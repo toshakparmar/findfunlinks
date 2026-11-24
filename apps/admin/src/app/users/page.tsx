@@ -3,7 +3,22 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { StatusBadge } from '@/components/StatusBadge';
-import { Users, Shield, ShieldCheck, Search, RefreshCw, Lock, Unlock, Loader2 } from 'lucide-react';
+import { DeleteConfirmModal } from '@/components/DeleteConfirmModal';
+import type { Category } from '@finallinks/contracts';
+import {
+  Users,
+  Shield,
+  ShieldCheck,
+  Search,
+  RefreshCw,
+  Lock,
+  Unlock,
+  Loader2,
+  UserPlus,
+  Trash2,
+  X,
+  Globe,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 interface UserRecord {
@@ -45,11 +60,28 @@ export default function UsersPage() {
   const [activeTab, setActiveTab] = useState<'USERS' | 'ROLES'>('USERS');
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [roles, setRoles] = useState<RoleItem[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+
+  // Deletion state
+  const [deletingUser, setDeletingUser] = useState<UserRecord | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Create Owner modal state
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [ownerName, setOwnerName] = useState('');
+  const [ownerEmail, setOwnerEmail] = useState('');
+  const [includeWebsite, setIncludeWebsite] = useState(true);
+  const [siteName, setSiteName] = useState('');
+  const [siteUrl, setSiteUrl] = useState('');
+  const [siteCategoryId, setSiteCategoryId] = useState('');
+  const [siteTagline, setSiteTagline] = useState('');
+  const [siteDescription, setSiteDescription] = useState('');
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -82,6 +114,18 @@ export default function UsersPage() {
     }
   }, []);
 
+  const fetchCategories = useCallback(async () => {
+    try {
+      const res = await api.admin.getCategories();
+      setCategories(res || []);
+      if (res && res.length > 0 && !siteCategoryId) {
+        setSiteCategoryId(res[0]?.id || '');
+      }
+    } catch {
+      // Ignore
+    }
+  }, [siteCategoryId]);
+
   useEffect(() => {
     if (activeTab === 'USERS') {
       fetchUsers();
@@ -90,6 +134,10 @@ export default function UsersPage() {
     }
   }, [activeTab, fetchUsers, fetchRoles]);
 
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
   const handleToggleStatus = async (user: UserRecord) => {
     const newStatus = user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
     setActionLoadingId(user.id);
@@ -97,7 +145,7 @@ export default function UsersPage() {
       await api.admin.setUserStatus(user.id, newStatus);
       toast.success(`User marked as ${newStatus.toLowerCase()}`);
       setUsers((prev) =>
-        prev.map((u) => (u.id === user.id ? { ...u, status: newStatus as any } : u)),
+        prev.map((u) => (u.id === user.id ? { ...u, status: newStatus as 'ACTIVE' | 'SUSPENDED' | 'INVITED' } : u)),
       );
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to update user status';
@@ -107,38 +155,109 @@ export default function UsersPage() {
     }
   };
 
+  const handleConfirmDelete = async () => {
+    if (!deletingUser) return;
+    try {
+      setDeleteLoading(true);
+      await api.admin.deleteUser(deletingUser.id);
+      toast.success(`User account "${deletingUser.email}" deleted.`);
+      setDeletingUser(null);
+      await fetchUsers();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete user.');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleCreateOwner = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ownerName.trim() || !ownerEmail.trim()) {
+      toast.error('Please enter name and email.');
+      return;
+    }
+
+    if (includeWebsite && (!siteName.trim() || !siteUrl.trim())) {
+      toast.error('Please enter website name and URL, or uncheck website registration.');
+      return;
+    }
+
+    try {
+      setCreating(true);
+      await api.admin.createUser({
+        name: ownerName.trim(),
+        email: ownerEmail.trim(),
+        websiteName: includeWebsite ? siteName.trim() : undefined,
+        websiteUrl: includeWebsite ? siteUrl.trim() : undefined,
+        categoryId: includeWebsite ? siteCategoryId : undefined,
+        tagline: includeWebsite ? siteTagline.trim() || undefined : undefined,
+        description: includeWebsite ? siteDescription.trim() || undefined : undefined,
+      });
+
+      toast.success(
+        `Website Owner created! Login credentials dispatched to ${ownerEmail}.`,
+      );
+
+      setCreateModalOpen(false);
+      setOwnerName('');
+      setOwnerEmail('');
+      setSiteName('');
+      setSiteUrl('');
+      setSiteTagline('');
+      setSiteDescription('');
+      await fetchUsers();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to create owner user.');
+    } finally {
+      setCreating(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">
+          <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">
             Users & Access Control
           </h1>
-          <p className="text-xs text-[#A8B3C7] mt-1">
+          <p className="text-sm text-[#9CA3AF] mt-1">
             Manage Super Admin and Website Owner platform credentials, RBAC roles, and login access.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => (activeTab === 'USERS' ? fetchUsers() : fetchRoles())}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors self-start sm:self-auto"
-        >
-          <RefreshCw className="h-3.5 w-3.5" />
-          Refresh
-        </button>
+        <div className="flex items-center gap-3 self-start sm:self-auto">
+          {activeTab === 'USERS' && (
+            <button
+              type="button"
+              onClick={() => setCreateModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 h-11 rounded-lg bg-[#0B9DF7] hover:bg-[#0987d6] text-white text-sm font-medium transition-colors shadow-lg shadow-[#0B9DF7]/20"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span>Create Owner User</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => (activeTab === 'USERS' ? fetchUsers() : fetchRoles())}
+            className="inline-flex items-center gap-2 px-4 h-11 rounded-lg border border-[#33373D] bg-[#1E2024] text-sm font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white transition-colors"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#1A2442] pb-3">
+      <div className="flex items-center gap-2 border-b border-[#33373D] pb-3">
         <button
           type="button"
           onClick={() => setActiveTab('USERS')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 px-4 h-11 rounded-lg text-sm font-medium transition-colors ${
             activeTab === 'USERS'
-              ? 'bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/25'
-              : 'border border-[#1A2442] bg-[#0A1226] text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]'
+              ? 'bg-[#0B9DF7] text-white'
+              : 'border border-[#33373D] bg-[#1E2024] text-[#9CA3AF] hover:bg-[#26292F] hover:text-white'
           }`}
         >
           <Users className="h-4 w-4" />
@@ -147,10 +266,10 @@ export default function UsersPage() {
         <button
           type="button"
           onClick={() => setActiveTab('ROLES')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 px-4 h-11 rounded-lg text-sm font-medium transition-colors ${
             activeTab === 'ROLES'
-              ? 'bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/25'
-              : 'border border-[#1A2442] bg-[#0A1226] text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]'
+              ? 'bg-[#0B9DF7] text-white'
+              : 'border border-[#33373D] bg-[#1E2024] text-[#9CA3AF] hover:bg-[#26292F] hover:text-white'
           }`}
         >
           <Shield className="h-4 w-4" />
@@ -162,62 +281,62 @@ export default function UsersPage() {
         <>
           {/* Search */}
           <div className="relative max-w-md">
-            <Search className="h-4 w-4 text-[#6B7893] absolute left-3 top-2.5" />
+            <Search className="h-4 w-4 text-[#6B7280] absolute left-3.5 top-3.5" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search user by name or email..."
-              className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] pl-9 pr-3.5 py-2 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-colors"
+              className="w-full h-11 rounded-lg border border-[#33373D] bg-[#1E2024] pl-10 pr-4 text-sm text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] transition-colors"
             />
           </div>
 
           {/* Table */}
-          <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] shadow-sm overflow-hidden">
+          <div className="rounded-xl border border-[#33373D] bg-[#1E2024] overflow-hidden">
             {loading ? (
               <div className="flex justify-center py-20">
-                <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
+                <Loader2 className="h-7 w-7 animate-spin text-[#0B9DF7]" />
               </div>
             ) : users.length > 0 ? (
               <>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                  <table className="w-full text-left text-sm">
                     <thead>
-                      <tr className="border-b border-[#1A2442] bg-[#070D1E] text-[#A8B3C7]">
-                        <th className="py-3 px-4 font-semibold">User</th>
-                        <th className="py-3 px-4 font-semibold">Role</th>
-                        <th className="py-3 px-4 font-semibold">Managed Website</th>
-                        <th className="py-3 px-4 font-semibold">Status</th>
-                        <th className="py-3 px-4 font-semibold">Joined</th>
-                        <th className="py-3 px-4 font-semibold text-right">Access Action</th>
+                      <tr className="border-b border-[#33373D] bg-[#16181B] text-[#9CA3AF]">
+                        <th className="py-3 px-4 font-medium">User</th>
+                        <th className="py-3 px-4 font-medium">Role</th>
+                        <th className="py-3 px-4 font-medium">Managed Website</th>
+                        <th className="py-3 px-4 font-medium">Status</th>
+                        <th className="py-3 px-4 font-medium">Joined</th>
+                        <th className="py-3 px-4 font-medium text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#1A2442]/60">
+                    <tbody className="divide-y divide-[#33373D]">
                       {users.map((u) => (
-                        <tr key={u.id} className="hover:bg-[#0E182F] transition-colors">
+                        <tr key={u.id} className="hover:bg-[#26292F] transition-colors">
                           <td className="py-3.5 px-4">
-                            <div className="font-semibold text-[#F1F5F9]">{u.name}</div>
-                            <div className="text-[11px] font-mono text-[#A8B3C7]">{u.email}</div>
+                            <div className="font-semibold text-[#F3F4F6]">{u.name}</div>
+                            <div className="text-xs font-mono text-[#9CA3AF] mt-0.5">{u.email}</div>
                           </td>
 
                           <td className="py-3.5 px-4">
                             <span
-                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ${
                                 u.role?.type === 'SUPER_ADMIN'
-                                  ? 'bg-[#2563EB]/15 text-[#3B82F6] border-[#2563EB]/30'
-                                  : 'bg-[#1A2442] text-[#A8B3C7] border-[#1A2442]'
+                                  ? 'bg-[#26292F] text-[#0B9DF7] border-[#33373D]'
+                                  : 'bg-[#16181B] text-[#9CA3AF] border-[#33373D]'
                               }`}
                             >
-                              <Shield className="h-3 w-3" />
+                              <Shield className="h-3.5 w-3.5" />
                               {u.role?.name || 'Owner'}
                             </span>
                           </td>
 
-                          <td className="py-3.5 px-4 text-[#A8B3C7]">
+                          <td className="py-3.5 px-4 text-[#9CA3AF]">
                             {u.website ? (
-                              <span className="font-semibold text-[#F1F5F9]">{u.website.name}</span>
+                              <span className="font-medium text-[#F3F4F6]">{u.website.name}</span>
                             ) : (
-                              <span className="text-[#6B7893]">—</span>
+                              <span className="text-[#6B7280]">—</span>
                             )}
                           </td>
 
@@ -225,30 +344,41 @@ export default function UsersPage() {
                             <StatusBadge status={u.status} />
                           </td>
 
-                          <td className="py-3.5 px-4 text-[#A8B3C7]">
+                          <td className="py-3.5 px-4 text-[#9CA3AF] text-xs font-mono">
                             {new Date(u.createdAt).toLocaleDateString()}
                           </td>
 
                           <td className="py-3.5 px-4 text-right">
                             {u.role?.type !== 'SUPER_ADMIN' && (
-                              <button
-                                type="button"
-                                disabled={actionLoadingId === u.id}
-                                onClick={() => handleToggleStatus(u)}
-                                className={`p-1.5 rounded-lg border transition-colors inline-flex items-center gap-1 text-xs font-semibold ${
-                                  u.status === 'ACTIVE'
-                                    ? 'border-[#EF4444]/30 bg-[#EF4444]/15 text-[#EF4444] hover:bg-[#EF4444] hover:text-white'
-                                    : 'border-[#22C55E]/30 bg-[#22C55E]/15 text-[#22C55E] hover:bg-[#22C55E] hover:text-white'
-                                }`}
-                                title={u.status === 'ACTIVE' ? 'Suspend User' : 'Activate User'}
-                              >
-                                {u.status === 'ACTIVE' ? (
-                                  <Lock className="h-3.5 w-3.5" />
-                                ) : (
-                                  <Unlock className="h-3.5 w-3.5" />
-                                )}
-                                <span>{u.status === 'ACTIVE' ? 'Suspend' : 'Activate'}</span>
-                              </button>
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  type="button"
+                                  disabled={actionLoadingId === u.id}
+                                  onClick={() => handleToggleStatus(u)}
+                                  className={`px-3 h-8 rounded-lg border transition-colors inline-flex items-center gap-1.5 text-xs font-medium ${
+                                    u.status === 'ACTIVE'
+                                      ? 'border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20'
+                                      : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                                  }`}
+                                  title={u.status === 'ACTIVE' ? 'Suspend User' : 'Activate User'}
+                                >
+                                  {u.status === 'ACTIVE' ? (
+                                    <Lock className="h-3.5 w-3.5" />
+                                  ) : (
+                                    <Unlock className="h-3.5 w-3.5" />
+                                  )}
+                                  <span>{u.status === 'ACTIVE' ? 'Suspend' : 'Activate'}</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setDeletingUser(u)}
+                                  className="p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors border border-transparent hover:border-red-500/20"
+                                  title="Delete User Account"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
                             )}
                           </td>
                         </tr>
@@ -258,7 +388,7 @@ export default function UsersPage() {
                 </div>
 
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between px-4 py-3 border-t border-[#1A2442] bg-[#070D1E] text-xs text-[#A8B3C7]">
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-[#33373D] bg-[#16181B] text-sm text-[#9CA3AF]">
                     <span>
                       Page {page} of {totalPages}
                     </span>
@@ -267,7 +397,7 @@ export default function UsersPage() {
                         type="button"
                         disabled={page <= 1}
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        className="px-2.5 py-1 rounded-lg border border-[#1A2442] bg-[#0A1226] text-[#F1F5F9] disabled:opacity-40 hover:bg-[#0E182F]"
+                        className="px-3 h-8 rounded-lg border border-[#33373D] bg-[#1E2024] text-[#D1D5DB] disabled:opacity-40 hover:bg-[#26292F]"
                       >
                         Previous
                       </button>
@@ -275,7 +405,7 @@ export default function UsersPage() {
                         type="button"
                         disabled={page >= totalPages}
                         onClick={() => setPage((p) => p + 1)}
-                        className="px-2.5 py-1 rounded-lg border border-[#1A2442] bg-[#0A1226] text-[#F1F5F9] disabled:opacity-40 hover:bg-[#0E182F]"
+                        className="px-3 h-8 rounded-lg border border-[#33373D] bg-[#1E2024] text-[#D1D5DB] disabled:opacity-40 hover:bg-[#26292F]"
                       >
                         Next
                       </button>
@@ -284,7 +414,7 @@ export default function UsersPage() {
                 )}
               </>
             ) : (
-              <div className="p-12 text-center text-xs text-[#A8B3C7]">
+              <div className="p-12 text-center text-sm text-[#9CA3AF]">
                 No users found matching your search.
               </div>
             )}
@@ -295,33 +425,33 @@ export default function UsersPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {loading ? (
             <div className="col-span-full py-20 flex justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
+              <Loader2 className="h-7 w-7 animate-spin text-[#0B9DF7]" />
             </div>
           ) : (
             roles.map((r) => (
               <div
                 key={r.id}
-                className="rounded-2xl border border-[#1A2442] bg-[#0A1226] p-5 shadow-sm space-y-4"
+                className="rounded-xl border border-[#33373D] bg-[#1E2024] p-5 space-y-4"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="h-5 w-5 text-[#3B82F6]" />
-                    <h2 className="font-bold text-sm text-[#F1F5F9]">{r.name}</h2>
+                  <div className="flex items-center gap-2.5">
+                    <ShieldCheck className="h-5 w-5 text-[#0B9DF7]" />
+                    <h2 className="font-semibold text-base text-[#F3F4F6]">{r.name}</h2>
                   </div>
-                  <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#1A2442] text-[#A8B3C7]">
+                  <span className="font-mono text-xs px-2.5 py-1 rounded-md bg-[#26292F] text-[#9CA3AF] border border-[#33373D]">
                     {r.type}
                   </span>
                 </div>
-                {r.description && <p className="text-xs text-[#A8B3C7]">{r.description}</p>}
+                {r.description && <p className="text-xs text-[#9CA3AF]">{r.description}</p>}
                 <div>
-                  <span className="text-[11px] font-semibold text-[#A8B3C7] uppercase">
+                  <span className="text-xs font-semibold text-[#9CA3AF] uppercase">
                     Permissions ({r.permissions?.length || 0}):
                   </span>
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {r.permissions?.map((p, idx) => (
                       <span
                         key={idx}
-                        className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#070D1E] border border-[#1A2442] text-[#3B82F6]"
+                        className="font-mono text-xs px-2 py-0.5 rounded bg-[#16181B] border border-[#33373D] text-[#0B9DF7]"
                       >
                         {p.permission?.key || 'all'}
                       </span>
@@ -331,6 +461,192 @@ export default function UsersPage() {
               </div>
             ))
           )}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={!!deletingUser}
+        onClose={() => setDeletingUser(null)}
+        onConfirm={handleConfirmDelete}
+        title="Delete User Account?"
+        description="Are you sure you want to remove this user account? If this user owns a website, that website will be archived and unlisted."
+        itemName={deletingUser ? `${deletingUser.name} (${deletingUser.email})` : undefined}
+        confirmLabel="Delete User"
+        loading={deleteLoading}
+      />
+
+      {/* Create Owner Modal */}
+      {createModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-full max-w-lg rounded-2xl border border-[#33373D] bg-[#1E2024] p-6 shadow-2xl space-y-5 animate-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#33373D] pb-3.5">
+              <div className="flex items-center gap-2.5">
+                <UserPlus className="h-5 w-5 text-[#0B9DF7]" />
+                <h3 className="text-lg font-bold text-[#F3F4F6] tracking-tight">
+                  Create Website Owner Account
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCreateModalOpen(false)}
+                className="text-[#9CA3AF] hover:text-white transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateOwner} className="space-y-4 text-sm">
+              <div>
+                <label className="block text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1.5">
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={ownerName}
+                  onChange={(e) => setOwnerName(e.target.value)}
+                  placeholder="e.g. Alexander Vance"
+                  className="w-full h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1.5">
+                  Email Address * (Credentials will be sent here)
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={ownerEmail}
+                  onChange={(e) => setOwnerEmail(e.target.value)}
+                  placeholder="alexander@domain.com"
+                  className="w-full h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] transition-colors"
+                />
+              </div>
+
+              {/* Website Registration Toggle */}
+              <div className="pt-2 border-t border-[#33373D] space-y-3">
+                <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={includeWebsite}
+                    onChange={(e) => setIncludeWebsite(e.target.checked)}
+                    className="w-4 h-4 rounded border-[#33373D] bg-[#16181B] text-[#0B9DF7] focus:ring-0 focus:ring-offset-0"
+                  />
+                  <span className="text-xs font-bold text-[#F3F4F6] uppercase tracking-wider flex items-center gap-1.5">
+                    <Globe className="h-3.5 w-3.5 text-[#0B9DF7]" />
+                    Register Website For This Owner Now
+                  </span>
+                </label>
+
+                {includeWebsite && (
+                  <div className="space-y-3 rounded-xl border border-[#33373D] bg-[#16181B] p-4">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">
+                        Website Name *
+                      </label>
+                      <input
+                        type="text"
+                        required={includeWebsite}
+                        value={siteName}
+                        onChange={(e) => setSiteName(e.target.value)}
+                        placeholder="e.g. MangaHub Online"
+                        className="w-full h-10 rounded-lg border border-[#33373D] bg-[#1E2024] px-3 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">
+                        Primary Mirror URL *
+                      </label>
+                      <input
+                        type="text"
+                        required={includeWebsite}
+                        value={siteUrl}
+                        onChange={(e) => setSiteUrl(e.target.value)}
+                        placeholder="https://mangahub.online"
+                        className="w-full h-10 rounded-lg border border-[#33373D] bg-[#1E2024] px-3 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] text-xs font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">
+                        Category *
+                      </label>
+                      <select
+                        required={includeWebsite}
+                        value={siteCategoryId}
+                        onChange={(e) => setSiteCategoryId(e.target.value)}
+                        className="w-full h-10 rounded-lg border border-[#33373D] bg-[#1E2024] px-3 text-[#F3F4F6] text-xs focus:outline-none focus:border-[#0B9DF7]"
+                      >
+                        {categories.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">
+                        Tagline (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={siteTagline}
+                        onChange={(e) => setSiteTagline(e.target.value)}
+                        placeholder="Leading online manga discovery community..."
+                        className="w-full h-10 rounded-lg border border-[#33373D] bg-[#1E2024] px-3 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">
+                        Description (Optional)
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={siteDescription}
+                        onChange={(e) => setSiteDescription(e.target.value)}
+                        placeholder="Overview of website features and mirrors..."
+                        className="w-full rounded-lg border border-[#33373D] bg-[#1E2024] p-2.5 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] text-xs resize-none"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-xl border border-[#33373D] bg-[#16181B] p-3 text-xs text-[#9CA3AF] leading-relaxed">
+                💡 <strong>Credentials Email:</strong> A randomized temporary password will be created and an invitation email will be dispatched to <strong>{ownerEmail || 'the user'}</strong> containing direct panel login instructions.
+              </div>
+
+              {/* Submit Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#33373D]">
+                <button
+                  type="button"
+                  onClick={() => setCreateModalOpen(false)}
+                  className="h-11 px-5 rounded-lg border border-[#33373D] bg-[#16181B] text-sm font-semibold text-[#D1D5DB] hover:bg-[#26292F] hover:text-[#F3F4F6] transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="h-11 px-5 rounded-lg bg-[#0B9DF7] hover:bg-[#0987d6] text-sm font-semibold text-white transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#0B9DF7]/20 disabled:opacity-50"
+                >
+                  {creating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Creating...</span>
+                    </>
+                  ) : (
+                    <span>Create Owner User</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

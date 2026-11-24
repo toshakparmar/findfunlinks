@@ -3,23 +3,30 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { toast } from 'sonner';
-import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth-context';
-import { Shield, Mail, Loader2, ArrowRight, Eye, EyeOff, KeyRound } from 'lucide-react';
+import { Shield, Mail, Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { BRAND } from '@finallinks/config';
 
-export default function AdminLoginPage() {
-  const { setUser } = useAuth();
+export default function LoginPage() {
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const fillDefaultCredentials = () => {
-    setEmail('admin@findfunlinks.com');
+  const fillAdminCredentials = () => {
+    setEmail('admin@finallinks.com');
     setPassword('SuperAdminSecretPass123!');
     setErrorMessage(null);
     toast.info('Filled default administrator credentials.');
+  };
+
+  const fillOwnerCredentials = () => {
+    setEmail('owner@finallinks.com');
+    setPassword('OwnerSecurePassword2026!');
+    setErrorMessage(null);
+    toast.info('Filled demo owner credentials.');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,59 +40,51 @@ export default function AdminLoginPage() {
 
     try {
       setSubmitting(true);
-      const res = await api.auth.login({ email: email.trim(), password: password.trim() });
-      if (res?.accessToken) {
-        api.setToken(res.accessToken);
+      const success = await login(email.trim(), password.trim());
+      if (!success) {
+        setErrorMessage('Invalid credentials. Please verify your email and password.');
       }
-      if (res?.user) {
-        setUser(res.user);
-      }
-      toast.success('Authenticated successfully. Welcome back!');
-      window.location.href = '/';
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Invalid credentials. Access denied.';
       setErrorMessage(msg);
-      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-[#050A18] relative overflow-hidden select-none">
-      {/* Background radial gradient glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#2563EB]/10 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="w-full max-w-md space-y-6 relative z-10">
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-[#16181B] select-none">
+      <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-3">
           <div className="flex justify-center">
             <div className="relative w-12 h-12">
               <Image
-                src="/logo-mark.svg"
-                alt="FindFunLinks"
-                fill
+                src="/mark-blue.svg"
+                alt={BRAND.name}
+                width={48}
+                height={48}
                 className="object-contain"
                 priority
               />
             </div>
           </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30 text-xs font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0B9DF7]/15 text-[#0B9DF7] border border-[#0B9DF7]/30 text-xs font-semibold">
             <Shield className="h-3.5 w-3.5" />
-            <span>Super Admin Console</span>
+            <span>{BRAND.name} Console</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#F1F5F9] tracking-tight">
-            Operator Sign In
+          <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">
+            Account Sign In
           </h1>
-          <p className="text-xs text-[#A8B3C7]">
-            Enter your platform administrator credentials to manage FindFunLinks.
+          <p className="text-sm text-[#9CA3AF]">
+            Sign in with your Administrator or Website Owner credentials.
           </p>
         </div>
 
         {/* Login Form Card */}
-        <div className="rounded-3xl border border-[#1A2442] bg-[#0A1226]/90 backdrop-blur-xl p-8 shadow-2xl space-y-6">
+        <div className="rounded-xl border border-[#33373D] bg-[#1E2024] p-8 shadow-xl space-y-6">
           {errorMessage && (
-            <div className="p-3.5 rounded-xl border border-[#EF4444]/30 bg-[#EF4444]/10 text-[#EF4444] text-xs font-semibold">
+            <div className="p-3.5 rounded-lg border border-[#EF4444]/40 bg-[#EF4444]/10 text-[#EF4444] text-sm font-medium">
               {errorMessage}
             </div>
           )}
@@ -94,49 +93,45 @@ export default function AdminLoginPage() {
             <div>
               <label
                 htmlFor="login-email"
-                className="block text-xs font-semibold text-[#F1F5F9] uppercase tracking-wider mb-1.5"
+                className="block text-xs font-semibold text-[#F3F4F6] uppercase tracking-wider mb-2"
               >
-                Administrator Email
+                Email Address
               </label>
               <div className="relative">
-                <Mail className="h-4 w-4 text-[#6B7893] absolute left-3.5 top-3" />
                 <input
                   id="login-email"
                   type="email"
                   required
-                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@findfunlinks.com"
-                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] pl-10 pr-4 py-2.5 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-colors"
+                  placeholder="operator@domain.com"
+                  className="w-full h-11 px-4 pl-10 rounded-lg bg-[#16181B] border border-[#33373D] text-sm text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] focus:ring-1 focus:ring-[#0B9DF7] transition-colors"
                 />
+                <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-[#6B7280]" />
               </div>
             </div>
 
             <div>
               <label
                 htmlFor="login-password"
-                className="block text-xs font-semibold text-[#F1F5F9] uppercase tracking-wider mb-1.5"
+                className="block text-xs font-semibold text-[#F3F4F6] uppercase tracking-wider mb-2"
               >
-                Security Password
+                Password
               </label>
               <div className="relative">
-                <KeyRound className="h-4 w-4 text-[#6B7893] absolute left-3.5 top-3" />
                 <input
                   id="login-password"
                   type={showPassword ? 'text' : 'password'}
                   required
-                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] pl-10 pr-10 py-2.5 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-colors"
+                  className="w-full h-11 px-4 pl-4 pr-10 rounded-lg bg-[#16181B] border border-[#33373D] text-sm text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] focus:ring-1 focus:ring-[#0B9DF7] transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-[#6B7893] hover:text-[#F1F5F9]"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  className="absolute right-3.5 top-3.5 text-[#6B7280] hover:text-[#F3F4F6] transition-colors"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -146,37 +141,43 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full mt-2 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all shadow-md shadow-[#2563EB]/25 disabled:opacity-50"
+              className="w-full h-11 rounded-lg bg-[#0B9DF7] hover:bg-[#0A8FE0] disabled:opacity-50 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors mt-2"
             >
               {submitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Verifying Credentials...
+                  <span>Verifying Credentials...</span>
                 </>
               ) : (
                 <>
-                  <span>Sign In to Console</span>
+                  <span>Sign In</span>
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
             </button>
           </form>
 
-          {/* Quick Credential Helper for Development */}
-          <div className="pt-2 border-t border-[#1A2442] text-center">
+          {/* Quick Demo Credentials */}
+          <div className="pt-4 border-t border-[#33373D] flex flex-col sm:flex-row gap-2.5">
             <button
               type="button"
-              onClick={fillDefaultCredentials}
-              className="text-[11px] font-semibold text-[#3B82F6] hover:underline"
+              onClick={fillAdminCredentials}
+              className="flex-1 h-9 px-3 text-xs font-medium text-[#9CA3AF] hover:text-[#0B9DF7] hover:bg-[#26292F] border border-[#33373D] rounded-lg transition-colors text-center"
             >
-              Fill Default Admin Credentials (Seed)
+              Fill Admin Demo
+            </button>
+            <button
+              type="button"
+              onClick={fillOwnerCredentials}
+              className="flex-1 h-9 px-3 text-xs font-medium text-[#9CA3AF] hover:text-[#10B981] hover:bg-[#26292F] border border-[#33373D] rounded-lg transition-colors text-center"
+            >
+              Fill Owner Demo
             </button>
           </div>
         </div>
 
-        {/* Security Notice */}
-        <p className="text-[11px] text-center text-[#6B7893]">
-          Protected by Argon2id password hashing, rate limiting, and HTTP-only session cookies.
+        <p className="text-center text-xs text-[#6B7280]">
+          &copy; {new Date().getFullYear()} {BRAND.name}. All rights reserved.
         </p>
       </div>
     </div>

@@ -46,12 +46,12 @@ export function TrustShieldPopover() {
             </button>
           </div>
 
-          <p className="text-token/70 leading-relaxed text-[11px]">
+          <p className="text-token/70 leading-relaxed text-fs-xs">
             Every directory entry is continuously probed by our distributed uptime workers every 60
             seconds to ensure only live, working mirrors are presented.
           </p>
 
-          <div className="space-y-2 pt-1 font-mono text-[10px]">
+          <div className="space-y-2 pt-1 font-mono text-fs-xs">
             <div className="flex items-center gap-2 text-token/80">
               <CheckCircle2 className="w-3.5 h-3.5 text-status-online shrink-0" />
               <span>TLS &amp; SSL certificates actively verified</span>

@@ -1,4 +1,3 @@
-import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -13,7 +12,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 process.env.NODE_ENV = 'test';
 process.env.DATABASE_URL =
   process.env.DATABASE_URL ||
-  'postgresql://postgres:postgres@localhost:5432/findfunlinks_test?schema=public';
+  'postgresql://postgres:postgres@localhost:5432/finallinks_test?schema=public';
 process.env.DIRECT_URL = process.env.DIRECT_URL || process.env.DATABASE_URL;
 process.env.JWT_ACCESS_SECRET =
   process.env.JWT_ACCESS_SECRET || 'test_jwt_access_secret_for_ci_pipeline_32_chars';
@@ -36,11 +35,4 @@ export default defineConfig({
       },
     },
   },
-  plugins: [
-    // This is required to build the test files with SWC
-    swc.vite({
-      // Explicitly set the module type to avoid compiling into an unsupported type
-      module: { type: 'es6' },
-    }),
-  ],
 });

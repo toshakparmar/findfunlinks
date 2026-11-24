@@ -3,14 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { api } from '../../lib/api';
-import type { Tag } from '@findfunlinks/contracts';
+import type { Tag } from '@finallinks/contracts';
 import { Tag as TagIcon, Plus, Trash2, RotateCcw, Loader2 } from 'lucide-react';
+import { DeleteConfirmModal } from '@/components/DeleteConfirmModal';
 
 export default function TagsAdminPage() {
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [newTagName, setNewTagName] = useState('');
   const [creating, setCreating] = useState(false);
+  const [deletingTag, setDeletingTag] = useState<Tag | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const fetchTags = async () => {
     try {
@@ -45,15 +48,18 @@ export default function TagsAdminPage() {
     }
   };
 
-  const handleDelete = async (tag: Tag) => {
-    if (!confirm(`Delete tag "#${tag.name}"?`)) return;
-
+  const handleConfirmDelete = async () => {
+    if (!deletingTag) return;
     try {
-      await api.admin.deleteTag(tag.id);
+      setDeleteLoading(true);
+      await api.admin.deleteTag(deletingTag.id);
       toast.success('Tag deleted.');
+      setDeletingTag(null);
       await fetchTags();
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Delete failed.');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -62,8 +68,8 @@ export default function TagsAdminPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">Directory Tags</h1>
-          <p className="text-xs text-[#A8B3C7] mt-1">
+          <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">Directory Tags</h1>
+          <p className="text-sm text-[#9CA3AF] mt-1">
             Global taxonomy tags used by website owners and visitors for granular filtering.
           </p>
         </div>
@@ -71,9 +77,9 @@ export default function TagsAdminPage() {
         <button
           type="button"
           onClick={fetchTags}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-4 h-11 rounded-lg border border-[#33373D] bg-[#1E2024] text-sm font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white transition-colors self-start sm:self-auto"
         >
-          <RotateCcw className="h-3.5 w-3.5" />
+          <RotateCcw className="h-4 w-4" />
           Refresh
         </button>
       </div>
@@ -81,66 +87,78 @@ export default function TagsAdminPage() {
       {/* Create New Tag */}
       <form
         onSubmit={handleCreate}
-        className="flex items-center gap-2 max-w-md rounded-2xl border border-[#1A2442] bg-[#0A1226] p-2"
+        className="flex items-center gap-3 max-w-md rounded-xl border border-[#33373D] bg-[#1E2024] p-2"
       >
         <div className="relative flex-1">
-          <TagIcon className="h-4 w-4 text-[#6B7893] absolute left-3 top-2.5" />
+          <TagIcon className="h-4 w-4 text-[#6B7280] absolute left-3.5 top-3.5" />
           <input
             type="text"
             value={newTagName}
             onChange={(e) => setNewTagName(e.target.value)}
             placeholder="Add new tag (e.g. streaming, ad-free)..."
-            className="w-full bg-transparent pl-9 pr-3 py-1.5 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none"
+            className="w-full h-11 bg-transparent pl-10 pr-3 text-sm text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none"
           />
         </div>
         <button
           type="submit"
           disabled={creating || !newTagName.trim()}
-          className="px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all disabled:opacity-50 inline-flex items-center gap-1 shadow-sm"
+          className="px-4 h-11 rounded-lg bg-[#0B9DF7] hover:bg-[#0987d6] text-white text-sm font-medium transition-colors disabled:opacity-50 inline-flex items-center gap-2"
         >
           {creating ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-4 w-4" />
           )}
           <span>Add</span>
         </button>
       </form>
 
       {/* Tags List */}
-      <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] p-6 shadow-sm">
+      <div className="rounded-xl border border-[#33373D] bg-[#1E2024] p-6">
         {loading ? (
           <div className="flex justify-center py-10">
-            <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
+            <Loader2 className="h-7 w-7 animate-spin text-[#0B9DF7]" />
           </div>
         ) : tags.length > 0 ? (
           <div className="flex flex-wrap gap-2.5">
             {tags.map((tag) => (
               <div
                 key={tag.id}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#070D1E] text-xs font-medium text-[#F1F5F9] hover:border-[#2563EB]/40 transition-colors group"
+                className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-lg border border-[#33373D] bg-[#16181B] text-sm font-medium text-[#F3F4F6] hover:border-[#0B9DF7]/50 transition-colors group"
               >
                 <span>#{tag.name}</span>
                 {tag.websiteCount !== undefined && (
-                  <span className="text-[10px] text-[#A8B3C7]">({tag.websiteCount})</span>
+                  <span className="text-xs text-[#9CA3AF]">({tag.websiteCount})</span>
                 )}
                 <button
                   type="button"
-                  onClick={() => handleDelete(tag)}
-                  className="text-[#6B7893] hover:text-[#EF4444] transition-colors ml-1"
+                  onClick={() => setDeletingTag(tag)}
+                  className="text-[#6B7280] hover:text-red-400 transition-colors ml-1"
                   title="Delete Tag"
                 >
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-10 text-xs text-[#A8B3C7]">
+          <div className="text-center py-10 text-sm text-[#9CA3AF]">
             No tags created yet. Use the field above to add common website tags.
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={!!deletingTag}
+        onClose={() => setDeletingTag(null)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Directory Tag?"
+        description="Are you sure you want to remove this tag? It will be unlinked from any associated websites."
+        itemName={deletingTag ? `#${deletingTag.name}` : undefined}
+        confirmLabel="Delete Tag"
+        loading={deleteLoading}
+      />
     </div>
   );
 }

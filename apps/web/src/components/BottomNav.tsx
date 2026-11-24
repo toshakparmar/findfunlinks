@@ -32,7 +32,7 @@ export const BottomNav: React.FC = () => {
             }`}
           >
             <IconComponent className="w-4 h-4 mb-0.5" />
-            <span className="text-[10px] font-semibold leading-tight">{item.label}</span>
+            <span className="text-[11px] font-semibold leading-tight">{item.label}</span>
           </Link>
         );
       })}

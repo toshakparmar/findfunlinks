@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Menu, Search, X, ArrowUpRight, HelpCircle } from 'lucide-react';
+import { Logo } from '@finallinks/ui';
 import { ThemeToggle } from './ThemeToggle';
 import { TrustShieldPopover } from './TrustShieldPopover';
 import { Magnet } from './reactbits/Magnet';
@@ -47,8 +48,8 @@ export function TopNav({
           href="/"
           className="flex items-center gap-2 font-display font-bold text-token tracking-tight lg:hidden"
         >
-          <img src="/logo-mark.svg" alt="FindFunLinks" className="w-6 h-6 object-contain" />
-          <span className="text-sm">FindFunLinks</span>
+          <Logo variant="mark" size="sm" className="w-6 h-6 shrink-0" />
+          <span className="text-sm">FinalLinks</span>
         </Link>
       </div>
 
@@ -80,7 +81,7 @@ export function TopNav({
               <button
                 type="button"
                 onClick={onOpenCommandPalette}
-                className="hidden sm:flex items-center gap-1 mr-2 px-1.5 py-0.5 rounded bg-surface-1 border border-token/15 text-[10px] font-mono text-token/50 hover:text-token hover:border-token/30 transition-all"
+                className="hidden sm:flex items-center gap-1 mr-2 px-1.5 py-0.5 rounded bg-surface-1 border border-token/15 text-fs-xs font-mono text-token/50 hover:text-token hover:border-token/30 transition-all"
                 title="Open Command Palette (Ctrl+K)"
               >
                 <span>⌘K</span>
@@ -93,7 +94,7 @@ export function TopNav({
             <select
               value={selectedCategory}
               onChange={(e) => onSelectCategory(e.target.value)}
-              className="appearance-none bg-transparent text-[11px] font-medium text-token/60 hover:text-token focus:outline-none pl-2.5 pr-6 py-1 cursor-pointer"
+              className="appearance-none bg-transparent text-fs-xs font-medium text-token/60 hover:text-token focus:outline-none pl-2.5 pr-6 py-1 cursor-pointer"
             >
               <option value="all" className="bg-surface-1 text-token">
                 All Status

@@ -6,7 +6,7 @@ import { FALLBACK_CATEGORIES } from '../../lib/directory-data';
 import { CategoryTab } from '../../components/DirectoryGrid';
 
 export const metadata: Metadata = {
-  title: 'Register Your Website as an Owner — FindFunLinks',
+  title: 'Register Your Website as an Owner — FinalLinks',
   description:
     'Submit your website for review. After approval, you receive a dedicated owner account to manage your live links, working mirrors, and monitor uptime.',
 };

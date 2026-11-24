@@ -1,5 +1,5 @@
 {
-  "extends": "@findfunlinks/config/tsconfig.nest.json",
+  "extends": "@finallinks/config/tsconfig.nest.json",
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": "./",

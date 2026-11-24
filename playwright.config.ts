@@ -8,7 +8,7 @@ export default defineConfig({
   workers: 1,
   reporter: 'list',
   use: {
-    baseURL: 'http://127.0.0.1:3000',
+    baseURL: 'http://127.0.0.1:3005',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -22,4 +22,10 @@ export default defineConfig({
       use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 } },
     },
   ],
+  webServer: {
+    command: 'node apps/web/node_modules/next/dist/bin/next start apps/web --hostname 127.0.0.1 --port 3005',
+    url: 'http://127.0.0.1:3005',
+    reuseExistingServer: true,
+    timeout: 30000,
+  },
 });

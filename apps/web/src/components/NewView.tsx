@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { Sparkles, Calendar, Search, ChevronRight, PlusCircle } from 'lucide-react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { Calendar, Sparkles } from 'lucide-react';
 import { CLIENT_18_CATEGORIES } from '../lib/client-catalog';
-import { SiteDomainsDrawer, SiteDetailModalData } from './SiteDomainsDrawer';
+import { PageHeader, FilterGroup } from './PageHeader';
+import { SiteRow } from './SiteRow';
 
 export const NAV_NEW_LABEL = 'New';
 
@@ -25,11 +26,73 @@ interface NewSiteItem {
   addedLabel: string;
 }
 
+const NEW_FILTER_GROUPS: FilterGroup[] = [
+  {
+    id: 'range',
+    label: 'Date Range',
+    options: [
+      { value: 'all', label: 'All recent' },
+      { value: 'today', label: 'Added today' },
+      { value: 'week', label: 'This week' },
+      { value: 'month', label: 'This month' },
+    ],
+  },
+  {
+    id: 'category',
+    label: 'Category',
+    options: [
+      { value: 'all', label: 'All categories' },
+      ...CLIENT_18_CATEGORIES.map((cat) => ({
+        value: cat.slug,
+        label: cat.name,
+      })),
+    ],
+  },
+];
+
 export function NewView() {
-  const [timeRange, setTimeRange] = useState<TimeRange>('all');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDrawerSite, setSelectedDrawerSite] = useState<SiteDetailModalData | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const initialRange = (searchParams?.get('range') || 'all') as TimeRange;
+  const initialCategory = searchParams?.get('category') || 'all';
+  const initialQ = searchParams?.get('q') || '';
+
+  const [timeRange, setTimeRange] = useState<TimeRange>(initialRange);
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
+  const [searchQuery, setSearchQuery] = useState(initialQ);
+  const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
+
+  const syncToUrl = useCallback(
+    (q: string, range: string, category: string) => {
+      const params = new URLSearchParams();
+      if (q.trim()) params.set('q', q.trim());
+      if (range && range !== 'all') params.set('range', range);
+      if (category && category !== 'all') params.set('category', category);
+
+      const qs = params.toString();
+      const newUrl = qs ? `${pathname}?${qs}` : pathname;
+      router.replace(newUrl, { scroll: false });
+    },
+    [pathname, router],
+  );
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    syncToUrl(val, timeRange, selectedCategory);
+  };
+
+  const handleFilterChange = (groupId: string, val: string) => {
+    if (groupId === 'range') {
+      const newRange = val as TimeRange;
+      setTimeRange(newRange);
+      syncToUrl(searchQuery, newRange, selectedCategory);
+    } else if (groupId === 'category') {
+      setSelectedCategory(val);
+      syncToUrl(searchQuery, timeRange, val);
+    }
+  };
 
   // Generate newly added & updated sites from catalog with realistic dates
   const allNewSites = useMemo<NewSiteItem[]>(() => {
@@ -151,126 +214,31 @@ export function NewView() {
 
   return (
     <div className="w-full space-y-6">
-      {/* 1. Breadcrumbs */}
-      <nav
-        aria-label="Breadcrumb"
-        className="flex items-center gap-1.5 text-xs text-[var(--text-3,#6B7893)] font-medium"
-      >
-        <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
-          Home
-        </Link>
-        <ChevronRight className="w-3.5 h-3.5 text-[var(--line,#1A2442)]" />
-        <span className="text-slate-900 dark:text-white font-semibold">New Additions</span>
-      </nav>
+      {/* 1. Page Header (No banner, no visible breadcrumb) */}
+      <PageHeader
+        title="Recently Added & Updated"
+        count={filteredSites.length}
+        countLabel="websites"
+        subtitle="Recently added websites and newly verified mirror links"
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        searchPlaceholder="Search recent additions…"
+        filterGroups={NEW_FILTER_GROUPS}
+        selectedFilters={{
+          range: timeRange,
+          category: selectedCategory,
+        }}
+        onFilterChange={handleFilterChange}
+      />
 
-      {/* 2. Header Banner (Matching Category Detail Style) */}
-      <div className="rounded-[16px] p-4 sm:p-5 md:p-6 bg-[var(--card,#0A1226)] border border-[var(--primary,#2563EB)]/50 shadow-[0_0_24px_-8px_rgba(37,99,235,0.35)] relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-start sm:items-center gap-3.5">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-[12px] bg-[var(--primary,#2563EB)]/15 border border-[var(--primary,#2563EB)]/40 flex items-center justify-center text-[var(--brand-link,#3B82F6)] shrink-0">
-              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--primary,#2563EB)]" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white font-heading">
-                  Recently Added & Updated
-                </h1>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[var(--primary,#2563EB)]/15 border border-[var(--primary,#2563EB)]/30 text-[var(--brand-link,#3B82F6)]">
-                  {filteredSites.length} New Additions
-                </span>
-              </div>
-              <p className="text-xs text-[var(--text-2,#A8B3C7)] mt-1 max-w-2xl">
-                Freshly curated websites and newly verified mirror links added to the FindFunLinks
-                directory.
-              </p>
-            </div>
-          </div>
-
-          <Link
-            href="/register"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-[12px] text-xs font-semibold bg-[var(--primary,#2563EB)] hover:bg-[var(--primary-hover,#1D4ED8)] text-white shadow-sm transition-colors shrink-0 self-start md:self-auto cursor-pointer"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            <span>List Your Website</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* 3. Controls Toolbar (Matching Category View Toolbar) */}
-      <div className="sticky top-14 md:top-16 z-20 py-2.5 bg-[var(--bg,#050A18)]/95 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-y border-[var(--line,#1A2442)]/60">
-        {/* Time Segmented Filter */}
-        <div className="grid grid-cols-4 sm:flex items-center p-1 rounded-[10px] bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] text-xs font-medium w-full sm:w-auto shrink-0 gap-0.5">
-          {(
-            [
-              { id: 'all', label: 'All Recent' },
-              { id: 'today', label: 'Today' },
-              { id: 'week', label: 'This Week' },
-              { id: 'month', label: 'This Month' },
-            ] as const
-          ).map((seg) => (
-            <button
-              key={seg.id}
-              type="button"
-              onClick={() => setTimeRange(seg.id)}
-              className={`px-1.5 sm:px-3 py-1.5 rounded-[8px] text-[11px] sm:text-xs text-center justify-center transition-all cursor-pointer ${
-                timeRange === seg.id
-                  ? 'bg-[var(--primary,#2563EB)] text-white font-semibold shadow-sm'
-                  : 'text-[var(--text-2,#A8B3C7)] hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              {seg.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Search Box */}
-        <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-3,#6B7893)]" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search recent additions..."
-            className="w-full bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] focus:border-[var(--primary,#2563EB)] rounded-[10px] pl-9 pr-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-[var(--text-3,#6B7893)] outline-none transition-colors"
-          />
-        </div>
-      </div>
-
-      {/* Category Chips Horizontal Filter */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
-        <button
-          type="button"
-          onClick={() => setSelectedCategory('all')}
-          className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-colors cursor-pointer text-xs ${
-            selectedCategory === 'all'
-              ? 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white font-semibold border border-slate-300 dark:border-white/20'
-              : 'text-[var(--text-2,#A8B3C7)] hover:text-slate-900 dark:hover:text-white border border-transparent'
-          }`}
-        >
-          All Categories ({allNewSites.length})
-        </button>
-        {CLIENT_18_CATEGORIES.map((cat) => (
-          <button
-            key={cat.slug}
-            type="button"
-            onClick={() => setSelectedCategory(cat.slug)}
-            className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-colors cursor-pointer text-xs ${
-              selectedCategory === cat.slug
-                ? 'bg-[var(--primary,#2563EB)] text-white font-semibold border border-[var(--primary,#2563EB)]'
-                : 'text-[var(--text-2,#A8B3C7)] hover:text-slate-900 dark:hover:text-white border border-[var(--line,#1A2442)] bg-[var(--card,#0A1226)]'
-            }`}
-          >
-            {cat.name}
-          </button>
-        ))}
-      </div>
-
-      {/* 4. Grouped Results Cards */}
+      {/* 2. Grouped Results Cards */}
       {groupedResults.length === 0 ? (
         <div className="rounded-[16px] bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] p-12 text-center space-y-3">
           <Calendar className="w-10 h-10 text-[var(--text-3,#6B7893)] mx-auto" />
-          <h2 className="text-sm font-semibold text-white">No additions match your filter</h2>
-          <p className="text-xs text-[var(--text-2,#A8B3C7)] max-w-sm mx-auto">
+          <h2 className="text-fs-base font-semibold text-slate-900 dark:text-white">
+            No additions match your filter
+          </h2>
+          <p className="text-fs-sm text-[var(--text-2,#A8B3C7)] max-w-sm mx-auto">
             Try adjusting your time range, category selection, or search query.
           </p>
           <button
@@ -279,8 +247,9 @@ export function NewView() {
               setTimeRange('all');
               setSelectedCategory('all');
               setSearchQuery('');
+              syncToUrl('', 'all', 'all');
             }}
-            className="inline-flex px-4 py-2 rounded-[10px] text-xs font-semibold bg-[var(--primary,#2563EB)] text-white cursor-pointer"
+            className="inline-flex px-4 py-2 rounded-[10px] text-fs-sm font-semibold bg-[var(--primary,#2563EB)] text-white hover:bg-[var(--primary-hover,#1D4ED8)] cursor-pointer transition-colors"
           >
             Reset Filters
           </button>
@@ -292,91 +261,59 @@ export function NewView() {
               key={group.title}
               className="rounded-[16px] bg-[var(--card,#0A1226)] border border-[var(--line,#1A2442)] hover:border-[var(--primary,#2563EB)]/40 transition-all overflow-hidden shadow-sm"
             >
-              <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--line,#1A2442)] bg-[var(--card-hover,#0E182F)]/30">
-                <div>
-                  <h2 className="text-sm font-bold text-slate-900 dark:text-white font-heading">
-                    {group.title}
-                  </h2>
-                  <p className="text-[11px] text-[var(--text-3,#6B7893)]">{group.subtitle}</p>
+              <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--line,#1A2442)] bg-[var(--card-hover,#0E182F)]/40">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[var(--primary,#2563EB)]/15 border border-[var(--primary,#2563EB)]/30 flex items-center justify-center text-[var(--primary,#2563EB)]">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-fs-base font-bold text-slate-900 dark:text-white font-heading">
+                      {group.title}
+                    </h2>
+                    <p className="text-fs-xs text-[var(--text-3,#6B7893)]">{group.subtitle}</p>
+                  </div>
                 </div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-[var(--text-2,#A8B3C7)] bg-slate-100 dark:bg-[var(--line,#1A2442)]/50 px-2 py-0.5 rounded-full border border-[var(--line,#1A2442)]">
+                <span className="text-fs-xs font-semibold text-slate-700 dark:text-[var(--text-2,#A8B3C7)] bg-slate-100 dark:bg-[var(--line,#1A2442)]/50 px-2.5 py-0.5 rounded-full border border-[var(--line,#1A2442)] tabular-nums">
                   {group.items.length} sites
                 </span>
               </div>
 
-              <div className="p-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
-                {group.items.map((site, idx) => (
-                  <div
-                    key={site.id}
-                    onClick={() =>
-                      setSelectedDrawerSite({
-                        id: site.id,
-                        name: site.name,
-                        displayName: site.displayName,
-                        slug: site.slug,
-                        faviconUrl: site.faviconUrl,
-                        categoryName: site.categoryName,
-                        accentColor: site.accentColor,
-                        domains: site.domains,
-                      })
-                    }
-                    className="flex items-center justify-between p-2.5 rounded-[12px] bg-[var(--card-hover,#0E182F)]/50 hover:bg-[var(--card-hover,#0E182F)] border border-[var(--line,#1A2442)] hover:border-[var(--primary,#2563EB)]/40 transition-all cursor-pointer group"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                      <span className="text-[11px] font-mono text-[var(--text-3,#6B7893)] w-5 text-right shrink-0">
-                        {idx + 1}.
-                      </span>
-                      {site.faviconUrl ? (
-                        <img
-                          src={site.faviconUrl}
-                          alt={site.name}
-                          className="w-5 h-5 rounded-sm object-contain shrink-0"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div
-                          className="w-5 h-5 rounded-sm flex items-center justify-center text-[10px] font-bold text-white shrink-0"
-                          style={{ backgroundColor: site.accentColor }}
-                        >
-                          {site.name.charAt(0)}
-                        </div>
-                      )}
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-[var(--brand-link,#3B82F6)] transition-colors truncate">
-                            {site.displayName || site.name}
-                          </span>
-                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-[var(--primary,#2563EB)]/15 text-[var(--brand-link,#3B82F6)] border border-[var(--primary,#2563EB)]/30">
-                            NEW
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-[var(--text-3,#6B7893)] block truncate">
-                          {site.categoryName}
-                        </span>
-                      </div>
+              <div className="p-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
+                {group.items.map((site, idx) => {
+                  const isExpanded = expandedSlug === site.slug;
+                  return (
+                    <div
+                      key={site.id || site.slug || idx}
+                      className={`rounded-xl border border-[var(--line,#1A2442)] bg-[var(--card-hover,#0E182F)]/40 hover:bg-[var(--card-hover,#0E182F)] hover:border-[var(--primary,#2563EB)]/40 transition-all p-0.5 ${
+                        isExpanded ? 'col-span-1 md:col-span-2 xl:col-span-3 ring-1 ring-[var(--primary,#2563EB)]/30' : ''
+                      }`}
+                    >
+                      <SiteRow
+                        rank={idx + 1}
+                        name={site.name}
+                        displayName={site.displayName}
+                        slug={site.slug}
+                        faviconUrl={site.faviconUrl}
+                        bestDomainUrl={site.bestDomainUrl}
+                        domainsCount={site.domains?.length || 1}
+                        isNew={true}
+                        accentColor={site.accentColor || '#2563EB'}
+                        categoryName={site.categoryName}
+                        categorySlug={site.categorySlug}
+                        expanded={isExpanded}
+                        onToggle={() => setExpandedSlug((prev) => (prev === site.slug ? null : site.slug))}
+                        onExternalClick={(url) => {
+                          window.open(url, '_blank');
+                        }}
+                      />
                     </div>
-
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]" />
-                      <span className="text-[10px] text-[var(--text-3,#6B7893)]">
-                        {site.domains?.length || 1}{' '}
-                        {site.domains?.length === 1 ? 'link' : 'mirrors'}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}
         </div>
       )}
-
-      {/* 5. Domains Drawer */}
-      <SiteDomainsDrawer
-        isOpen={!!selectedDrawerSite}
-        onClose={() => setSelectedDrawerSite(null)}
-        site={selectedDrawerSite}
-      />
     </div>
   );
 }

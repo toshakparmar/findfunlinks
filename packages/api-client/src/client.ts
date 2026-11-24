@@ -18,7 +18,10 @@ import type {
   Tag,
   SubmitReportInput,
   UpdateWebsiteInput,
-} from '@findfunlinks/contracts';
+  WebsitePreview,
+  WebsiteDetail,
+  Engagement,
+} from '@finallinks/contracts';
 
 export interface ApiClientOptions {
   baseUrl: string;
@@ -104,9 +107,9 @@ export class ApiClient {
     if (typeof window !== 'undefined') {
       try {
         if (token) {
-          localStorage.setItem('ffl_access_token', token);
+          localStorage.setItem('fl_access_token', token);
         } else {
-          localStorage.removeItem('ffl_access_token');
+          localStorage.removeItem('fl_access_token');
         }
       } catch {
         // Ignore localStorage errors (e.g. Incognito private mode quota)
@@ -117,7 +120,7 @@ export class ApiClient {
   public getToken(): string | null {
     if (!this.token && typeof window !== 'undefined') {
       try {
-        this.token = localStorage.getItem('ffl_access_token');
+        this.token = localStorage.getItem('fl_access_token');
       } catch {
         // Ignore localStorage errors
       }
@@ -245,6 +248,16 @@ export class ApiClient {
     getWebsitesGrouped: () => this.request<GroupedCategory[]>('/api/v1/websites/grouped'),
     getWebsiteBySlug: (slug: string) =>
       this.request<WebsiteCard & { domains: DomainItem[] }>(`/api/v1/websites/${slug}`),
+    getWebsitePreview: (slug: string) =>
+      this.request<WebsitePreview>(`/api/v1/websites/${slug}/preview`),
+    getWebsiteDetail: (slug: string) =>
+      this.request<WebsiteDetail>(`/api/v1/websites/${slug}/detail`),
+    getWebsiteEngagement: (slug: string) =>
+      this.request<Engagement>(`/api/v1/websites/${slug}/engagement`),
+    toggleStarWebsite: (slug: string, star: boolean) =>
+      this.request<Engagement>(`/api/v1/websites/${slug}/star`, {
+        method: star ? 'PUT' : 'DELETE',
+      }),
     getCategories: () => this.request<Category[]>('/api/v1/categories'),
     getCategoryBySlug: (slug: string, page = 1, limit = 20) =>
       this.request<CategoryWithWebsites>(`/api/v1/categories/${slug}?page=${page}&limit=${limit}`),
@@ -296,6 +309,10 @@ export class ApiClient {
       this.request<{ success: boolean; clickCount: number }>(`/api/v1/domains/${domainId}/click`, {
         method: 'POST',
       }),
+    starWebsite: (websiteId: string) =>
+      this.request<{ success: boolean; stars: number }>(`/api/v1/websites/${websiteId}/star`, {
+        method: 'POST',
+      }),
     getSettings: () => this.request<Record<string, unknown>>('/api/v1/settings/public'),
   };
 
@@ -327,9 +344,58 @@ export class ApiClient {
         method: 'PUT',
         body: JSON.stringify({ items }),
       }),
+    updateDomain: (id: string, input: Partial<CreateDomainInput>) =>
+      this.request<DomainItem>(`/api/v1/domains/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(input),
+      }),
+    deleteDomain: (id: string) =>
+      this.request<{ message: string }>(`/api/v1/domains/${id}`, {
+        method: 'DELETE',
+      }),
     checkDomain: (domainId: string) =>
       this.request<DomainItem>(`/api/v1/health-check/domain/${domainId}`, {
         method: 'POST',
+      }),
+    getAnalytics: (range = '30d') =>
+      this.request<{
+        websiteName: string;
+        websiteSlug: string;
+        range: string;
+        totalClicks: number;
+        totalDomains: number;
+        onlineDomains: number;
+        uptimePercentage: number;
+        views: number;
+        domains: Array<{
+          id: string;
+          hostname: string;
+          label: string | null;
+          type: string;
+          status: string;
+          clickCount: number;
+          lastResponseMs?: number | null;
+          sharePercentage: number;
+        }>;
+      }>(`/api/v1/websites/my-website/analytics?range=${range}`),
+    getMyReports: () =>
+      this.request<
+        Array<{
+          id: string;
+          reason: string;
+          details: string;
+          status: string;
+          reporterEmail?: string | null;
+          createdAt: string;
+          website?: { id: string; name: string; slug: string } | null;
+          domain?: { id: string; hostname: string; url: string } | null;
+          handledBy?: { id: string; name: string; email: string } | null;
+        }>
+      >('/api/v1/reports/my-reports'),
+    createSupportTicket: (input: { reason: string; details: string; domainId?: string }) =>
+      this.request<{ id: string; status: string }>('/api/v1/reports/owner-ticket', {
+        method: 'POST',
+        body: JSON.stringify(input),
       }),
   };
 
@@ -377,7 +443,13 @@ export class ApiClient {
       }),
 
     // Websites
-    getWebsites: (query?: { page?: number; limit?: number; status?: string; search?: string }) => {
+    getWebsites: (query?: {
+      page?: number;
+      limit?: number;
+      status?: string;
+      search?: string;
+      categoryId?: string;
+    }) => {
       const params = new URLSearchParams();
       if (query) {
         Object.entries(query).forEach(([k, v]) => {
@@ -392,6 +464,39 @@ export class ApiClient {
         totalPages: number;
       }>(`/api/v1/websites/admin/all${qs ? `?${qs}` : ''}`);
     },
+    createWebsite: (data: {
+      name: string;
+      primaryUrl: string;
+      categoryId: string;
+      tagline?: string;
+      description?: string;
+      contentRating?: 'ALL' | 'MATURE';
+      ownerId?: string;
+      ownerName?: string;
+      ownerEmail?: string;
+    }) =>
+      this.request<{
+        success: boolean;
+        website: WebsiteCard;
+        domain?: any;
+        tempPassword?: string;
+      }>('/api/v1/websites/admin', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    reorderWebsites: (categoryId: string, items: Array<{ id: string; sortOrder: number }>) =>
+      this.request<{ success: boolean; count: number }>(
+        `/api/v1/websites/admin/categories/${categoryId}/reorder`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({ items }),
+        },
+      ),
+    updateWebsiteStars: (id: string, stars: number) =>
+      this.request<{ success: boolean; stars: number }>(`/api/v1/websites/admin/${id}/stars`, {
+        method: 'PUT',
+        body: JSON.stringify({ stars }),
+      }),
     updateWebsite: (id: string, input: UpdateWebsiteInput) =>
       this.request<WebsiteCard>(`/api/v1/websites/admin/${id}`, {
         method: 'PUT',
@@ -415,6 +520,7 @@ export class ApiClient {
       description?: string;
       icon?: string;
       sortOrder?: number;
+      homeLimit?: number;
       isActive?: boolean;
     }) =>
       this.request<Category>('/api/v1/categories', {
@@ -438,10 +544,18 @@ export class ApiClient {
 
     // Tags
     getTags: () => this.request<Tag[]>('/api/v1/tags'),
-    createTag: (name: string) =>
+    createTag: (name: string, slug?: string) =>
       this.request<Tag>('/api/v1/tags', {
         method: 'POST',
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({
+          name,
+          slug:
+            slug ||
+            name
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-|-$/g, ''),
+        }),
       }),
     deleteTag: (id: string) =>
       this.request<{ deleted: boolean }>(`/api/v1/tags/${id}`, {
@@ -449,7 +563,7 @@ export class ApiClient {
       }),
 
     // Reports
-    getReports: (query?: { page?: number; limit?: number; status?: string }) => {
+    getReports: (query?: { page?: number; limit?: number; status?: string; search?: string }) => {
       const params = new URLSearchParams();
       if (query) {
         Object.entries(query).forEach(([k, v]) => {
@@ -465,6 +579,11 @@ export class ApiClient {
       this.request<{ updated: boolean }>(`/api/v1/reports/${id}/status`, {
         method: 'PUT',
         body: JSON.stringify({ status }),
+      }),
+    replyReport: (id: string, message: string) =>
+      this.request<{ success: boolean }>(`/api/v1/reports/${id}/reply`, {
+        method: 'POST',
+        body: JSON.stringify({ message }),
       }),
 
     // Audit Logs
@@ -507,10 +626,33 @@ export class ApiClient {
         `/api/v1/admin/users${qs ? `?${qs}` : ''}`,
       );
     },
+    createUser: (data: {
+      name: string;
+      email: string;
+      websiteName?: string;
+      websiteUrl?: string;
+      categoryId?: string;
+      tagline?: string;
+      description?: string;
+    }) =>
+      this.request<{
+        success: boolean;
+        user: any;
+        website?: any;
+        domain?: any;
+        tempPassword?: string;
+      }>('/api/v1/admin/users', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
     setUserStatus: (id: string, status: string) =>
       this.request<{ updated: boolean }>(`/api/v1/admin/users/${id}/status`, {
         method: 'PATCH',
         body: JSON.stringify({ status }),
+      }),
+    deleteUser: (id: string) =>
+      this.request<{ id: string; email: string }>(`/api/v1/admin/users/${id}`, {
+        method: 'DELETE',
       }),
 
     // Roles & Permissions

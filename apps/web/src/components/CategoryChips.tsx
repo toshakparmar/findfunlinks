@@ -96,7 +96,7 @@ export const CategoryChips: React.FC<CategoryChipsProps> = ({ categories, classN
         }`}
       >
         <LayoutGrid className="w-5 h-5 shrink-0" />
-        <span className="text-[11px] font-semibold truncate leading-none">All Links</span>
+        <span className="text-fs-xs font-semibold truncate leading-none">All Links</span>
       </Link>
 
       {/* Category Tiles */}
@@ -120,7 +120,7 @@ export const CategoryChips: React.FC<CategoryChipsProps> = ({ categories, classN
               className="w-5 h-5 shrink-0"
               style={{ color: isActive ? '#FFFFFF' : iconColor }}
             />
-            <span className="text-[11px] font-medium truncate leading-none">{cat.name}</span>
+            <span className="text-fs-xs font-medium truncate leading-none">{cat.name}</span>
           </Link>
         );
       })}

@@ -7,7 +7,7 @@ import { CategoryTab } from '../../../components/DirectoryGrid';
 import { Loader2 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Edit Registration Submission | FindFunLinks',
+  title: 'Edit Registration Submission | FinalLinks',
   description: 'Update your submitted website registration based on administrator feedback.',
 };
 

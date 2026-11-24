@@ -1,6 +1,6 @@
 # CI/CD Infrastructure
 
-The automated CI/CD pipeline for FindFunLinks is implemented via GitHub Actions:
+The automated CI/CD pipeline for FinalLinks is implemented via GitHub Actions:
 
 - Primary Workflow: [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)
 

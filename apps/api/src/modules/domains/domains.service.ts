@@ -12,7 +12,7 @@ import {
   UpdateDomainInput,
   ReorderDomainsInput,
   DomainType,
-} from '@findfunlinks/contracts';
+} from '@finallinks/contracts';
 import {
   DomainType as PrismaDomainType,
   DomainStatus as PrismaDomainStatus,
@@ -84,6 +84,13 @@ export class DomainsService {
       where: { id },
       data: { clickCount: { increment: 1 } },
     });
+
+    if (domain.websiteId) {
+      await this.prisma.website.update({
+        where: { id: domain.websiteId },
+        data: { viewCount: { increment: 1 } },
+      }).catch(() => {});
+    }
 
     return { success: true, url: domain.url };
   }

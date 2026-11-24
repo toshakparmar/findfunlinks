@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateCategoryInput, UpdateCategoryInput } from '@findfunlinks/contracts';
+import { CreateCategoryInput, UpdateCategoryInput } from '@finallinks/contracts';
 import { WebsiteStatus } from '@prisma/client';
 
 @Injectable()
@@ -37,6 +37,7 @@ export class CategoriesService {
       description: c.description,
       icon: c.icon,
       sortOrder: c.sortOrder,
+      homeLimit: c.homeLimit ?? 10,
       websiteCount: c._count.websites,
     }));
   }
@@ -132,6 +133,7 @@ export class CategoriesService {
         description: input.description,
         icon: input.icon,
         sortOrder: input.sortOrder ?? 0,
+        homeLimit: input.homeLimit ?? 10,
         isActive: input.isActive ?? true,
       },
     });
@@ -160,6 +162,7 @@ export class CategoriesService {
         ...(input.description !== undefined ? { description: input.description } : {}),
         ...(input.icon !== undefined ? { icon: input.icon } : {}),
         ...(input.sortOrder !== undefined ? { sortOrder: input.sortOrder } : {}),
+        ...(input.homeLimit !== undefined ? { homeLimit: input.homeLimit } : {}),
         ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
       },
     });

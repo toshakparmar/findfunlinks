@@ -60,6 +60,12 @@ enum ReportStatus {
   DISMISSED
 }
 
+enum StarStatus {
+  VALID
+  SUSPECT
+  REMOVED
+}
+
 enum TokenType {
   INVITE
   PASSWORD_RESET
@@ -169,6 +175,7 @@ model Category {
   description String?
   icon        String?
   sortOrder   Int       @default(0)
+  homeLimit   Int       @default(10)
   isActive    Boolean   @default(true)
   websites    Website[]
   createdAt   DateTime  @default(now())
@@ -251,14 +258,26 @@ model Website {
   seoDescription String?
   socialLinks    Json?
   viewCount      Int           @default(0)
+  stars          Int                 @default(0)
+  starCount      Int                 @default(0)
+  shortDescription String?
+  highlights     String[]            @default([])
+  note           String?
+  rankKey        String?
+  sortOrder      Int                 @default(0)
   domains        Domain[]
   reports        Report[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  screenshots    WebsiteScreenshot[]
+  starsList      WebsiteStar[]
+  slugRedirects  SlugRedirect[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
   deletedAt      DateTime?
 
   @@index([slug])
   @@index([categoryId])
+  @@index([categoryId, rankKey])
+  @@index([categoryId, sortOrder])
   @@index([status])
   @@index([isFeatured])
 }
@@ -382,5 +401,45 @@ model EmailLog {
   @@index([to])
   @@index([createdAt])
 }
+
+model WebsiteScreenshot {
+  id           String   @id @default(uuid())
+  websiteId    String
+  website      Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  url          String
+  thumbnailUrl String?
+  altText      String
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  @@index([websiteId, sortOrder])
+}
+
+model WebsiteStar {
+  id        String     @id @default(uuid())
+  websiteId String
+  website   Website    @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  voterHash String
+  ipHash    String
+  status    StarStatus @default(VALID)
+  createdAt DateTime   @default(now())
+
+  @@unique([websiteId, voterHash])
+  @@index([websiteId, status])
+  @@index([voterHash])
+}
+
+model SlugRedirect {
+  id        String   @id @default(uuid())
+  oldSlug   String   @unique
+  newSlug   String
+  websiteId String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([oldSlug])
+  @@index([websiteId])
+}
+
 
 

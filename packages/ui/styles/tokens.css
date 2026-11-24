@@ -1,5 +1,5 @@
 /**
- * FindFunLinks — Design System Tokens
+ * FinalLinks — Design System Tokens
  * Source of truth for Web, Admin, and Owner apps
  */
 
@@ -63,6 +63,16 @@
   /* Fonts */
   --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Type Scale Tokens (Iteration 3) */
+  --fs-xs: 0.8125rem; /* 13px */
+  --fs-sm: 0.875rem;  /* 14px */
+  --fs-base: 1rem;    /* 16px */
+  --fs-md: 1.0625rem; /* 17px */
+  --fs-lg: 1.25rem;   /* 20px */
+  --fs-xl: 1.5rem;    /* 24px */
+  --fs-2xl: clamp(1.75rem, 3vw, 2.25rem); /* 28-36px */
+  --fs-3xl: clamp(2rem, 4vw, 2.75rem);    /* 32-44px */
 
   /* Radii */
   --radius-card: 16px;

@@ -9,7 +9,7 @@ import {
   CreateTagInput,
   UpdateTagSchema,
   UpdateTagInput,
-} from '@findfunlinks/contracts';
+} from '@finallinks/contracts';
 
 @ApiTags('Tags')
 @Controller('tags')

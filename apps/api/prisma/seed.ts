@@ -229,8 +229,21 @@ async function main() {
     }
   }
 
+  // 3.5. Clean Database of legacy websites, domains, tokens, and users
+  console.log('🧹 Clearing legacy database records (websites, domains, tokens, old users)...');
+  await prisma.domainCheck.deleteMany({});
+  await prisma.domain.deleteMany({});
+  await prisma.websiteTag.deleteMany({});
+  await prisma.report.deleteMany({});
+  await prisma.registrationRequest.deleteMany({});
+  await prisma.website.deleteMany({});
+  await prisma.token.deleteMany({});
+  await prisma.refreshToken.deleteMany({});
+  await prisma.auditLog.deleteMany({});
+  await prisma.user.deleteMany({});
+
   // 4. Seed Initial Super Admin User
-  const adminEmail = process.env.SUPER_ADMIN_EMAIL || 'admin@findfunlinks.com';
+  const adminEmail = process.env.SUPER_ADMIN_EMAIL || 'admin@finallinks.com';
   const adminPassword = process.env.SUPER_ADMIN_PASSWORD || 'SuperAdminSecretPass123!';
   console.log(`👉 Seeding Super Admin user (${adminEmail})...`);
 
@@ -278,12 +291,12 @@ async function main() {
   }
 
   // 7. Seed Demo Website Owner User
-  const ownerEmail = process.env.DEMO_OWNER_EMAIL || 'owner@findfunlinks.com';
+  const ownerEmail = process.env.DEMO_OWNER_EMAIL || 'owner@finallinks.com';
   const ownerPassword = process.env.DEMO_OWNER_PASSWORD || 'OwnerSecurePassword2026!';
   console.log(`👉 Seeding Demo Owner user (${ownerEmail})...`);
 
   const ownerPasswordHash = await argon2.hash(ownerPassword);
-  const ownerUser = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: ownerEmail.toLowerCase() },
     update: {
       passwordHash: ownerPasswordHash,
@@ -303,95 +316,463 @@ async function main() {
     },
   });
 
-  // 8. Seed Demo Website for Owner
-  console.log('👉 Seeding demo website for owner...');
-  const firstCategory = await prisma.category.findFirstOrThrow();
-  const demoWebsite = await prisma.website.upsert({
-    where: { slug: 'funlinks-showcase' },
-    update: {
-      ownerId: ownerUser.id,
-      status: WebsiteStatus.ACTIVE,
-      name: 'FunLinks Showcase Portal',
-      tagline: 'Premier curated directory for anime, games, and entertainment mirrors.',
-      description:
-        'The official showcase directory entry demonstrating live mirror routing, automatic health checks, and public analytics on FindFunLinks.',
-      contentRating: ContentRating.ALL,
-      categoryId: firstCategory.id,
-    },
-    create: {
+  // 8. Seed 20 Demo Websites across Categories
+  console.log('👉 Seeding 20 demo websites with showcase data and varied mirrors...');
+  const allCategories = await prisma.category.findMany({ orderBy: { sortOrder: 'asc' } });
+  const allTags = await prisma.tag.findMany();
+
+  const websiteTemplates = [
+    {
       slug: 'funlinks-showcase',
       name: 'FunLinks Showcase Portal',
-      tagline: 'Premier curated directory for anime, games, and entertainment mirrors.',
-      description:
-        'The official showcase directory entry demonstrating live mirror routing, automatic health checks, and public analytics on FindFunLinks.',
-      contentRating: ContentRating.ALL,
-      status: WebsiteStatus.ACTIVE,
-      ownerId: ownerUser.id,
-      categoryId: firstCategory.id,
-      isFeatured: true,
-    },
-  });
-
-  // 9. Seed Demo Mirrors
-  console.log('👉 Seeding demo mirror domains...');
-  const demoDomains = [
-    {
-      hostname: 'showcase.findfunlinks.com',
-      url: 'https://showcase.findfunlinks.com',
-      type: DomainType.PRIMARY,
-      status: DomainStatus.ACTIVE,
-      isPublic: true,
-      lastResponseMs: 142,
-      lastCheckedAt: new Date(),
+      shortDescription: 'Premier curated directory for anime, games, and entertainment mirrors.',
+      highlights: [
+        'Automated 5-minute health telemetry',
+        'Zero tracking or middleman redirects',
+        'Direct connection to ultra-fast mirrors',
+        'Community verified domain ownership',
+      ],
+      note: 'Notice: Mirror latency is re-checked every 5 minutes across 6 global edge nodes.',
+      catSlug: 'anime-streaming',
+      starCount: 642,
+      domainCount: 6,
     },
     {
-      hostname: 'mirror-us.findfunlinks.com',
-      url: 'https://mirror-us.findfunlinks.com',
-      type: DomainType.MIRROR,
-      status: DomainStatus.ACTIVE,
-      isPublic: true,
-      lastResponseMs: 185,
-      lastCheckedAt: new Date(),
+      slug: 'stream-matrix',
+      name: 'Stream Matrix Hub',
+      shortDescription: 'Global resilient mirror network with 150+ edge unblocked proxies and CDN relays.',
+      highlights: [
+        '150+ active global mirrors & proxies',
+        'Anycast CDN acceleration',
+        'Instant fallback routing when domains drop',
+        'Encrypted HTTPS everywhere',
+        'Clean, ad-free directory presentation',
+      ],
+      note: 'High-availability cluster: automatically selects the nearest edge server.',
+      catSlug: 'anime-streaming',
+      starCount: 1250,
+      domainCount: 150, // Test virtualization and unlimited domains!
     },
     {
-      hostname: 'proxy-cdn.findfunlinks.net',
-      url: 'https://proxy-cdn.findfunlinks.net',
-      type: DomainType.PROXY,
-      status: DomainStatus.ACTIVE,
-      isPublic: true,
-      lastResponseMs: 95,
-      lastCheckedAt: new Date(),
+      slug: 'cinema-vault',
+      name: 'Cinema Vault Online',
+      shortDescription: 'Archive of public-domain classics, indie festivals, and remastered cinema.',
+      highlights: [
+        'Master quality 4K and 1080p remaster streams',
+        'Multi-language soft subtitles in 20+ languages',
+        'Lossless FLAC audio tracks',
+        'Exhaustive metadata and director notes',
+      ],
+      note: 'Subtitles are community-translated and peer-reviewed.',
+      catSlug: 'movies',
+      starCount: 890,
+      domainCount: 8,
+    },
+    {
+      slug: 'retro-arcade-zone',
+      name: 'Retro Arcade Zone',
+      shortDescription: 'Browser-playable retro gaming portal with cloud save synchronization.',
+      highlights: [
+        'Over 3,000 classic games ready in-browser',
+        'Gamepad and Bluetooth controller support',
+        'Cloud save slots linked to user profiles',
+        'Zero install or plugins required',
+      ],
+      note: 'Optimized for Chrome, Firefox, and mobile Safari.',
+      catSlug: 'games',
+      starCount: 730,
+      domainCount: 5,
+    },
+    {
+      slug: 'open-source-haven',
+      name: 'Open Source Haven',
+      shortDescription: 'Curated index of high-quality open-source desktop software and developer tools.',
+      highlights: [
+        'Strictly FOSS licensed applications',
+        'SHA256 checksums verified for all releases',
+        'Direct binary downloads without bundleware',
+        'Cross-platform Windows, Mac, and Linux',
+      ],
+      note: 'Mirrors are synced hourly with upstream GitHub releases.',
+      catSlug: 'software',
+      starCount: 940,
+      domainCount: 7,
+    },
+    {
+      slug: 'sound-sphere',
+      name: 'Sound Sphere Audio',
+      shortDescription: 'Independent lossless audio streaming and creator music discovery.',
+      highlights: [
+        'Hi-Res 24-bit/96kHz lossless streaming',
+        'Direct artist support and tip integration',
+        'Zero audio compression or volume flattening',
+        'Offline caching enabled',
+      ],
+      note: 'Works offline via Progressive Web App technology.',
+      catSlug: 'music',
+      starCount: 512,
+      domainCount: 4,
+    },
+    {
+      slug: 'docu-world',
+      name: 'DocuWorld Streaming',
+      shortDescription: 'Nature, science, and history documentaries curated from global creators.',
+      highlights: [
+        'Full 4K HDR nature cinematics',
+        'Original commentary and interactive transcripts',
+        'Curated by scientific educators',
+        'Ad-free learning experience',
+      ],
+      note: 'Educational licenses available for schools and libraries.',
+      catSlug: 'documentaries',
+      starCount: 460,
+      domainCount: 4,
+    },
+    {
+      slug: 'manga-nexus',
+      name: 'Manga Nexus Reader',
+      shortDescription: 'Fast, responsive manga reader with high-res scans and continuous vertical scroll.',
+      highlights: [
+        'Continuous webtoon and vertical reading mode',
+        'High-density image compression with sharp text',
+        'Instant chapter prefetching',
+        'Customizable color themes for AMOLED screens',
+      ],
+      note: 'Double-tap to zoom is fully supported on mobile devices.',
+      catSlug: 'comics',
+      starCount: 810,
+      domainCount: 9,
+    },
+    {
+      slug: 'podcast-station',
+      name: 'Podcast Station Live',
+      shortDescription: 'Aggregated directory of tech, business, and storytelling audio shows.',
+      highlights: [
+        'Searchable audio transcripts with timestamp jumping',
+        'Variable speed playback 0.5x to 3.0x',
+        'Silence skipping and voice boost audio engine',
+        'RSS feed auto-detection',
+      ],
+      note: 'No sign-up required to stream or download episodes.',
+      catSlug: 'podcasts',
+      starCount: 380,
+      domainCount: 3,
+    },
+    {
+      slug: 'dev-toolbox-pro',
+      name: 'Dev Toolbox Pro',
+      shortDescription: 'Essential in-browser utilities for developers: formatters, converters, and regex testers.',
+      highlights: [
+        '100% client-side privacy: no data leaves your browser',
+        'JSON, YAML, GraphQL, and SQL formatters',
+        'JWT decoder, Base64 converter, hash generators',
+        'Works completely offline',
+      ],
+      note: 'Security certified: zero telemetry collected on input payloads.',
+      catSlug: 'tools',
+      starCount: 1120,
+      domainCount: 5,
+    },
+    {
+      slug: 'indie-games-radar',
+      name: 'Indie Games Radar',
+      shortDescription: 'Showcase of hidden gems, experimental prototypes, and indie game demos.',
+      highlights: [
+        'Developer interviews and devlog updates',
+        'Playable web builds and direct demo mirrors',
+        'Categorized by mechanics and game engines',
+        'Community voting and feedback',
+      ],
+      note: 'Direct links to itch.io and Steam developer pages.',
+      catSlug: 'games',
+      starCount: 490,
+      domainCount: 3,
+    },
+    {
+      slug: 'anime-pulse',
+      name: 'Anime Pulse Central',
+      shortDescription: 'Seasonal anime broadcasting schedule, release tracker, and discussion links.',
+      highlights: [
+        'Live airtime countdowns adjusted to user timezone',
+        'Simulcast stream links and backup mirrors',
+        'Episode release notifications',
+        'Spoiler-free synopsis and staff credits',
+      ],
+      note: 'Timezones update automatically based on device locale.',
+      catSlug: 'anime-streaming',
+      starCount: 680,
+      domainCount: 6,
+    },
+    {
+      slug: 'classic-lit-library',
+      name: 'Classic Lit E-Library',
+      shortDescription: 'Over 70,000 free public domain ebooks formatted for modern e-readers and web.',
+      highlights: [
+        'Available in EPUB, Kindle MOBI, and responsive Web Reader',
+        'Beautiful bespoke cover art and typography',
+        'Annotated footnotes and author biographies',
+        'Free forever with zero ads',
+      ],
+      note: 'EPUB files are strictly validated against IDPF standards.',
+      catSlug: 'ebooks',
+      starCount: 580,
+      domainCount: 4,
+    },
+    {
+      slug: 'live-sports-wire',
+      name: 'Live Sports Wire',
+      shortDescription: 'Real-time scores, verified legal broadcast schedules, and match replay mirrors.',
+      highlights: [
+        'Sub-second live score updates across soccer, basketball, F1',
+        'Official broadcast provider links by country',
+        'Extended tactical highlight packages',
+        'Clean layout with minimal bandwidth overhead',
+      ],
+      note: 'Scores stream via low-latency WebSockets.',
+      catSlug: 'sports',
+      starCount: 770,
+      domainCount: 7,
+    },
+    {
+      slug: 'ambient-chillout',
+      name: 'Ambient Chillout Radio',
+      shortDescription: 'Curated 24/7 lo-fi, synthwave, and generative ambient streams for focus and study.',
+      highlights: [
+        'Continuous commercial-free generative audio',
+        'Built-in Pomodoro productivity timer',
+        'Dynamic soundscapes: rain, thunder, cafe noise',
+        'Ultra-low battery and CPU usage',
+      ],
+      note: 'Designed to run quietly in background browser tabs.',
+      catSlug: 'music',
+      starCount: 840,
+      domainCount: 4,
+    },
+    {
+      slug: 'theatre-arts-hub',
+      name: 'Theatre & Arts Hub',
+      shortDescription: 'Archived stage plays, Shakespeare productions, and performing arts recordings.',
+      highlights: [
+        'Full multicam recordings of historic theatre',
+        'Accompanying scripts and study guides',
+        'Exclusive backstage and actor retrospectives',
+        'High quality stereo and 5.1 surround sound',
+      ],
+      note: 'Archived under educational fair-use preservation licenses.',
+      catSlug: 'theatre',
+      starCount: 320,
+      domainCount: 3,
+    },
+    {
+      slug: 'kids-learn-zone',
+      name: 'Kids Learning Adventures',
+      shortDescription: 'Safe, age-appropriate educational games, animations, and interactive storybooks.',
+      highlights: [
+        'COPPA compliant: zero ads, zero data tracking',
+        'Interactive math and phonics minigames',
+        'Parental dashboard with time limit controls',
+        'Vibrant, colorful animation by certified educators',
+      ],
+      note: 'Approved for early childhood and elementary classrooms.',
+      catSlug: 'kids-family',
+      starCount: 410,
+      domainCount: 3,
+    },
+    {
+      slug: 'tv-archive-project',
+      name: 'TV Archive Project',
+      shortDescription: 'Classic television broadcasts, retro commercials, and nostalgic television specials.',
+      highlights: [
+        'Uncut broadcast master quality with original bumpers',
+        'Searchable by original air date and decade',
+        'Comprehensive commercial archives from the 80s & 90s',
+        'High fidelity CRT shader filter optional',
+      ],
+      note: 'CRT filter can be toggled on/off in player controls.',
+      catSlug: 'tv-shows',
+      starCount: 620,
+      domainCount: 5,
+    },
+    {
+      slug: 'live-stream-directory',
+      name: 'Live Stream Directory',
+      shortDescription: 'Global public webcam streams, space agency views, and wildlife sanctuary feeds.',
+      highlights: [
+        'NASA ISS Earth orbit live feeds',
+        'African watering hole wildlife cameras',
+        'Tokyo, New York, and London 4K city cams',
+        'Low-latency HLS with automatic quality switching',
+      ],
+      note: 'Streams are verified for continuous 24/7 uptime.',
+      catSlug: 'live-tv',
+      starCount: 710,
+      domainCount: 4,
+    },
+    {
+      slug: 'open-learn-academy',
+      name: 'Open Learn Academy',
+      shortDescription: 'Free university-level computer science, mathematics, and philosophy video courses.',
+      highlights: [
+        'Complete course lecture recordings and syllabi',
+        'Practice problem sets with step-by-step solutions',
+        'Peer discussion study groups',
+        'Self-paced learning with progress tracking',
+      ],
+      note: 'All course materials are licensed under Creative Commons.',
+      catSlug: 'educational',
+      starCount: 960,
+      domainCount: 5,
     },
   ];
 
-  for (let i = 0; i < demoDomains.length; i++) {
-    const d = demoDomains[i]!;
-    await prisma.domain.upsert({
-      where: {
-        hostname: d.hostname,
-      },
+  for (let idx = 0; idx < websiteTemplates.length; idx++) {
+    const t = websiteTemplates[idx]!;
+    const category =
+      allCategories.find((c) => c.slug === t.catSlug) || allCategories[idx % allCategories.length]!;
+
+    // Create unique owner user for each website
+    const ownerEmail = `owner-${t.slug}@finallinks.com`;
+    const owner = await prisma.user.upsert({
+      where: { email: ownerEmail },
       update: {
-        url: d.url,
-        type: d.type,
-        status: d.status,
-        isPublic: d.isPublic,
-        lastResponseMs: d.lastResponseMs,
-        lastCheckedAt: d.lastCheckedAt,
-        sortOrder: i,
-        websiteId: demoWebsite.id,
+        roleId: ownerRole.id,
+        status: UserStatus.ACTIVE,
       },
       create: {
-        hostname: d.hostname,
-        url: d.url,
-        type: d.type,
-        status: d.status,
-        isPublic: d.isPublic,
-        lastResponseMs: d.lastResponseMs,
-        lastCheckedAt: d.lastCheckedAt,
-        sortOrder: i,
-        websiteId: demoWebsite.id,
+        email: ownerEmail,
+        name: `Owner of ${t.name}`,
+        passwordHash: ownerPasswordHash,
+        status: UserStatus.ACTIVE,
+        roleId: ownerRole.id,
       },
     });
+
+    const website = await prisma.website.upsert({
+      where: { slug: t.slug },
+      update: {
+        name: t.name,
+        shortDescription: t.shortDescription,
+        highlights: t.highlights,
+        note: t.note,
+        starCount: t.starCount,
+        stars: t.starCount,
+        sortOrder: idx + 1,
+        categoryId: category.id,
+        ownerId: owner.id,
+        status: WebsiteStatus.ACTIVE,
+      },
+      create: {
+        slug: t.slug,
+        name: t.name,
+        tagline: t.shortDescription,
+        shortDescription: t.shortDescription,
+        description: `## About ${t.name}\n\n${t.shortDescription}\n\n### Key Features\n${t.highlights.map((h) => `- ${h}`).join('\n')}\n\n${t.note}`,
+        highlights: t.highlights,
+        note: t.note,
+        starCount: t.starCount,
+        stars: t.starCount,
+        sortOrder: idx + 1,
+        contentRating: ContentRating.ALL,
+        status: WebsiteStatus.ACTIVE,
+        ownerId: owner.id,
+        categoryId: category.id,
+        isFeatured: idx < 4,
+        logoUrl: `https://images.unsplash.com/photo-${1570000000000 + idx * 123456}?w=128&auto=format&fit=crop`,
+      },
+    });
+
+    // Seed sample screenshots for detail gallery
+    await prisma.websiteScreenshot.deleteMany({ where: { websiteId: website.id } });
+    await prisma.websiteScreenshot.createMany({
+      data: [
+        {
+          websiteId: website.id,
+          url: `https://picsum.photos/seed/${t.slug}-1/1280/720`,
+          thumbnailUrl: `https://picsum.photos/seed/${t.slug}-1/480/270`,
+          altText: `${t.name} Dashboard view`,
+          sortOrder: 0,
+        },
+        {
+          websiteId: website.id,
+          url: `https://picsum.photos/seed/${t.slug}-2/1280/720`,
+          thumbnailUrl: `https://picsum.photos/seed/${t.slug}-2/480/270`,
+          altText: `${t.name} Content reader preview`,
+          sortOrder: 1,
+        },
+        {
+          websiteId: website.id,
+          url: `https://picsum.photos/seed/${t.slug}-3/1280/720`,
+          thumbnailUrl: `https://picsum.photos/seed/${t.slug}-3/480/270`,
+          altText: `${t.name} Mirror selection interface`,
+          sortOrder: 2,
+        },
+      ],
+    });
+
+    // Seed mirror domains
+    await prisma.domain.deleteMany({ where: { websiteId: website.id } });
+    const domainData: Array<{
+      hostname: string;
+      url: string;
+      label: string;
+      type: DomainType;
+      status: DomainStatus;
+      lastResponseMs: number;
+      sortOrder: number;
+      isPublic: boolean;
+      websiteId: string;
+    }> = [];
+
+    // Primary domain
+    domainData.push({
+      hostname: `${t.slug}.com`,
+      url: `https://${t.slug}.com`,
+      label: 'Official Primary',
+      type: DomainType.PRIMARY,
+      status: DomainStatus.ACTIVE,
+      lastResponseMs: 95 + (idx % 50),
+      sortOrder: 0,
+      isPublic: true,
+      websiteId: website.id,
+    });
+
+    // Additional mirrors
+    const tldList = ['org', 'net', 'io', 'to', 'ws', 'is', 'me', 'bz', 'ch', 'gg'];
+    const countToGenerate = t.domainCount || 3;
+
+    for (let dIdx = 1; dIdx < countToGenerate; dIdx++) {
+      const tld = tldList[dIdx % tldList.length];
+      const mirrorType = dIdx % 4 === 0 ? DomainType.PROXY : DomainType.MIRROR;
+      const isDown = dIdx === 3 && countToGenerate > 5;
+      domainData.push({
+        hostname: `mirror-${dIdx}.${t.slug}.${tld}`,
+        url: `https://mirror-${dIdx}.${t.slug}.${tld}`,
+        label: dIdx % 2 === 0 ? `Fast CDN #${dIdx}` : `Backup Edge #${dIdx}`,
+        type: mirrorType,
+        status: isDown ? DomainStatus.DOWN : DomainStatus.ACTIVE,
+        lastResponseMs: isDown ? 9999 : 80 + ((dIdx * 17) % 180),
+        sortOrder: dIdx,
+        isPublic: true,
+        websiteId: website.id,
+      });
+    }
+
+    // Insert domains in batch
+    await prisma.domain.createMany({ data: domainData });
+
+    // Link random tags
+    if (allTags.length > 0) {
+      await prisma.websiteTag.deleteMany({ where: { websiteId: website.id } });
+      const tag1 = allTags[idx % allTags.length]!;
+      const tag2 = allTags[(idx + 2) % allTags.length]!;
+      await prisma.websiteTag.createMany({
+        data: [
+          { websiteId: website.id, tagId: tag1.id },
+          { websiteId: website.id, tagId: tag2.id },
+        ],
+        skipDuplicates: true,
+      });
+    }
   }
 
   console.log('✅ Seeding complete!');

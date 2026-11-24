@@ -12,8 +12,8 @@ interface FavoritesContextType {
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
-const FAVORITES_KEY = 'findfunlinks_favorites';
-const RECENT_KEY = 'findfunlinks_recent';
+const FAVORITES_KEY = 'finallinks_favorites';
+const RECENT_KEY = 'finallinks_recent';
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<string[]>([]);

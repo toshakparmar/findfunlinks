@@ -78,12 +78,12 @@ export function QuickCategoryGrid({ categories, onSelectCategory }: QuickCategor
               </div>
 
               {/* Category Name */}
-              <span className="text-[11px] font-semibold text-token group-hover:text-primary transition-colors truncate max-w-full">
+              <span className="text-fs-xs font-semibold text-token group-hover:text-primary transition-colors truncate max-w-full">
                 {cat.name.split(' ')[0]}
               </span>
 
               {/* Site Count under name */}
-              <span className="text-[10px] text-token-text-faint font-mono">
+              <span className="text-fs-xs text-token-text-faint font-mono">
                 {cat.count ? `${cat.count} sites` : 'Explore'}
               </span>
             </button>

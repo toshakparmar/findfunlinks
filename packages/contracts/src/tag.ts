@@ -9,9 +9,9 @@ export const TagSchema = z.object({
 });
 export type Tag = z.infer<typeof TagSchema>;
 
-export const CreateTagSchema = TagSchema.pick({
-  name: true,
-  slug: true,
+export const CreateTagSchema = z.object({
+  name: z.string().trim().min(2).max(40),
+  slug: z.string().trim().regex(SlugRegex).optional(),
 });
 export type CreateTagInput = z.infer<typeof CreateTagSchema>;
 

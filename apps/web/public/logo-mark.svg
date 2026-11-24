@@ -1,29 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-  <!-- Handle -->
-  <path d="M28 82L10 100C7 103 7 108 10 111L11 112C14 115 19 115 22 112L40 94" stroke="#0B57D9" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  
-  <!-- Outer Rim -->
-  <circle cx="62" cy="52" r="42" stroke="#0B57D9" stroke-width="12" fill="#FFFFFF"/>
-
-  <!-- Sun with Rays inside Lens -->
-  <circle cx="49" cy="40" r="10" fill="#F59E0B"/>
-  <!-- Sun Rays -->
-  <line x1="49" y1="24" x2="49" y2="19" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-  <line x1="49" y1="56" x2="49" y2="61" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-  <line x1="33" y1="40" x2="28" y2="40" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-  <line x1="65" y1="40" x2="70" y2="40" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-  <line x1="38" y1="29" x2="34" y2="25" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-  <line x1="60" y1="51" x2="64" y2="55" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-  <line x1="38" y1="51" x2="34" y2="55" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-  <line x1="60" y1="29" x2="64" y2="25" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Light Focus Beam -->
-  <path d="M54 44L77 74C73 77 66 79 59 74L50 47Z" fill="#F59E0B" opacity="0.95"/>
-
-  <!-- Flame Effect at Focal Point -->
-  <path d="M60 78C58 71 62 67 69 63C72 67 76 69 77 74C78 78 74 81 69 81C63 81 60 79 60 78Z" fill="#EA580C"/>
-  <path d="M65 79C64 76 66 74 70 72C72 74 73 76 73 78C73 79 71 80 69 80C67 80 65 79 65 79Z" fill="#FFFFFF"/>
-
-  <!-- Burning base plate -->
-  <line x1="56" y1="83" x2="82" y2="83" stroke="#EA580C" stroke-width="3" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <path d="M52 40L66 26C71.5228 20.4772 80.4772 20.4772 86 26C91.5228 31.5228 91.5228 40.4772 86 46L72 60C66.4772 65.5228 57.5228 65.5228 52 60" stroke="#0B9DF7" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M48 60L34 74C28.4772 79.5228 19.5228 79.5228 14 74C8.47715 68.4772 8.47715 59.5228 14 54L28 40C33.5228 34.4772 42.4772 34.4772 48 40" stroke="#0B9DF7" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="39" y1="61" x2="61" y2="39" stroke="#0B9DF7" stroke-width="9" stroke-linecap="round"/>
 </svg>

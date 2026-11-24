@@ -1,4 +1,4 @@
-import { ApiClient } from '@findfunlinks/api-client';
+import { ApiClient } from '@finallinks/api-client';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 

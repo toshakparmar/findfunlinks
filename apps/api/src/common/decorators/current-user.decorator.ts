@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { UserProfile } from '@findfunlinks/contracts';
+import { UserProfile } from '@finallinks/contracts';
 
 export const CurrentUser = createParamDecorator(
   (data: keyof UserProfile | undefined, ctx: ExecutionContext) => {

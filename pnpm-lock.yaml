@@ -23,13 +23,13 @@ importers:
 
   apps/admin:
     dependencies:
-      '@findfunlinks/api-client':
+      '@finallinks/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@findfunlinks/contracts':
+      '@finallinks/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@findfunlinks/ui':
+      '@finallinks/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@hookform/resolvers':
@@ -63,7 +63,7 @@ importers:
         specifier: ^3.0.2
         version: 3.7.0
     devDependencies:
-      '@findfunlinks/config':
+      '@finallinks/config':
         specifier: workspace:*
         version: link:../../packages/config
       '@types/node':
@@ -90,7 +90,7 @@ importers:
 
   apps/api:
     dependencies:
-      '@findfunlinks/contracts':
+      '@finallinks/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
       '@nestjs/common':
@@ -175,7 +175,7 @@ importers:
         specifier: ^7.8.1
         version: 7.8.2
     devDependencies:
-      '@findfunlinks/config':
+      '@finallinks/config':
         specifier: workspace:*
         version: link:../../packages/config
       '@nestjs/cli':
@@ -227,76 +227,15 @@ importers:
         specifier: ^3.0.5
         version: 3.2.7(@types/node@22.20.5)(jiti@2.7.0)(terser@5.51.2)
 
-  apps/owner:
-    dependencies:
-      '@findfunlinks/api-client':
-        specifier: workspace:*
-        version: link:../../packages/api-client
-      '@findfunlinks/contracts':
-        specifier: workspace:*
-        version: link:../../packages/contracts
-      '@findfunlinks/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      lucide-react:
-        specifier: ^1.16.0
-        version: 1.73.0(@types/react@19.3.0)(react@19.3.1)
-      next:
-        specifier: 15.1.12
-        version: 15.1.12(@playwright/test@1.65.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      next-themes:
-        specifier: ^0.4.4
-        version: 0.4.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      react:
-        specifier: ^19.0.0
-        version: 19.3.1
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.3.1(react@19.3.1)
-      sonner:
-        specifier: ^2.0.1
-        version: 2.0.8(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      tailwind-merge:
-        specifier: ^3.0.2
-        version: 3.7.0
-    devDependencies:
-      '@findfunlinks/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@types/node':
-        specifier: ^22.13.4
-        version: 22.20.5
-      '@types/react':
-        specifier: ^19.0.10
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: ^19.0.4
-        version: 19.3.0(@types/react@19.3.0)
-      autoprefixer:
-        specifier: ^10.4.20
-        version: 10.6.2(postcss@8.5.33)
-      postcss:
-        specifier: ^8.5.2
-        version: 8.5.33
-      tailwindcss:
-        specifier: ^3.4.17
-        version: 3.4.19
-      typescript:
-        specifier: ^5.7.3
-        version: 5.9.3
-
   apps/web:
     dependencies:
-      '@findfunlinks/api-client':
+      '@finallinks/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@findfunlinks/contracts':
+      '@finallinks/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@findfunlinks/ui':
+      '@finallinks/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@hookform/resolvers':
@@ -336,7 +275,7 @@ importers:
         specifier: ^3.0.2
         version: 3.7.0
     devDependencies:
-      '@findfunlinks/config':
+      '@finallinks/config':
         specifier: workspace:*
         version: link:../../packages/config
       '@types/node':
@@ -363,18 +302,25 @@ importers:
 
   packages/api-client:
     dependencies:
-      '@findfunlinks/contracts':
+      '@finallinks/contracts':
         specifier: workspace:*
         version: link:../contracts
     devDependencies:
-      '@findfunlinks/config':
+      '@finallinks/config':
         specifier: workspace:*
         version: link:../config
       typescript:
         specifier: ^5.7.3
         version: 5.9.3
 
-  packages/config: {}
+  packages/config:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.13.4
+        version: 22.20.5
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
 
   packages/contracts:
     dependencies:
@@ -382,7 +328,7 @@ importers:
         specifier: ^3.24.2
         version: 3.25.76
     devDependencies:
-      '@findfunlinks/config':
+      '@finallinks/config':
         specifier: workspace:*
         version: link:../config
       typescript:
@@ -391,6 +337,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@finallinks/config':
+        specifier: workspace:*
+        version: link:../config
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -401,9 +350,6 @@ importers:
         specifier: ^3.0.2
         version: 3.7.0
     devDependencies:
-      '@findfunlinks/config':
-        specifier: workspace:*
-        version: link:../config
       '@types/react':
         specifier: ^19.0.0
         version: 19.3.0

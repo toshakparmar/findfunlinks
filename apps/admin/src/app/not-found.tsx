@@ -13,7 +13,7 @@ export default function NotFound() {
           <div className="relative w-12 h-12 mx-auto">
             <Image
               src="/logo-mark.svg"
-              alt="FindFunLinks"
+              alt="FinalLinks"
               fill
               className="object-contain"
               priority

@@ -55,7 +55,7 @@ describe('Auth, RBAC & Ownership Security (E2E)', () => {
 
     const ownerPasswordHash = await argon2.hash('OwnerSecurePassword2026!');
     ownerUser = await prisma.user.upsert({
-      where: { email: 'owner_test@findfunlinks.com' },
+      where: { email: 'owner_test@finallinks.com' },
       update: {
         passwordHash: ownerPasswordHash,
         status: UserStatus.ACTIVE,
@@ -63,7 +63,7 @@ describe('Auth, RBAC & Ownership Security (E2E)', () => {
         lockedUntil: null,
       },
       create: {
-        email: 'owner_test@findfunlinks.com',
+        email: 'owner_test@finallinks.com',
         name: 'Test Owner',
         passwordHash: ownerPasswordHash,
         status: UserStatus.ACTIVE,
@@ -84,14 +84,14 @@ describe('Auth, RBAC & Ownership Security (E2E)', () => {
   describe('1. Authentication Subsystem', () => {
     it('POST /api/v1/auth/login - authenticates Super Admin and sets httpOnly refresh cookie', async () => {
       const res = await request(app.getHttpServer()).post('/api/v1/auth/login').send({
-        email: 'admin@findfunlinks.com',
+        email: 'admin@finallinks.com',
         password: 'SuperAdminSecretPass123!',
       });
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.accessToken).toBeDefined();
-      expect(res.body.data.user.email).toBe('admin@findfunlinks.com');
+      expect(res.body.data.user.email).toBe('admin@finallinks.com');
       expect(res.body.data.user.role.type).toBe('SUPER_ADMIN');
 
       // Verify Set-Cookie header contains refresh_token
@@ -111,7 +111,7 @@ describe('Auth, RBAC & Ownership Security (E2E)', () => {
 
     it('POST /api/v1/auth/login - rejects invalid password with 401 and generic message', async () => {
       const res = await request(app.getHttpServer()).post('/api/v1/auth/login').send({
-        email: 'admin@findfunlinks.com',
+        email: 'admin@finallinks.com',
         password: 'WrongPassword123!',
       });
 
@@ -123,7 +123,7 @@ describe('Auth, RBAC & Ownership Security (E2E)', () => {
 
     it('Account Lockout - triggers lockout after repeated failed attempts', async () => {
       // Create a throwaway user for lockout test
-      const throwawayEmail = 'lockout_target@findfunlinks.com';
+      const throwawayEmail = 'lockout_target@finallinks.com';
       const role = await prisma.role.findFirst();
       await prisma.user.upsert({
         where: { email: throwawayEmail },
@@ -185,7 +185,7 @@ describe('Auth, RBAC & Ownership Security (E2E)', () => {
 
     it('POST /api/v1/auth/accept-invite - accepts 24h expiring invite token and sets password', async () => {
       // Create an invited user
-      const inviteEmail = 'invited_owner@findfunlinks.com';
+      const inviteEmail = 'invited_owner@finallinks.com';
       const role = await prisma.role.findUnique({ where: { name: 'Website Owner' } });
       const invitedUser = await prisma.user.upsert({
         where: { email: inviteEmail },
@@ -241,14 +241,14 @@ describe('Auth, RBAC & Ownership Security (E2E)', () => {
     beforeAll(async () => {
       // Log in as Super Admin to get fresh token
       const adminLogin = await request(app.getHttpServer()).post('/api/v1/auth/login').send({
-        email: 'admin@findfunlinks.com',
+        email: 'admin@finallinks.com',
         password: 'SuperAdminSecretPass123!',
       });
       superAdminAccessToken = adminLogin.body.data.accessToken;
 
       // Log in as Website Owner to get owner token
       const ownerLogin = await request(app.getHttpServer()).post('/api/v1/auth/login').send({
-        email: 'owner_test@findfunlinks.com',
+        email: 'owner_test@finallinks.com',
         password: 'OwnerSecurePassword2026!',
       });
       ownerAccessToken = ownerLogin.body.data.accessToken;
@@ -317,10 +317,10 @@ describe('Auth, RBAC & Ownership Security (E2E)', () => {
       // Create Owner B and Website B
       const ownerRole = await prisma.role.findUnique({ where: { name: 'Website Owner' } });
       ownerB = await prisma.user.upsert({
-        where: { email: 'owner_b@findfunlinks.com' },
+        where: { email: 'owner_b@finallinks.com' },
         update: {},
         create: {
-          email: 'owner_b@findfunlinks.com',
+          email: 'owner_b@finallinks.com',
           name: 'Owner B',
           passwordHash: await argon2.hash('OwnerBPassword2026!'),
           roleId: ownerRole!.id,

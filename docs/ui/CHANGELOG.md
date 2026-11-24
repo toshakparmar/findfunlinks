@@ -1,4 +1,4 @@
-# UI Redesign Changelog — FindFunLinks Main Website
+# UI Redesign Changelog — FinalLinks Main Website
 
 ## Overview
 

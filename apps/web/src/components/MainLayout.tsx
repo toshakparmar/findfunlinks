@@ -12,7 +12,9 @@ import { MobileMenu } from './MobileMenu';
 import { SiteDomainsDrawer, SiteDetailModalData } from './SiteDomainsDrawer';
 import { ReportModal } from './ReportModal';
 import { ScrollProgressBar } from './ScrollProgressBar';
+import { GlobalNavigationLoader } from './GlobalNavigationLoader';
 import { useSearch } from '../lib/search-context';
+import { useWebsiteModal } from '../lib/website-modal-context';
 import { CLIENT_18_CATEGORIES } from '../lib/client-catalog';
 
 interface MainLayoutProps {
@@ -21,6 +23,7 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const { reportModalWebsite, setReportModalWebsite } = useSearch();
+  const { openWebsiteModal } = useWebsiteModal();
 
   const { resolvedTheme, setTheme } = useTheme();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -88,23 +91,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   const handleSelectSearchResult = (item: SearchResultItem) => {
     setIsSearchOpen(false);
-    // Find full site details for drawer
-    for (const cat of CLIENT_18_CATEGORIES) {
-      const match = cat.sites.find((s) => s.id === item.id || s.slug === item.slug);
-      if (match) {
-        setActiveSiteDrawer({
-          id: match.id,
-          name: match.name,
-          displayName: match.displayName,
-          slug: match.slug,
-          faviconUrl: match.faviconUrl,
-          categoryName: cat.name,
-          accentColor: cat.themeColor || '#3B82F6',
-          domains: match.domains || [],
-        });
-        return;
-      }
-    }
+    openWebsiteModal(item.slug);
   };
 
   const pathname = usePathname();
@@ -112,8 +99,11 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen bg-[var(--bg,#050A18)] text-[var(--text,#F1F5F9)] flex flex-col font-sans selection:bg-[var(--primary,#2563EB)]/30 selection:text-white">
-      {/* 0. Top Reading / Scroll Progress Bar */}
+      {/* 0. Top Reading / Scroll Progress Bar & Route Navigation Loader */}
       <ScrollProgressBar />
+      <React.Suspense fallback={null}>
+        <GlobalNavigationLoader />
+      </React.Suspense>
 
       {/* 1. Sticky Site Header (Desktop & Mobile) */}
       <SiteHeader
@@ -130,7 +120,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
         {/* Content Column */}
         <div className="flex-1 flex flex-col min-w-0">
-          <main className="flex-1 p-3 sm:p-5 lg:p-6 pb-20 lg:pb-8 w-full max-w-[1560px] mx-auto">
+          <main className="flex-1 p-2 sm:p-4 md:p-5 lg:p-6 pb-20 lg:pb-8 w-full max-w-[1560px] mx-auto">
             {children}
           </main>
           <SiteFooter />

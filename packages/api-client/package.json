@@ -1,5 +1,5 @@
 {
-  "name": "@findfunlinks/api-client",
+  "name": "@finallinks/api-client",
   "version": "0.1.0",
   "private": true,
   "main": "./dist/index.js",
@@ -12,10 +12,10 @@
     "test": "tsc && node --test test/client.test.mjs"
   },
   "dependencies": {
-    "@findfunlinks/contracts": "workspace:*"
+    "@finallinks/contracts": "workspace:*"
   },
   "devDependencies": {
-    "@findfunlinks/config": "workspace:*",
+    "@finallinks/config": "workspace:*",
     "typescript": "^5.7.3"
   }
 }

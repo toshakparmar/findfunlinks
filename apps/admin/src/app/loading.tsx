@@ -1,13 +1,10 @@
 import React from 'react';
-import { Loader2 } from 'lucide-react';
+import { CircularLoader } from '@finallinks/ui';
 
 export default function Loading() {
   return (
-    <div className="min-h-[50vh] flex items-center justify-center text-[#F1F5F9]">
-      <div className="flex flex-col items-center gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-[#3B82F6]" />
-        <p className="text-xs text-[#A8B3C7]">Loading...</p>
-      </div>
+    <div className="fixed inset-0 z-[9998] flex flex-col items-center justify-center bg-[#16181B]/60 backdrop-blur-[2px]">
+      <CircularLoader size="xl" label="Loading" color="#0B9DF7" />
     </div>
   );
 }

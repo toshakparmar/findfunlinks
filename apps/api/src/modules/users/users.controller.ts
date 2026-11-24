@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Patch,
   Delete,
   Param,
@@ -10,7 +11,7 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { UsersService } from './users.service';
+import { UsersService, CreateOwnerUserInput } from './users.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../common/guards/permissions.guard';
 import { RequirePermissions } from '../../common/decorators/permissions.decorator';
@@ -32,6 +33,13 @@ export class UsersController {
     @Query('search') search?: string,
   ) {
     return this.usersService.findAll(page ? Number(page) : 1, limit ? Number(limit) : 20, search);
+  }
+
+  @Post()
+  @RequirePermissions('user.create')
+  @ApiOperation({ summary: 'Create a new Website Owner user and optionally provision their website' })
+  async create(@Body() body: CreateOwnerUserInput) {
+    return this.usersService.createOwnerUser(body);
   }
 
   @Get(':id')

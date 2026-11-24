@@ -3,7 +3,7 @@ import { FALLBACK_CATEGORIES, FALLBACK_WEBSITES } from '../lib/directory-data';
 import { api } from '../lib/api';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://findfunlinks.com';
+  const baseUrl = 'https://finallinks.com';
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {

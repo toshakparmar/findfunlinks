@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Logo } from '@findfunlinks/ui';
+import { Logo } from '@finallinks/ui';
 import { ThemeToggle } from './ThemeToggle';
 import { Menu, X, PlusCircle, Compass, FolderGit2, Info } from 'lucide-react';
 
@@ -24,9 +24,9 @@ export function Navbar() {
         <Link
           href="/"
           className="flex items-center gap-2 group transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg"
-          aria-label="FindFunLinks Home"
+          aria-label="FinalLinks Home"
         >
-          <Logo variant="auto" className="h-8 w-auto transition-transform group-hover:scale-105" />
+          <Logo variant="full" theme="auto" className="h-8 w-auto transition-transform group-hover:scale-105" />
         </Link>
 
         {/* Desktop Navigation */}

@@ -1,7 +1,8 @@
 {
-  "extends": "@findfunlinks/config/tsconfig.base.json",
+  "extends": "@finallinks/config/tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "moduleResolution": "bundler",
     "module": "ESNext",
     "declaration": true,

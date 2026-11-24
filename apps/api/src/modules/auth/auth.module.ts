@@ -12,7 +12,7 @@ import { OwnerScopeGuard } from '../../common/guards/owner-scope.guard';
     JwtModule.register({
       secret:
         process.env.JWT_ACCESS_SECRET ||
-        'super_secret_access_key_min_32_characters_random_findfunlinks',
+        'super_secret_access_key_min_32_characters_random_finallinks',
       signOptions: {
         expiresIn: (process.env.JWT_EXPIRES_IN || '15m') as `${number}${'s' | 'm' | 'h' | 'd'}`,
       },

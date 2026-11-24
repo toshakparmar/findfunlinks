@@ -79,7 +79,7 @@ export class HealthCheckService {
           method,
           timeout: this.timeoutMs,
           headers: {
-            'User-Agent': 'FindFunLinks-HealthCheck/1.0 (+https://findfunlinks.com)',
+            'User-Agent': 'FinalLinks-HealthCheck/1.0 (+https://finallinks.com)',
             Accept: '*/*',
           },
         },

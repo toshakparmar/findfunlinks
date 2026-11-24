@@ -89,6 +89,26 @@ module.exports = {
           foreground: 'hsl(var(--card-foreground))',
         },
       },
+      fontSize: {
+        // Explicit type scale tokens (Iteration 3)
+        'fs-xs': ['var(--fs-xs, 0.8125rem)', { lineHeight: '1.4' }],
+        'fs-sm': ['var(--fs-sm, 0.875rem)', { lineHeight: '1.45' }],
+        'fs-base': ['var(--fs-base, 1rem)', { lineHeight: '1.5' }],
+        'fs-md': ['var(--fs-md, 1.0625rem)', { lineHeight: '1.5' }],
+        'fs-lg': ['var(--fs-lg, 1.25rem)', { lineHeight: '1.35' }],
+        'fs-xl': ['var(--fs-xl, 1.5rem)', { lineHeight: '1.3' }],
+        'fs-2xl': ['var(--fs-2xl, clamp(1.75rem, 3vw, 2.25rem))', { lineHeight: '1.2' }],
+        'fs-3xl': ['var(--fs-3xl, clamp(2rem, 4vw, 2.75rem))', { lineHeight: '1.2' }],
+        // Standard tailwind classes aligned to minimum 13px (0.8125rem)
+        xs: ['0.8125rem', { lineHeight: '1.4' }],
+        sm: ['0.875rem', { lineHeight: '1.45' }],
+        base: ['1rem', { lineHeight: '1.5' }],
+        md: ['1.0625rem', { lineHeight: '1.5' }],
+        lg: ['1.25rem', { lineHeight: '1.35' }],
+        xl: ['1.5rem', { lineHeight: '1.3' }],
+        '2xl': ['clamp(1.75rem, 3vw, 2.25rem)', { lineHeight: '1.2' }],
+        '3xl': ['clamp(2rem, 4vw, 2.75rem)', { lineHeight: '1.2' }],
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',

@@ -146,7 +146,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ categories, className = '' }) 
             <PlusCircle className="w-3.5 h-3.5 text-[var(--primary,#2563EB)]" />
             <span>Own a website?</span>
           </div>
-          <div className="flex items-center justify-between text-[11px] text-[var(--text-2,#A8B3C7)] group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+          <div className="flex items-center justify-between text-fs-xs text-[var(--text-2,#A8B3C7)] group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
             <span className="font-medium text-[var(--brand-link,#3B82F6)]">Get listed</span>
             <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
           </div>

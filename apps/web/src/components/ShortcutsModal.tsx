@@ -50,14 +50,14 @@ export function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps) {
           {shortcuts.map((s) => (
             <div key={s.key} className="flex items-center justify-between py-2.5">
               <span className="text-token/70">{s.desc}</span>
-              <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-token/15 font-mono text-[11px] text-token font-medium">
+              <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-token/15 font-mono text-fs-xs text-token font-medium">
                 {s.key}
               </kbd>
             </div>
           ))}
         </div>
 
-        <div className="pt-2 text-center text-[11px] text-token/40 font-mono">
+        <div className="pt-2 text-center text-fs-xs text-token/40 font-mono">
           Press <kbd className="px-1 py-0.5 rounded bg-surface-2 border border-token/15">ESC</kbd>{' '}
           to dismiss
         </div>

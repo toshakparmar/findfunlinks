@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { ShieldAlert, Mail } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'DMCA & Copyright Takedown Policy | FindFunLinks',
+  title: 'DMCA & Copyright Takedown Policy | FinalLinks',
   description:
     'Digital Millennium Copyright Act compliance, copyright infringement notification procedure, and designated agent contact.',
 };
@@ -26,9 +26,9 @@ export default function DmcaPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">1. Overview & Disclaimer</h2>
           <p>
-            FindFunLinks (<strong>findfunlinks.com</strong>) respects the intellectual property
-            rights of creators and copyright holders. FindFunLinks is a search directory and index
-            of publicly available third-party websites. FindFunLinks does <strong>not</strong> host,
+            FinalLinks (<strong>finallinks.com</strong>) respects the intellectual property
+            rights of creators and copyright holders. FinalLinks is a search directory and index
+            of publicly available third-party websites. FinalLinks does <strong>not</strong> host,
             store, stream, or distribute any copyrighted files, multimedia, or proprietary software
             on its own servers.
           </p>
@@ -36,7 +36,7 @@ export default function DmcaPage() {
             The directory merely indexes hyperlinks to external web destinations. Because we do not
             control the content hosted by third-party web operators, we strongly recommend directing
             takedown notices to the actual hosting provider or registrar of the destination website.
-            However, if a directory listing on FindFunLinks links to copyright-infringing content,
+            However, if a directory listing on FinalLinks links to copyright-infringing content,
             we will expeditiously remove or disable access to that directory listing upon receipt of
             a compliant notice.
           </p>
@@ -62,10 +62,10 @@ export default function DmcaPage() {
               works.
             </li>
             <li>
-              Identification of the specific listing, URL, or domain on FindFunLinks that is claimed
+              Identification of the specific listing, URL, or domain on FinalLinks that is claimed
               to be infringing or to be the subject of infringing activity, and information
               reasonably sufficient to permit us to locate the material (e.g., direct URL to the
-              listing on FindFunLinks).
+              listing on FinalLinks).
             </li>
             <li>
               Information reasonably sufficient to permit us to contact the complaining party, such
@@ -94,17 +94,17 @@ export default function DmcaPage() {
           </p>
           <div className="text-xs font-mono bg-muted p-3 rounded-lg border border-border/60 text-foreground space-y-1">
             <p>
-              <strong>Designated Agent:</strong> FindFunLinks Legal & Compliance Officer
+              <strong>Designated Agent:</strong> FinalLinks Legal & Compliance Officer
             </p>
             <p>
-              <strong>Email:</strong> dmca@findfunlinks.com
+              <strong>Email:</strong> dmca@finallinks.com
             </p>
             <p>
               <strong>Subject Line:</strong> DMCA Copyright Takedown Request — [Website Name]
             </p>
           </div>
           <p className="text-xs text-muted-foreground">
-            Upon receipt of a valid and complete notification, FindFunLinks will take appropriate
+            Upon receipt of a valid and complete notification, FinalLinks will take appropriate
             action, which may include removing the listing or disabling the specified mirror links
             within 48 business hours.
           </p>

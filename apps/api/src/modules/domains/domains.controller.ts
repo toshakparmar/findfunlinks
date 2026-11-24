@@ -25,7 +25,7 @@ import {
   UpdateDomainInput,
   ReorderDomainsSchema,
   ReorderDomainsInput,
-} from '@findfunlinks/contracts';
+} from '@finallinks/contracts';
 
 @ApiTags('Domains')
 @Controller('domains')

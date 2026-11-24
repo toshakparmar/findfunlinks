@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
+import { MailService } from '../mail/mail.service';
 import * as argon2 from 'argon2';
 import { randomBytes, createHash } from 'crypto';
 import {
@@ -15,7 +16,7 @@ import {
   ResetPasswordInput,
   ChangePasswordInput,
   UserProfile,
-} from '@findfunlinks/contracts';
+} from '@finallinks/contracts';
 import { TokenType, UserStatus } from '@prisma/client';
 import { Request } from 'express';
 
@@ -27,6 +28,7 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   private hashToken(token: string): string {
@@ -75,8 +77,8 @@ export class AuthService {
       const allowedSeedPasswords = [
         process.env.SUPER_ADMIN_PASSWORD || 'SuperAdminSecretPass123!',
         'SuperAdminSecretPass123!',
-        'Findfunlinks@123',
-        'Findfunlinks@123!',
+        'Finallinks@123',
+        'Finallinks@123!',
         'admin123456',
         'Admin@123456',
       ];
@@ -110,6 +112,16 @@ export class AuthService {
       });
 
       throw new UnauthorizedException('Invalid email or password');
+    }
+
+    // Check temporary password TTL (72 hours)
+    if (user.mustChangePassword) {
+      const TEMP_PASSWORD_TTL_MS = 72 * 60 * 60 * 1000;
+      if (Date.now() - new Date(user.updatedAt).getTime() > TEMP_PASSWORD_TTL_MS) {
+        throw new UnauthorizedException(
+          'Temporary password has expired (72 hours limit). Please use Forgot Password or contact support.',
+        );
+      }
     }
 
     // Reset failed attempts on success
@@ -323,7 +335,19 @@ export class AuthService {
       },
     });
 
-    // In local dev/Mailpit or via queue, this would be sent
+    // Send password reset email
+    const webUrl =
+      process.env.ADMIN_PANEL_URL ||
+      process.env.WEB_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      'http://localhost:3001';
+    const resetUrl = `${webUrl}/reset-password?token=${rawToken}`;
+    try {
+      await this.mailService.sendPasswordResetEmail(user.email, user.name, resetUrl);
+    } catch {
+      // Handled in mail service
+    }
+
     return {
       message: 'If an account exists with this email, a reset link has been sent.',
       // Expose reset token only in development for convenience / testing
@@ -392,6 +416,12 @@ export class AuthService {
       },
     });
 
+    try {
+      await this.mailService.sendPasswordChangedEmail(user.email, user.name);
+    } catch {
+      // Handled in mail service
+    }
+
     return { message: 'Password changed successfully' };
   }
 
@@ -427,7 +457,7 @@ export class AuthService {
     return this.jwtService.signAsync(payload, {
       secret:
         process.env.JWT_ACCESS_SECRET ||
-        'super_secret_access_key_min_32_characters_random_findfunlinks',
+        'super_secret_access_key_min_32_characters_random_finallinks',
       expiresIn: (process.env.JWT_EXPIRES_IN || '15m') as `${number}${'s' | 'm' | 'h' | 'd'}`,
     });
   }

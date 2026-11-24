@@ -20,9 +20,9 @@ COPY apps/api/ ./apps/api/
 RUN pnpm install --frozen-lockfile
 
 # Generate Prisma client and build contracts + api
-RUN pnpm --filter @findfunlinks/contracts build
+RUN pnpm --filter @finallinks/contracts build
 RUN npx prisma generate --schema=apps/api/prisma/schema.prisma
-RUN pnpm --filter @findfunlinks/api build
+RUN pnpm --filter @finallinks/api build
 
 # Stage 3: Runner
 FROM node:22-alpine AS runner

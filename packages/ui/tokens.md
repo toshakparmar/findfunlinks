@@ -1,4 +1,4 @@
-# FindFunLinks — Design Tokens Reference (Sampled & Measured)
+# FinalLinks — Design Tokens Reference (Sampled & Measured)
 
 This document records the exact measured token values sampled from the approved client reference images (`docs/design-reference/desktop-home.png` and `docs/design-reference/mobile-home.png`).
 
@@ -26,7 +26,7 @@ This document records the exact measured token values sampled from the approved 
 | ------------- | ----------------- | ------------------------- | ----------------------------------------- |
 | Primary Brand | `--primary`       | `#2563EB`                 | Active nav pill fill, primary CTA buttons |
 | Primary Hover | `--primary-hover` | `#1D4ED8`                 | Hover state for primary buttons           |
-| Brand Link    | `--brand-link`    | `#3B82F6`                 | "Links" in FindFunLinks wordmark          |
+| Brand Link    | `--brand-link`    | `#3B82F6`                 | "Links" in FinalLinks wordmark          |
 | Focus Ring    | `--focus-ring`    | `rgba(59, 130, 246, 0.6)` | Keyboard accessibility focus indicator    |
 | Status OK     | `--ok`            | `#22C55E`                 | Active mirrors, healthy response times    |
 | Status Warn   | `--warn`          | `#F59E0B`                 | Degraded latency, pending items           |

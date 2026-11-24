@@ -21,7 +21,7 @@ import {
   CreateCategoryInput,
   UpdateCategorySchema,
   UpdateCategoryInput,
-} from '@findfunlinks/contracts';
+} from '@finallinks/contracts';
 
 @ApiTags('Categories')
 @Controller('categories')

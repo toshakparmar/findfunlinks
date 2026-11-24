@@ -1,21 +1,20 @@
-# FindFunLinks — System Architecture Specification
+# FinalLinks — System Architecture Specification
 
 ## 1. Executive Summary & Monorepo Organization
 
-FindFunLinks is an enterprise-grade curated web directory with automated mirror discovery and real-time uptime monitoring. Built as a high-performance monorepo using **Turborepo** and **pnpm workspaces**, it enforces strict architectural boundaries, contract-first API design, and multi-layered defense-in-depth security.
+FinalLinks is an enterprise-grade curated web directory with automated mirror discovery and real-time uptime monitoring. Built as a high-performance monorepo using **Turborepo** and **pnpm workspaces**, it enforces strict architectural boundaries, contract-first API design, and multi-layered defense-in-depth security.
 
 ```
-findfunlinks/
+finallinks/
 ├── apps/
 │   ├── web/             # Public directory website (Next.js 15 App Router, Tailwind CSS, Framer Motion, GSAP)
-│   ├── admin/           # Super Admin operations console (Next.js 15, Radix UI, TanStack Table)
-│   ├── owner/           # Website Owner management portal (Next.js 15, Mirror manager, Profile editor)
+│   ├── admin/           # Unified Management & Owner Console (Next.js 15, Radix UI, TanStack Table, RBAC)
 │   └── api/             # Backend REST service (NestJS 11, Fastify, PostgreSQL 17, Prisma ORM, Redis 7, BullMQ)
 ├── packages/
 │   ├── config/          # Shared ESLint, Prettier, TypeScript, and Tailwind configurations
 │   ├── contracts/       # Single source of truth: Zod schemas, TypeScript types, DTOs, and RBAC enums
 │   ├── ui/              # Shared UI design tokens, brand SVG logos, Status badges, and BaseButton primitives
-│   └── api-client/      # Type-safe isomorphic HTTP client generated on top of @findfunlinks/contracts
+│   └── api-client/      # Type-safe isomorphic HTTP client generated on top of @finallinks/contracts
 ├── infra/
 │   ├── docker/          # Local development backing services (PostgreSQL 17, Redis 7, Mailpit)
 │   ├── nginx/           # Production reverse proxy, SSL/TLS termination, rate limiting, and security headers
@@ -31,8 +30,7 @@ findfunlinks/
 flowchart TD
     subgraph Clients["Frontend Clients (Next.js 15 App Router)"]
         WEB["Public Directory (apps/web)<br/>Port 3000 | ISR & SSR"]
-        ADMIN["Super Admin Console (apps/admin)<br/>Port 3001 | CSR & RBAC"]
-        OWNER["Website Owner Portal (apps/owner)<br/>Port 3002 | Single-Tenant Scope"]
+        ADMIN["Unified Console (apps/admin)<br/>Port 3001 | CSR & RBAC for Admin & Owners"]
     end
 
     subgraph Edge["Edge & Ingress (infra/nginx)"]
@@ -54,7 +52,6 @@ flowchart TD
 
     WEB --> NGINX
     ADMIN --> NGINX
-    OWNER --> NGINX
     NGINX --> NEST
 
     NEST --> AUTH_M
@@ -140,7 +137,7 @@ erDiagram
 
 ## 4. Mirror Discovery & Fallback Resolution Model
 
-FindFunLinks solves link rot and regional ISP blocks by maintaining an active mirror mesh for each curated website:
+FinalLinks solves link rot and regional ISP blocks by maintaining an active mirror mesh for each curated website:
 
 1. **Hierarchy & Priority:**
    - Each `Website` maintains a collection of `Domain` records.
@@ -170,7 +167,7 @@ flowchart TD
     PARSE --> DNS["3. DNS Lookup (A/AAAA)<br/>Resolves all IP endpoints"]
     DNS --> CIDR{"4. Private Subnet Check<br/>10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16<br/>127.0.0.0/8, 169.254.169.254, ::1, fc00::/7"}
     CIDR -- "Is Private / Reserved" --> BLOCK["REJECT WITH 403 FORBIDDEN<br/>Audit Log Security Violation"]
-    CIDR -- "Is Public IP" --> HTTP["5. Safe HTTP Client<br/>5s Timeout | Max 3 Redirects | User-Agent: FindFunLinks-HealthCheck/1.0"]
+    CIDR -- "Is Public IP" --> HTTP["5. Safe HTTP Client<br/>5s Timeout | Max 3 Redirects | User-Agent: FinalLinks-HealthCheck/1.0"]
     HTTP --> REDIR{"Redirect Returned?"}
     REDIR -- Yes --> PROTO
     REDIR -- No --> RESULT["Record Status, Latency & Update DB"]

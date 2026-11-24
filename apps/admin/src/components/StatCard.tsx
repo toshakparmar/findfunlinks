@@ -6,8 +6,10 @@ interface StatCardProps {
   value: string | number;
   icon: LucideIcon;
   description?: string;
+  subtitle?: string; // alias for description
   trend?: string;
   color?: 'blue' | 'orange' | 'emerald' | 'rose';
+  variant?: 'default' | 'success' | 'danger' | 'warning';
 }
 
 export function StatCard({
@@ -15,33 +17,42 @@ export function StatCard({
   value,
   icon: Icon,
   description,
+  subtitle,
   trend,
   color = 'blue',
+  variant,
 }: StatCardProps) {
+  let effectiveColor = color;
+  if (variant === 'success') effectiveColor = 'emerald';
+  else if (variant === 'danger') effectiveColor = 'rose';
+  else if (variant === 'warning') effectiveColor = 'orange';
+
   const colorMap = {
-    blue: 'bg-[#2563EB]/15 text-[#3B82F6] border-[#2563EB]/30',
+    blue: 'bg-[#0B9DF7]/15 text-[#0B9DF7] border-[#0B9DF7]/30',
     orange: 'bg-[#F59E0B]/15 text-[#F59E0B] border-[#F59E0B]/30',
     emerald: 'bg-[#22C55E]/15 text-[#22C55E] border-[#22C55E]/30',
     rose: 'bg-[#EF4444]/15 text-[#EF4444] border-[#EF4444]/30',
   };
 
+  const descText = description || subtitle;
+
   return (
-    <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] p-5 shadow-sm space-y-3 transition-colors hover:border-[#1A2442]/80 hover:bg-[#0E182F]">
+    <div className="rounded-xl border border-[#33373D] bg-[#1E2024] p-5 shadow-sm space-y-3 transition-colors hover:border-[#4B5563] hover:bg-[#26292F]">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold text-[#A8B3C7] uppercase tracking-wider">
+        <span className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">
           {title}
         </span>
-        <div className={`p-2 rounded-xl border ${colorMap[color]}`}>
+        <div className={`p-2.5 rounded-lg border ${colorMap[effectiveColor]}`}>
           <Icon className="h-4 w-4" />
         </div>
       </div>
 
       <div>
-        <div className="text-2xl font-black text-[#F1F5F9]">{value}</div>
-        {(description || trend) && (
-          <p className="text-xs text-[#A8B3C7] mt-1">
-            {trend && <span className="font-semibold text-[#F1F5F9] mr-1">{trend}</span>}
-            {description}
+        <div className="text-3xl font-bold text-[#F3F4F6] tracking-tight">{value}</div>
+        {(descText || trend) && (
+          <p className="text-xs text-[#9CA3AF] mt-1.5 flex items-center gap-1.5">
+            {trend && <span className="font-semibold text-[#F3F4F6]">{trend}</span>}
+            <span>{descText}</span>
           </p>
         )}
       </div>

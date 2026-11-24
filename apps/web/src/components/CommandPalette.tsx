@@ -160,7 +160,7 @@ export function CommandPalette({
               <X className="w-4 h-4" />
             </button>
           ) : (
-            <kbd className="px-2 py-0.5 text-[10px] font-mono rounded bg-surface-1 border border-token/20 text-token/50">
+            <kbd className="px-2 py-0.5 text-fs-xs font-mono rounded bg-surface-1 border border-token/20 text-token/50">
               ESC
             </kbd>
           )}
@@ -177,7 +177,7 @@ export function CommandPalette({
               {/* Websites section */}
               {matchedWebsites.length > 0 && (
                 <div className="pt-1">
-                  <div className="px-3 py-1 text-[11px] font-semibold text-token/40 uppercase tracking-wider font-mono">
+                  <div className="px-3 py-1 text-fs-xs font-semibold text-token/40 uppercase tracking-wider font-mono">
                     Websites & Working Mirrors
                   </div>
                   <div className="space-y-1 mt-1">
@@ -206,19 +206,19 @@ export function CommandPalette({
                           }`}
                         >
                           <div className="flex items-center gap-2.5 truncate">
-                            <div className="w-6 h-6 rounded-chip bg-surface-2 flex items-center justify-center shrink-0 border border-token/10 font-bold text-[10px]">
+                            <div className="w-6 h-6 rounded-chip bg-surface-2 flex items-center justify-center shrink-0 border border-token/10 font-bold text-fs-xs">
                               {site.name.charAt(0)}
                             </div>
                             <div className="truncate">
                               <span className="text-token font-medium">{site.name}</span>
-                              <span className="ml-2 text-[11px] text-token/40 font-mono">
+                              <span className="ml-2 text-fs-xs text-token/40 font-mono">
                                 {primaryHostname}
                               </span>
                             </div>
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
                             {site.domains && site.domains.length > 1 && (
-                              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono text-primary bg-primary/10">
+                              <span className="px-1.5 py-0.5 rounded text-fs-xs font-mono text-primary bg-primary/10">
                                 {site.domains.length} mirrors
                               </span>
                             )}
@@ -234,7 +234,7 @@ export function CommandPalette({
               {/* Categories Section */}
               {matchedCategories.length > 0 && (
                 <div className="pt-2">
-                  <div className="px-3 py-1 text-[11px] font-semibold text-token/40 uppercase tracking-wider font-mono">
+                  <div className="px-3 py-1 text-fs-xs font-semibold text-token/40 uppercase tracking-wider font-mono">
                     Directory Categories
                   </div>
                   <div className="space-y-1 mt-1">
@@ -265,7 +265,7 @@ export function CommandPalette({
                             <Globe className="w-4 h-4 text-accent" />
                             <span>{cat.name}</span>
                           </div>
-                          <span className="text-[10px] text-token/40 font-mono">
+                          <span className="text-fs-xs text-token/40 font-mono">
                             Jump to section
                           </span>
                         </div>
@@ -278,7 +278,7 @@ export function CommandPalette({
               {/* Pages Section */}
               {matchedPages.length > 0 && (
                 <div className="pt-2">
-                  <div className="px-3 py-1 text-[11px] font-semibold text-token/40 uppercase tracking-wider font-mono">
+                  <div className="px-3 py-1 text-fs-xs font-semibold text-token/40 uppercase tracking-wider font-mono">
                     Pages & Tools
                   </div>
                   <div className="space-y-1 mt-1">
@@ -310,7 +310,7 @@ export function CommandPalette({
                             <Icon className="w-4 h-4 text-token/50" />
                             <div>
                               <span>{pg.name}</span>
-                              <span className="ml-2 text-[11px] text-token/40">{pg.desc}</span>
+                              <span className="ml-2 text-fs-xs text-token/40">{pg.desc}</span>
                             </div>
                           </div>
                           <ArrowRight className="w-3.5 h-3.5 text-token/40" />
@@ -325,7 +325,7 @@ export function CommandPalette({
         </div>
 
         {/* Footer shortcuts */}
-        <div className="flex items-center justify-between px-4 py-2 border-t border-token/10 bg-surface-2/40 text-[11px] text-token/40 font-mono">
+        <div className="flex items-center justify-between px-4 py-2 border-t border-token/10 bg-surface-2/40 text-fs-xs text-token/40 font-mono">
           <div className="flex items-center gap-3">
             <span>
               <kbd className="px-1 py-0.5 rounded bg-surface-1 border border-token/20">↑</kbd>{' '}
@@ -337,7 +337,7 @@ export function CommandPalette({
               select
             </span>
           </div>
-          <span>FindFunLinks v2.0</span>
+          <span>FinalLinks v2.0</span>
         </div>
       </div>
     </div>

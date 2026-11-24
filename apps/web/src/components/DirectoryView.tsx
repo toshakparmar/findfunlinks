@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import { CategoryChips } from './CategoryChips';
+import React from 'react';
+import { CategoryTileStrip } from './CategoryTileStrip';
 import { CategoryCard, CategoryCardSiteItem } from './CategoryCard';
-import { SiteDomainsDrawer, SiteDetailModalData } from './SiteDomainsDrawer';
 import { useSearch } from '../lib/search-context';
+import { useWebsiteModal } from '../lib/website-modal-context';
 import { CLIENT_18_CATEGORIES } from '../lib/client-catalog';
 
 export interface DirectoryViewProps {
@@ -12,68 +12,78 @@ export interface DirectoryViewProps {
   websites?: any[];
 }
 
-export function DirectoryView(_props?: DirectoryViewProps) {
+export function DirectoryView(props?: DirectoryViewProps) {
   const { searchQuery } = useSearch();
-  const [selectedDrawerSite, setSelectedDrawerSite] = useState<SiteDetailModalData | null>(null);
+  const { openWebsiteModal } = useWebsiteModal();
 
-  // Home always renders all 18 categories in order
-  const visibleCategories = CLIENT_18_CATEGORIES;
+  // Dynamic categories from DB via props, fallback to client catalog
+  const visibleCategories = React.useMemo(() => {
+    if (props?.categories && props.categories.length > 0 && props?.websites && props.websites.length > 0) {
+      const mapped = props.categories.map((cat, catIdx) => {
+        if (!cat) return CLIENT_18_CATEGORIES[catIdx % CLIENT_18_CATEGORIES.length]!;
+        const catWebsites = props.websites!.filter(
+          (w) => w && (w.categoryId === cat.id || w.categorySlug === cat.slug) && (w.primaryDomainUrl || (w.domains && w.domains.length > 0))
+        );
+        if (catWebsites.length > 0) {
+          const fallbackCat = CLIENT_18_CATEGORIES.find((c) => c.slug === cat.slug);
+          return {
+            id: cat.id || fallbackCat?.id || `cat-${catIdx}`,
+            slug: cat.slug || fallbackCat?.slug || `cat-${catIdx}`,
+            name: cat.name || fallbackCat?.name || 'Category',
+            iconName: cat.iconName || fallbackCat?.iconName || 'PlaySquare',
+            accentKey: fallbackCat?.accentKey || 'accent-purple',
+            themeColor: cat.themeColor || fallbackCat?.themeColor || '#8B5CF6',
+            total: cat.count || catWebsites.length,
+            homeLimit: cat.homeLimit || fallbackCat?.homeLimit || 10,
+            sites: catWebsites.map((w, idx) => ({
+              id: w.id,
+              rank: idx + 1,
+              name: w.name,
+              displayName: w.name,
+              slug: w.slug,
+              faviconUrl:
+                w.logoUrl ||
+                `https://www.google.com/s2/favicons?domain=${w.primaryDomainUrl || `${w.slug}.com`}&sz=64`,
+              bestDomainUrl: w.primaryDomainUrl || w.domains?.[0]?.url || `https://${w.slug}.com`,
+              domainsCount: w.domains?.length || w.activeDomainsCount || 1,
+              domains: (w.domains || []).map((d: any) => ({
+                id: d.id,
+                domainName: d.hostname || d.url?.replace(/^https?:\/\//, '') || d.label,
+                url: d.url,
+                domainType: d.type || 'PRIMARY',
+                status: d.status || 'ACTIVE',
+                lastResponseMs: d.lastResponseMs || 80,
+              })),
+            })),
+          };
+        }
+        const fallbackCat = CLIENT_18_CATEGORIES.find((c) => c.slug === cat.slug);
+        return fallbackCat || CLIENT_18_CATEGORIES[catIdx % CLIENT_18_CATEGORIES.length]!;
+      });
+      return mapped.filter((c): c is typeof CLIENT_18_CATEGORIES[number] => Boolean(c && c.sites));
+    }
+    return CLIENT_18_CATEGORIES;
+  }, [props?.categories, props?.websites]);
 
   // Filter sites within category if search query active
   const q = searchQuery?.toLowerCase().trim() || '';
 
-  const handleSelectSite = (
-    site: CategoryCardSiteItem,
-    categoryName: string,
-    accentColor?: string,
-  ) => {
-    // Find complete site from catalog to populate drawer
-    for (const cat of CLIENT_18_CATEGORIES) {
-      const found = cat.sites.find((s) => s.id === site.id || s.slug === site.slug);
-      if (found) {
-        setSelectedDrawerSite({
-          id: found.id,
-          name: found.name,
-          displayName: found.displayName,
-          slug: found.slug,
-          faviconUrl: found.faviconUrl,
-          categoryName,
-          accentColor: accentColor || '#3B82F6',
-          domains: found.domains || [],
-        });
-        return;
-      }
-    }
-
-    // Fallback if not found in catalog
-    setSelectedDrawerSite({
-      id: site.id,
-      name: site.name,
-      displayName: site.displayName,
-      slug: site.slug,
-      faviconUrl: site.faviconUrl,
-      categoryName,
-      accentColor: accentColor || '#3B82F6',
-      domains: [
-        {
-          id: `${site.id}-primary`,
-          domainName: site.bestDomainUrl?.replace(/^https?:\/\//, '') || `${site.slug}.com`,
-          url: site.bestDomainUrl || `https://${site.slug}.com`,
-          domainType: 'PRIMARY',
-          status: 'ACTIVE',
-          lastResponseMs: 95,
-        },
-      ],
-    });
+  const handleSelectSite = (site: CategoryCardSiteItem) => {
+    openWebsiteModal(site.slug);
   };
 
   return (
     <div className="w-full space-y-4 md:space-y-6">
-      {/* 1. Mobile Horizontal Scroll Snap Category Chips */}
-      <CategoryChips />
+      {/* 1. Category Quick-Access Tile Strip (Section 4) */}
+      <CategoryTileStrip />
 
-      {/* 2. Responsive 2-Column Category Cards Grid (18 Cards) */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 xl:gap-5">
+      {/* 2. Responsive Category Cards Grid (Section 6) */}
+      <div
+        className="grid gap-4 md:gap-5"
+        style={{
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))',
+        }}
+      >
         {visibleCategories.map((cat) => {
           const matchingSites = q
             ? cat.sites.filter(
@@ -97,24 +107,15 @@ export function DirectoryView(_props?: DirectoryViewProps) {
                   total: cat.total,
                 }}
                 sites={matchingSites}
-                onSelectSite={(site) =>
-                  handleSelectSite(site, cat.name, cat.themeColor || undefined)
-                }
+                onSelectSite={handleSelectSite}
                 onExternalClick={(url) => {
-                  window.open(url, '_blank', 'noopener,noreferrer,nofollow');
+                  window.open(url, '_blank');
                 }}
               />
             </div>
           );
         })}
       </div>
-
-      {/* 3. Site Working Mirrors Drawer Modal */}
-      <SiteDomainsDrawer
-        isOpen={!!selectedDrawerSite}
-        onClose={() => setSelectedDrawerSite(null)}
-        site={selectedDrawerSite}
-      />
     </div>
   );
 }

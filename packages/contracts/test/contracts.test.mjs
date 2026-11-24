@@ -41,20 +41,20 @@ describe('Contracts & Validation Unit Tests', () => {
 
   describe('URL & Hostname Sanitization Patterns', () => {
     test('SafeUrlRegex validates standard HTTP and HTTPS URLs', () => {
-      assert.equal(SafeUrlRegex.test('https://findfunlinks.com'), true);
-      assert.equal(SafeUrlRegex.test('http://mirror1.findfunlinks.com/path?q=1'), true);
+      assert.equal(SafeUrlRegex.test('https://finallinks.com'), true);
+      assert.equal(SafeUrlRegex.test('http://mirror1.finallinks.com/path?q=1'), true);
       assert.equal(SafeUrlRegex.test('ftp://unsafe.com'), false);
       assert.equal(SafeUrlRegex.test('javascript:alert(1)'), false);
     });
 
     test('HostnameRegex validates proper hostnames', () => {
-      assert.equal(HostnameRegex.test('findfunlinks.com'), true);
+      assert.equal(HostnameRegex.test('finallinks.com'), true);
       assert.equal(HostnameRegex.test('sub.mirror.example.org'), true);
       assert.equal(HostnameRegex.test('invalid..hostname'), false);
     });
 
     test('isSafePublicUrl blocks private networks & SSRF vectors', () => {
-      assert.equal(isSafePublicUrl('https://findfunlinks.com'), true);
+      assert.equal(isSafePublicUrl('https://finallinks.com'), true);
       assert.equal(isSafePublicUrl('https://mygame.io/play'), true);
       assert.equal(isSafePublicUrl('http://localhost:3000'), false);
       assert.equal(isSafePublicUrl('http://127.0.0.1:8080'), false);
@@ -62,7 +62,7 @@ describe('Contracts & Validation Unit Tests', () => {
       assert.equal(isSafePublicUrl('http://10.0.0.5'), false);
       assert.equal(isSafePublicUrl('http://192.168.1.100'), false);
       assert.equal(isSafePublicUrl('http://172.16.0.1'), false);
-      assert.equal(isSafePublicUrl('http://user:pass@findfunlinks.com'), false);
+      assert.equal(isSafePublicUrl('http://user:pass@finallinks.com'), false);
     });
 
     test('isNonDisposableEmail rejects throwaway mail services', () => {
@@ -122,7 +122,7 @@ describe('Contracts & Validation Unit Tests', () => {
     });
 
     test('validates status check input schema', () => {
-      const valid = { ref: 'FFL-2026-000123', email: 'owner@site.com' };
+      const valid = { ref: 'FL-2026-000123', email: 'owner@site.com' };
       assert.equal(RegistrationStatusCheckSchema.safeParse(valid).success, true);
 
       const invalid = { ref: '', email: 'not-an-email' };

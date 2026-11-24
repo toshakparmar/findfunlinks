@@ -1,8 +1,9 @@
 {
-  "name": "@findfunlinks/web",
+  "name": "@finallinks/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node -e \"try { require('fs').rmSync('.next', { recursive: true, force: true }); } catch {}\"",
     "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start --port 3000",
@@ -11,9 +12,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@findfunlinks/api-client": "workspace:*",
-    "@findfunlinks/contracts": "workspace:*",
-    "@findfunlinks/ui": "workspace:*",
+    "@finallinks/api-client": "workspace:*",
+    "@finallinks/contracts": "workspace:*",
+    "@finallinks/ui": "workspace:*",
     "@hookform/resolvers": "^7.0.7",
     "clsx": "^2.1.1",
     "framer-motion": "^12.4.7",
@@ -28,7 +29,7 @@
     "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
-    "@findfunlinks/config": "workspace:*",
+    "@finallinks/config": "workspace:*",
     "@types/node": "^22.13.4",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",

@@ -15,7 +15,7 @@ import {
   Moon,
   PlusCircle,
 } from 'lucide-react';
-import { Logo } from '@findfunlinks/ui';
+import { Logo } from '@finallinks/ui';
 import { getActive, ActiveHeaderTab } from '../lib/nav';
 
 export interface SiteHeaderProps {
@@ -52,11 +52,11 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
   const { header: activeTab } = getActive(pathname || '/');
 
   return (
-    <header className="sticky top-0 z-40 w-full h-14 md:h-16 bg-[var(--header,#070D1E)] border-b border-[var(--line,#1A2442)] px-4 lg:px-6 flex items-center justify-between transition-colors">
+    <header className="sticky top-0 z-40 w-full h-14 md:h-16 bg-[var(--header,#070D1E)] border-b border-[var(--line,#1A2442)] px-2.5 sm:px-4 lg:px-6 flex items-center justify-between transition-colors">
       {/* Left: Brand Logo & Desktop Navigation */}
       <div className="flex items-center gap-6">
         <Link href="/" className="flex items-center gap-2 group select-none">
-          <Logo variant="auto" className="h-8 md:h-9 w-auto" />
+          <Logo variant="full" theme="auto" className="h-8 md:h-9 w-auto" />
         </Link>
 
         {/* Desktop Nav Pills */}

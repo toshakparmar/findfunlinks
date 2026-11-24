@@ -26,6 +26,9 @@ interface ApprovalResult {
   message: string;
   userId?: string;
   websiteId?: string;
+  tempPassword?: string;
+  loginUrl?: string;
+  inviteUrl?: string;
   rawInviteToken?: string;
   website?: { name: string; slug: string };
 }
@@ -48,6 +51,7 @@ function RegistrationsContent() {
   const [submittingAction, setSubmittingAction] = useState(false);
   const [approvalResult, setApprovalResult] = useState<ApprovalResult | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedPassword, setCopiedPassword] = useState(false);
 
   const fetchRegistrations = async () => {
     try {
@@ -84,7 +88,7 @@ function RegistrationsContent() {
       );
       setActionType(null);
       setSelectedItem(null);
-      if (res?.rawInviteToken) {
+      if (res?.rawInviteToken || res?.tempPassword) {
         setApprovalResult(res);
       }
       await fetchRegistrations();
@@ -136,9 +140,7 @@ function RegistrationsContent() {
   };
 
   const copyInviteUrl = (token: string) => {
-    const ownerUrl = window.location.origin.includes(':3001')
-      ? window.location.origin.replace(':3001', ':3002')
-      : window.location.origin;
+    const ownerUrl = window.location.origin;
     const fullUrl = `${ownerUrl}/accept-invite?token=${token}`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedLink(true);
@@ -146,13 +148,20 @@ function RegistrationsContent() {
     setTimeout(() => setCopiedLink(false), 3000);
   };
 
+  const copyPassword = (pwd: string) => {
+    navigator.clipboard.writeText(pwd);
+    setCopiedPassword(true);
+    toast.success('Temporary password copied to clipboard!');
+    setTimeout(() => setCopiedPassword(false), 3000);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[#F1F5F9] tracking-tight">Registration Queue</h1>
-          <p className="text-xs text-[#A8B3C7] mt-1">
+          <h1 className="text-2xl font-bold text-[#F3F4F6] tracking-tight">Registration Queue</h1>
+          <p className="text-sm text-[#9CA3AF] mt-1">
             Review applicant identity, verify website URLs, and approve owner credentials.
           </p>
         </div>
@@ -160,49 +169,84 @@ function RegistrationsContent() {
         <button
           type="button"
           onClick={fetchRegistrations}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9] transition-colors self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-4 h-11 rounded-lg border border-[#33373D] bg-[#1E2024] text-sm font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white transition-colors self-start sm:self-auto"
         >
-          <RotateCcw className="h-3.5 w-3.5" />
+          <RotateCcw className="h-4 w-4" />
           Refresh
         </button>
       </div>
 
-      {/* Approval Result Banner Modal */}
+      {/* Approval Result Banner */}
       {approvalResult && (
-        <div className="p-4 rounded-2xl border border-[#22C55E]/40 bg-[#22C55E]/10 space-y-3">
+        <div className="p-6 rounded-xl border border-emerald-500/30 bg-[#1E2024] space-y-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-[#22C55E]" />
-              <span className="font-bold text-sm text-[#F1F5F9]">Website Owner Provisioned</span>
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+              <span className="font-semibold text-base text-[#F3F4F6]">Website Owner Provisioned</span>
             </div>
             <button
               type="button"
               onClick={() => setApprovalResult(null)}
-              className="text-[#A8B3C7] hover:text-white"
+              className="text-[#9CA3AF] hover:text-white transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
-          <p className="text-xs text-[#A8B3C7] leading-relaxed">
-            The website and owner account have been created. An email invitation has been
-            dispatched. You can also manually provide the 24-hour setup link below:
+          <p className="text-sm text-[#9CA3AF] leading-relaxed">
+            The website and owner account have been created. Notification has been dispatched to the applicant.
+            Credentials and access details are provided below:
           </p>
+
+          {/* Temporary Password Card */}
+          {approvalResult.tempPassword && (
+            <div className="p-4 rounded-lg bg-[#26292F] border border-[#33373D] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-[#9CA3AF]">
+                  Temporary Password (72h Expiration)
+                </span>
+                <span className="text-xs text-amber-400 font-medium">Change required on first login</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  readOnly
+                  value={approvalResult.tempPassword}
+                  className="flex-1 h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-sm font-mono font-bold text-emerald-400 select-all tracking-wider"
+                />
+                <button
+                  type="button"
+                  onClick={() => copyPassword(approvalResult.tempPassword!)}
+                  className="inline-flex items-center gap-2 px-4 h-11 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors shrink-0"
+                >
+                  {copiedPassword ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  <span>{copiedPassword ? 'Copied' : 'Copy Password'}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Setup / Invite Link */}
           {approvalResult.rawInviteToken && (
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                readOnly
-                value={`${typeof window !== 'undefined' ? (window.location.origin.includes(':3001') ? window.location.origin.replace(':3001', ':3002') : window.location.origin) : 'http://localhost:3002'}/accept-invite?token=${approvalResult.rawInviteToken}`}
-                className="flex-1 rounded-xl border border-[#1A2442] bg-[#050A18] px-3 py-2 text-xs font-mono text-[#F1F5F9] select-all"
-              />
-              <button
-                type="button"
-                onClick={() => copyInviteUrl(approvalResult.rawInviteToken!)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all shrink-0"
-              >
-                {copiedLink ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                <span>{copiedLink ? 'Copied' : 'Copy Link'}</span>
-              </button>
+            <div className="p-4 rounded-lg bg-[#26292F] border border-[#33373D] space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#9CA3AF]">
+                Direct Single-Use Setup Link
+              </span>
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  readOnly
+                  value={`${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001'}/accept-invite?token=${approvalResult.rawInviteToken}`}
+                  className="flex-1 h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-sm font-mono text-[#D1D5DB] select-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => copyInviteUrl(approvalResult.rawInviteToken!)}
+                  className="inline-flex items-center gap-2 px-4 h-11 rounded-lg bg-[#0B9DF7] hover:bg-[#0987d6] text-white text-sm font-medium transition-colors shrink-0"
+                >
+                  {copiedLink ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  <span>{copiedLink ? 'Copied' : 'Copy Link'}</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -210,16 +254,16 @@ function RegistrationsContent() {
 
       {/* Filter Tabs & Search Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
           {['ALL', 'PENDING', 'CHANGES_REQUESTED', 'APPROVED', 'REJECTED'].map((st) => (
             <button
               key={st}
               type="button"
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
+              className={`px-4 h-11 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 statusFilter === st
-                  ? 'bg-[#2563EB] text-white shadow-sm'
-                  : 'border border-[#1A2442] bg-[#0A1226] text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]'
+                  ? 'bg-[#0B9DF7] text-white'
+                  : 'border border-[#33373D] bg-[#1E2024] text-[#9CA3AF] hover:bg-[#26292F] hover:text-white'
               }`}
             >
               {st.replace(/_/g, ' ')}
@@ -227,45 +271,45 @@ function RegistrationsContent() {
           ))}
         </div>
 
-        <div className="relative min-w-[240px]">
-          <Search className="h-4 w-4 text-[#6B7893] absolute left-3 top-2.5" />
+        <div className="relative min-w-[280px]">
+          <Search className="h-4 w-4 text-[#6B7280] absolute left-3.5 top-3.5" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && fetchRegistrations()}
             placeholder="Search applicant, site, or URL..."
-            className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] pl-9 pr-3.5 py-2 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-colors"
+            className="w-full h-11 rounded-lg border border-[#33373D] bg-[#1E2024] pl-10 pr-4 text-sm text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] transition-colors"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-2xl border border-[#1A2442] bg-[#0A1226] shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-[#33373D] bg-[#1E2024] overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
+            <Loader2 className="h-7 w-7 animate-spin text-[#0B9DF7]" />
           </div>
         ) : registrations.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-[#1A2442] bg-[#070D1E] text-[#A8B3C7]">
-                  <th className="py-3 px-4 font-semibold">Website</th>
-                  <th className="py-3 px-4 font-semibold">Applicant</th>
-                  <th className="py-3 px-4 font-semibold">Status</th>
-                  <th className="py-3 px-4 font-semibold">Submitted</th>
-                  <th className="py-3 px-4 font-semibold text-right">Actions</th>
+                <tr className="border-b border-[#33373D] bg-[#16181B] text-[#9CA3AF]">
+                  <th className="py-3 px-4 font-medium">Website</th>
+                  <th className="py-3 px-4 font-medium">Applicant</th>
+                  <th className="py-3 px-4 font-medium">Status</th>
+                  <th className="py-3 px-4 font-medium">Submitted</th>
+                  <th className="py-3 px-4 font-medium text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1A2442]/60">
+              <tbody className="divide-y divide-[#33373D]">
                 {registrations.map((reg) => (
-                  <tr key={reg.id} className="hover:bg-[#0E182F] transition-colors">
-                    <td className="py-3.5 px-4 font-semibold text-[#F1F5F9]">
+                  <tr key={reg.id} className="hover:bg-[#26292F] transition-colors">
+                    <td className="py-3.5 px-4 font-medium text-[#F3F4F6]">
                       <div className="flex items-center gap-2">
                         <span>{reg.websiteName}</span>
                         {reg.referenceId && (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30">
+                          <span className="px-2 py-0.5 rounded text-xs font-mono bg-[#26292F] text-[#0B9DF7] border border-[#33373D]">
                             {reg.referenceId}
                           </span>
                         )}
@@ -274,26 +318,26 @@ function RegistrationsContent() {
                         href={reg.primaryUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] font-mono text-[#3B82F6] hover:underline inline-flex items-center gap-1 truncate max-w-xs"
+                        className="text-xs font-mono text-[#0B9DF7] hover:underline inline-flex items-center gap-1 truncate max-w-xs mt-1"
                       >
                         {reg.primaryUrl}
                         <ExternalLink className="h-3 w-3 shrink-0" />
                       </a>
                     </td>
 
-                    <td className="py-3.5 px-4 text-[#A8B3C7]">
-                      <div className="font-medium text-[#F1F5F9] flex items-center gap-1.5">
+                    <td className="py-3.5 px-4 text-[#9CA3AF]">
+                      <div className="font-medium text-[#F3F4F6] flex items-center gap-2">
                         <span>{reg.applicantName}</span>
                         {reg.applicantRole && (
-                          <span className="text-[10px] font-semibold text-[#A8B3C7] bg-[#1A2442] px-1.5 py-0.2 rounded">
+                          <span className="text-[11px] font-medium text-[#9CA3AF] bg-[#26292F] px-1.5 py-0.5 rounded border border-[#33373D]">
                             {reg.applicantRole}
                           </span>
                         )}
                       </div>
-                      <div className="text-[11px]">{reg.applicantEmail}</div>
+                      <div className="text-xs text-[#9CA3AF] mt-0.5">{reg.applicantEmail}</div>
                       {reg.applicantCountry && (
-                        <span className="text-[10px] text-[#6B7893]">
-                          📍 {reg.applicantCountry}
+                        <span className="text-xs text-[#6B7280]">
+                          {reg.applicantCountry}
                         </span>
                       )}
                     </td>
@@ -302,15 +346,15 @@ function RegistrationsContent() {
                       <StatusBadge status={reg.status} />
                     </td>
 
-                    <td className="py-3.5 px-4 text-[#A8B3C7]">{formatTimeAgo(reg.submittedAt)}</td>
+                    <td className="py-3.5 px-4 text-[#9CA3AF] font-mono text-xs">{formatTimeAgo(reg.submittedAt)}</td>
 
-                    <td className="py-3.5 px-4 text-right space-x-1.5">
+                    <td className="py-3.5 px-4 text-right">
                       <button
                         type="button"
                         onClick={() => setSelectedItem(reg)}
-                        className="px-3 py-1.5 rounded-lg bg-[#2563EB]/15 text-[#3B82F6] font-semibold hover:bg-[#2563EB] hover:text-white transition-colors inline-flex items-center gap-1 border border-[#2563EB]/30"
+                        className="px-3.5 h-9 rounded-lg bg-[#26292F] text-[#F3F4F6] font-medium hover:bg-[#33373D] transition-colors inline-flex items-center gap-1.5 border border-[#33373D]"
                       >
-                        <Eye className="h-3.5 w-3.5" />
+                        <Eye className="h-4 w-4 text-[#0B9DF7]" />
                         Inspect
                       </button>
                     </td>
@@ -320,7 +364,7 @@ function RegistrationsContent() {
             </table>
           </div>
         ) : (
-          <div className="p-12 text-center text-xs text-[#A8B3C7]">
+          <div className="p-12 text-center text-sm text-[#9CA3AF]">
             No registration requests found matching current filter.
           </div>
         )}
@@ -329,18 +373,18 @@ function RegistrationsContent() {
       {/* Review Modal */}
       {selectedItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="rounded-3xl border border-[#1A2442] bg-[#0A1226] max-w-2xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="rounded-2xl border border-[#33373D] bg-[#1E2024] max-w-2xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-start justify-between border-b border-[#1A2442] pb-4">
+            <div className="flex items-start justify-between border-b border-[#33373D] pb-4">
               <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-[#F1F5F9]">{selectedItem.websiteName}</h2>
+                <div className="flex items-center gap-2.5">
+                  <h2 className="text-lg font-bold text-[#F3F4F6]">{selectedItem.websiteName}</h2>
                   <StatusBadge status={selectedItem.status} />
                 </div>
-                <div className="flex items-center gap-3 mt-1 text-xs text-[#A8B3C7]">
+                <div className="flex items-center gap-3 mt-1.5 text-xs text-[#9CA3AF]">
                   <span>
                     Ref:{' '}
-                    <strong className="text-[#F1F5F9] font-mono">
+                    <strong className="text-[#F3F4F6] font-mono">
                       {selectedItem.referenceId || selectedItem.id.slice(0, 8)}
                     </strong>
                   </span>
@@ -355,43 +399,43 @@ function RegistrationsContent() {
                   setSelectedItem(null);
                   setActionType(null);
                 }}
-                className="p-1.5 rounded-lg border border-[#1A2442] text-[#A8B3C7] hover:text-[#F1F5F9] hover:bg-[#0E182F] transition-colors"
+                className="p-2 rounded-lg border border-[#33373D] text-[#9CA3AF] hover:text-white hover:bg-[#26292F] transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="space-y-4 text-xs">
+            <div className="space-y-4 text-sm">
               {/* Website Info Card */}
-              <div className="p-4 rounded-2xl bg-[#070D1E] border border-[#1A2442] space-y-3">
-                <div className="flex items-center gap-1.5 font-bold text-[#F1F5F9] text-sm">
-                  <Globe className="h-4 w-4 text-[#3B82F6]" />
+              <div className="p-4 rounded-xl bg-[#16181B] border border-[#33373D] space-y-3">
+                <div className="flex items-center gap-2 font-semibold text-[#F3F4F6]">
+                  <Globe className="h-4 w-4 text-[#0B9DF7]" />
                   <span>Website Specifications</span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="text-[#A8B3C7]">Primary URL:</span>
-                    <div className="font-mono text-[#F1F5F9] font-medium truncate">
+                    <span className="text-[#9CA3AF]">Primary URL:</span>
+                    <div className="font-mono text-[#F3F4F6] font-medium truncate mt-0.5">
                       <a
                         href={selectedItem.primaryUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#3B82F6] hover:underline"
+                        className="text-[#0B9DF7] hover:underline"
                       >
                         {selectedItem.primaryUrl}
                       </a>
                     </div>
                   </div>
                   <div>
-                    <span className="text-[#A8B3C7]">Content Rating:</span>
-                    <div className="font-semibold text-[#F1F5F9]">{selectedItem.contentRating}</div>
+                    <span className="text-[#9CA3AF]">Content Rating:</span>
+                    <div className="font-semibold text-[#F3F4F6] mt-0.5">{selectedItem.contentRating}</div>
                   </div>
                 </div>
 
                 <div>
-                  <span className="text-[#A8B3C7]">Description:</span>
-                  <p className="text-[#F1F5F9] mt-0.5 leading-relaxed bg-[#050A18] p-2.5 rounded-lg border border-[#1A2442]">
+                  <span className="text-xs text-[#9CA3AF]">Description:</span>
+                  <p className="text-xs text-[#D1D5DB] mt-1 leading-relaxed bg-[#1E2024] p-3 rounded-lg border border-[#33373D]">
                     {selectedItem.description}
                   </p>
                 </div>
@@ -399,12 +443,12 @@ function RegistrationsContent() {
                 {Array.isArray(selectedItem.proposedTags) &&
                   selectedItem.proposedTags.length > 0 && (
                     <div>
-                      <span className="text-[#A8B3C7]">Proposed Tags:</span>
-                      <div className="flex flex-wrap gap-1 mt-1">
+                      <span className="text-xs text-[#9CA3AF]">Proposed Tags:</span>
+                      <div className="flex flex-wrap gap-1.5 mt-1">
                         {(selectedItem.proposedTags as string[]).map((t: string) => (
                           <span
                             key={t}
-                            className="px-2 py-0.5 rounded bg-[#050A18] text-[#F1F5F9] font-medium border border-[#1A2442]"
+                            className="px-2 py-0.5 rounded bg-[#1E2024] text-[#D1D5DB] text-xs font-medium border border-[#33373D]"
                           >
                             #{t}
                           </span>
@@ -415,42 +459,42 @@ function RegistrationsContent() {
               </div>
 
               {/* Applicant Card */}
-              <div className="p-4 rounded-2xl bg-[#070D1E] border border-[#1A2442] space-y-3">
-                <div className="flex items-center gap-1.5 font-bold text-[#F1F5F9] text-sm">
-                  <User className="h-4 w-4 text-[#F59E0B]" />
+              <div className="p-4 rounded-xl bg-[#16181B] border border-[#33373D] space-y-3">
+                <div className="flex items-center gap-2 font-semibold text-[#F3F4F6]">
+                  <User className="h-4 w-4 text-[#0B9DF7]" />
                   <span>Applicant Information</span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="text-[#A8B3C7]">Full Name:</span>
-                    <div className="font-semibold text-[#F1F5F9]">{selectedItem.applicantName}</div>
+                    <span className="text-[#9CA3AF]">Full Name:</span>
+                    <div className="font-medium text-[#F3F4F6] mt-0.5">{selectedItem.applicantName}</div>
                   </div>
                   <div>
-                    <span className="text-[#A8B3C7]">Email:</span>
-                    <div className="font-mono text-[#F1F5F9]">{selectedItem.applicantEmail}</div>
+                    <span className="text-[#9CA3AF]">Email:</span>
+                    <div className="font-mono text-[#F3F4F6] mt-0.5">{selectedItem.applicantEmail}</div>
                   </div>
                   <div>
-                    <span className="text-[#A8B3C7]">Country:</span>
-                    <div className="text-[#F1F5F9]">
+                    <span className="text-[#9CA3AF]">Country:</span>
+                    <div className="text-[#F3F4F6] mt-0.5">
                       {selectedItem.applicantCountry || 'Global'}
                     </div>
                   </div>
                   <div>
-                    <span className="text-[#A8B3C7]">Role:</span>
-                    <div className="font-semibold text-[#F1F5F9]">
+                    <span className="text-[#9CA3AF]">Role:</span>
+                    <div className="font-medium text-[#F3F4F6] mt-0.5">
                       {selectedItem.applicantRole || 'Owner'}
                     </div>
                   </div>
                   {selectedItem.applicantPhone && (
                     <div>
-                      <span className="text-[#A8B3C7]">Phone:</span>
-                      <div className="font-mono text-[#F1F5F9]">{selectedItem.applicantPhone}</div>
+                      <span className="text-[#9CA3AF]">Phone:</span>
+                      <div className="font-mono text-[#F3F4F6] mt-0.5">{selectedItem.applicantPhone}</div>
                     </div>
                   )}
                   {selectedItem.telegramOrDiscord && (
                     <div>
-                      <span className="text-[#A8B3C7]">Discord / Telegram:</span>
-                      <div className="font-mono text-[#F1F5F9]">
+                      <span className="text-[#9CA3AF]">Discord / Telegram:</span>
+                      <div className="font-mono text-[#F3F4F6] mt-0.5">
                         {selectedItem.telegramOrDiscord}
                       </div>
                     </div>
@@ -461,16 +505,16 @@ function RegistrationsContent() {
               {/* Mirrors / Additional Domains */}
               {Array.isArray(selectedItem.additionalDomains) &&
                 selectedItem.additionalDomains.length > 0 && (
-                  <div className="p-4 rounded-2xl bg-[#070D1E] border border-[#1A2442] space-y-2">
-                    <div className="flex items-center gap-1.5 font-bold text-[#F1F5F9] text-sm">
-                      <Radio className="h-4 w-4 text-[#3B82F6]" />
+                  <div className="p-4 rounded-xl bg-[#16181B] border border-[#33373D] space-y-2">
+                    <div className="flex items-center gap-2 font-semibold text-[#F3F4F6]">
+                      <Radio className="h-4 w-4 text-[#0B9DF7]" />
                       <span>Additional Mirrors ({selectedItem.additionalDomains.length})</span>
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       {selectedItem.additionalDomains.map((m: string, i: number) => (
                         <div
                           key={i}
-                          className="font-mono text-xs text-[#3B82F6] bg-[#050A18] p-2 rounded border border-[#1A2442]"
+                          className="font-mono text-xs text-[#0B9DF7] bg-[#1E2024] p-2.5 rounded-lg border border-[#33373D]"
                         >
                           {m}
                         </div>
@@ -480,37 +524,37 @@ function RegistrationsContent() {
                 )}
 
               {/* Ownership Verification Proof */}
-              <div className="p-4 rounded-2xl bg-[#070D1E] border border-[#1A2442] space-y-2">
-                <div className="flex items-center gap-1.5 font-bold text-[#F1F5F9] text-sm">
-                  <Shield className="h-4 w-4 text-[#22C55E]" />
+              <div className="p-4 rounded-xl bg-[#16181B] border border-[#33373D] space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-[#F3F4F6]">
+                  <Shield className="h-4 w-4 text-emerald-400" />
                   <span>Ownership Verification</span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="text-[#A8B3C7]">Method:</span>
-                    <div className="font-semibold text-[#F1F5F9]">
+                    <span className="text-[#9CA3AF]">Method:</span>
+                    <div className="font-medium text-[#F3F4F6] mt-0.5">
                       {selectedItem.verificationMethod || 'DNS_TXT'}
                     </div>
                   </div>
                   <div>
-                    <span className="text-[#A8B3C7]">Token:</span>
-                    <div className="font-mono text-[#F1F5F9] text-[11px] truncate">
+                    <span className="text-[#9CA3AF]">Token:</span>
+                    <div className="font-mono text-[#F3F4F6] text-xs truncate mt-0.5">
                       {selectedItem.verificationToken || 'N/A'}
                     </div>
                   </div>
                 </div>
                 {selectedItem.verificationProof && (
                   <div>
-                    <span className="text-[#A8B3C7]">Proof Details / Notes:</span>
-                    <p className="bg-[#050A18] p-2 rounded border border-[#1A2442] text-[#F1F5F9] font-mono text-[11px] mt-0.5">
+                    <span className="text-xs text-[#9CA3AF]">Proof Details / Notes:</span>
+                    <p className="bg-[#1E2024] p-2.5 rounded-lg border border-[#33373D] text-[#F3F4F6] font-mono text-xs mt-1">
                       {selectedItem.verificationProof}
                     </p>
                   </div>
                 )}
                 {selectedItem.adminNote && (
                   <div>
-                    <span className="text-[#A8B3C7]">Applicant Note to Reviewers:</span>
-                    <p className="bg-[#050A18] p-2 rounded border border-[#1A2442] text-[#F1F5F9] text-xs mt-0.5">
+                    <span className="text-xs text-[#9CA3AF]">Applicant Note to Reviewers:</span>
+                    <p className="bg-[#1E2024] p-2.5 rounded-lg border border-[#33373D] text-[#D1D5DB] text-xs mt-1">
                       {selectedItem.adminNote}
                     </p>
                   </div>
@@ -520,25 +564,25 @@ function RegistrationsContent() {
 
             {/* Action Selection / Form */}
             {actionType ? (
-              <div className="p-4 rounded-2xl border border-[#2563EB]/40 bg-[#2563EB]/10 space-y-3">
-                <div className="font-bold text-[#F1F5F9] text-xs uppercase tracking-wider">
+              <div className="p-5 rounded-xl border border-[#33373D] bg-[#16181B] space-y-4">
+                <div className="font-semibold text-[#F3F4F6] text-sm uppercase tracking-wider">
                   {actionType === 'APPROVE' && 'Confirm Approval'}
                   {actionType === 'REJECT' && 'Reject Application with Reason'}
                   {actionType === 'REQUEST_CHANGES' && 'Request Changes with Note'}
                 </div>
 
                 {actionType === 'APPROVE' && (
-                  <p className="text-xs text-[#A8B3C7] leading-relaxed">
+                  <p className="text-sm text-[#9CA3AF] leading-relaxed">
                     Approving will automatically create the Website Owner account in{' '}
-                    <strong className="text-[#F1F5F9]">INVITED</strong> status, create the{' '}
-                    <strong className="text-[#F1F5F9]">ACTIVE</strong> website profile, register the
-                    primary domain, generate a 24-hour setup token, and email the invitation.
+                    <strong className="text-[#F3F4F6]">ACTIVE</strong> status, create the{' '}
+                    <strong className="text-[#F3F4F6]">ACTIVE</strong> website profile, register the
+                    primary domain, generate a 72-hour temporary password, and email the credentials.
                   </p>
                 )}
 
                 {(actionType === 'REJECT' || actionType === 'REQUEST_CHANGES') && (
                   <div>
-                    <label className="block text-[11px] font-semibold text-[#F1F5F9] uppercase mb-1">
+                    <label className="block text-xs font-medium text-[#9CA3AF] uppercase mb-1.5">
                       {actionType === 'REJECT'
                         ? 'Rejection Reason *'
                         : 'Instructions for Applicant *'}
@@ -552,16 +596,16 @@ function RegistrationsContent() {
                           ? 'Explain why this submission does not meet directory guidelines...'
                           : 'Explain what fields or links need to be updated...'
                       }
-                      className="w-full rounded-xl border border-[#1A2442] bg-[#050A18] p-2.5 text-xs text-[#F1F5F9] placeholder-[#6B7893] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6]"
+                      className="w-full rounded-lg border border-[#33373D] bg-[#1E2024] p-3 text-sm text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7]"
                     />
                   </div>
                 )}
 
-                <div className="flex justify-end gap-2 pt-2">
+                <div className="flex justify-end gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => setActionType(null)}
-                    className="px-3 py-1.5 rounded-lg border border-[#1A2442] bg-[#0A1226] text-xs font-semibold text-[#A8B3C7] hover:bg-[#0E182F] hover:text-[#F1F5F9]"
+                    className="px-4 h-11 rounded-lg border border-[#33373D] bg-[#1E2024] text-sm font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white"
                   >
                     Cancel
                   </button>
@@ -571,9 +615,9 @@ function RegistrationsContent() {
                       type="button"
                       disabled={submittingAction}
                       onClick={() => handleApprove(selectedItem.id)}
-                      className="px-4 py-1.5 rounded-lg bg-[#22C55E] text-white font-bold text-xs hover:bg-[#16A34A] disabled:opacity-50 inline-flex items-center gap-1.5 shadow-md shadow-[#22C55E]/20"
+                      className="px-5 h-11 rounded-lg bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-500 disabled:opacity-50 inline-flex items-center gap-2"
                     >
-                      {submittingAction && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                      {submittingAction && <Loader2 className="h-4 w-4 animate-spin" />}
                       Confirm & Approve
                     </button>
                   )}
@@ -583,9 +627,9 @@ function RegistrationsContent() {
                       type="button"
                       disabled={submittingAction}
                       onClick={() => handleReject(selectedItem.id)}
-                      className="px-4 py-1.5 rounded-lg bg-[#EF4444] text-white font-bold text-xs hover:bg-[#DC2626] disabled:opacity-50 inline-flex items-center gap-1.5"
+                      className="px-5 h-11 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-500 disabled:opacity-50 inline-flex items-center gap-2"
                     >
-                      {submittingAction && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                      {submittingAction && <Loader2 className="h-4 w-4 animate-spin" />}
                       Send Rejection Email
                     </button>
                   )}
@@ -595,25 +639,25 @@ function RegistrationsContent() {
                       type="button"
                       disabled={submittingAction}
                       onClick={() => handleRequestChanges(selectedItem.id)}
-                      className="px-4 py-1.5 rounded-lg bg-[#2563EB] text-white font-bold text-xs hover:bg-[#1D4ED8] disabled:opacity-50 inline-flex items-center gap-1.5"
+                      className="px-5 h-11 rounded-lg bg-[#0B9DF7] text-white font-medium text-sm hover:bg-[#0987d6] disabled:opacity-50 inline-flex items-center gap-2"
                     >
-                      {submittingAction && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                      {submittingAction && <Loader2 className="h-4 w-4 animate-spin" />}
                       Send Change Request Link
                     </button>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[#1A2442]">
-                <span className="text-xs text-[#A8B3C7]">Select an outcome:</span>
-                <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[#33373D]">
+                <span className="text-sm text-[#9CA3AF]">Select an outcome:</span>
+                <div className="flex items-center gap-2.5">
                   <button
                     type="button"
                     onClick={() => {
                       setActionType('REQUEST_CHANGES');
                       setActionNote('');
                     }}
-                    className="px-3.5 py-2 rounded-xl border border-[#2563EB]/40 bg-[#2563EB]/15 text-[#3B82F6] font-bold text-xs hover:bg-[#2563EB]/25 transition-colors"
+                    className="px-4 h-11 rounded-lg border border-[#33373D] bg-[#26292F] text-[#0B9DF7] font-medium text-sm hover:bg-[#33373D] transition-colors"
                   >
                     Request Changes
                   </button>
@@ -624,7 +668,7 @@ function RegistrationsContent() {
                       setActionType('REJECT');
                       setActionNote('');
                     }}
-                    className="px-3.5 py-2 rounded-xl border border-[#EF4444]/40 bg-[#EF4444]/15 text-[#EF4444] font-bold text-xs hover:bg-[#EF4444]/25 transition-colors"
+                    className="px-4 h-11 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 font-medium text-sm hover:bg-red-500/20 transition-colors"
                   >
                     Reject
                   </button>
@@ -632,7 +676,7 @@ function RegistrationsContent() {
                   <button
                     type="button"
                     onClick={() => setActionType('APPROVE')}
-                    className="px-4 py-2 rounded-xl bg-[#22C55E] text-white font-bold text-xs hover:bg-[#16A34A] transition-colors shadow-md shadow-[#22C55E]/20 inline-flex items-center gap-1.5"
+                    className="px-5 h-11 rounded-lg bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-500 transition-colors inline-flex items-center gap-2"
                   >
                     <Check className="h-4 w-4" />
                     Approve Application
@@ -651,7 +695,7 @@ export default function RegistrationsPage() {
   return (
     <Suspense
       fallback={
-        <div className="py-20 text-center text-xs text-[#A8B3C7]">
+        <div className="py-20 text-center text-sm text-[#9CA3AF]">
           Loading registration review queue...
         </div>
       }

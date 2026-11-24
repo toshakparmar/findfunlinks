@@ -14,11 +14,11 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
   if (!category) {
     return {
-      title: 'Category Not Found — FindFunLinks',
+      title: 'Category Not Found — FinalLinks',
     };
   }
 
-  const title = `${category.name} Websites & Working Mirrors — FindFunLinks`;
+  const title = `${category.name} Websites & Working Mirrors — FinalLinks`;
   const description = `Browse verified, official ${category.name} websites and all their live working mirrors and domains so you never get stuck behind a broken link.`;
 
   return {
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
       title,
       description,
       type: 'website',
-      url: `https://findfunlinks.com/category/${category.slug}`,
+      url: `https://finallinks.com/category/${category.slug}`,
     },
     twitter: {
       card: 'summary_large_image',
@@ -57,19 +57,19 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: 'https://findfunlinks.com',
+            item: 'https://finallinks.com',
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: 'Categories',
-            item: 'https://findfunlinks.com/categories',
+            item: 'https://finallinks.com/categories',
           },
           {
             '@type': 'ListItem',
             position: 3,
             name: category.name,
-            item: `https://findfunlinks.com/category/${category.slug}`,
+            item: `https://finallinks.com/category/${category.slug}`,
           },
         ],
       },
@@ -81,7 +81,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           '@type': 'ListItem',
           position: index + 1,
           name: site.name,
-          url: `https://findfunlinks.com/site/${site.slug}`,
+          url: `https://finallinks.com/site/${site.slug}`,
         })),
       },
     ],
@@ -93,18 +93,20 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <CategoryDetailView
-        category={{
-          id: category.id,
-          slug: category.slug,
-          name: category.name,
-          iconName: category.iconName,
-          accentKey: category.accentKey,
-          themeColor: category.themeColor,
-          total: category.total ?? category.sites.length,
-        }}
-        sites={category.sites}
-      />
+      <React.Suspense fallback={<div className="w-full py-20 text-center text-fs-base text-[var(--text-3,#6B7893)]">Loading category...</div>}>
+        <CategoryDetailView
+          category={{
+            id: category.id,
+            slug: category.slug,
+            name: category.name,
+            iconName: category.iconName,
+            accentKey: category.accentKey,
+            themeColor: category.themeColor,
+            total: category.total ?? category.sites.length,
+          }}
+          sites={category.sites}
+        />
+      </React.Suspense>
     </>
   );
 }

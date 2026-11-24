@@ -150,7 +150,7 @@ export function CustomSelect({
                   {option.icon && <span className="shrink-0">{option.icon}</span>}
                   <span className="truncate">{option.label}</span>
                   {option.badge && (
-                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-white/10 text-[var(--text-2,#A8B3C7)] shrink-0">
+                    <span className="text-fs-xs px-1.5 py-0.2 rounded bg-white/10 text-[var(--text-2,#A8B3C7)] shrink-0">
                       {option.badge}
                     </span>
                   )}

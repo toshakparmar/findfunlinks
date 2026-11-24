@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { api, getLatencyBadge } from '../lib/api';
 import { ReportModal } from './ReportModal';
-import { DomainStatus, DomainType, ContentRating } from '@findfunlinks/contracts';
+import { DomainStatus, DomainType, ContentRating } from '@finallinks/contracts';
 import { ExternalLink, Copy, ChevronDown, ChevronUp, Flag, Globe } from 'lucide-react';
 
 export interface DomainItemData {
@@ -18,6 +18,7 @@ export interface DomainItemData {
   lastCheckedAt?: string | null;
   lastResponseMs?: number | null;
   clickCount?: number;
+  sortOrder?: number;
 }
 
 export interface WebsiteCardData {
@@ -51,9 +52,16 @@ export function DirectoryCard({ website }: DirectoryCardProps) {
   );
 
   const domains = website.domains || [];
-  const activeDomains = domains.filter((d) => d.status === DomainStatus.ACTIVE);
+  const sortedDomains = useMemo(() => {
+    return [...domains].sort((a, b) => {
+      if (a.type === DomainType.PRIMARY && b.type !== DomainType.PRIMARY) return -1;
+      if (b.type === DomainType.PRIMARY && a.type !== DomainType.PRIMARY) return 1;
+      return (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+    });
+  }, [domains]);
+  const activeDomains = sortedDomains.filter((d) => d.status === DomainStatus.ACTIVE);
   const primaryDomain =
-    domains.find((d) => d.type === DomainType.PRIMARY && d.status === DomainStatus.ACTIVE) ||
+    sortedDomains.find((d) => d.type === DomainType.PRIMARY && d.status === DomainStatus.ACTIVE) ||
     activeDomains[0];
 
   const handleCopyLink = async (url: string, e: React.MouseEvent) => {
@@ -70,7 +78,7 @@ export function DirectoryCard({ website }: DirectoryCardProps) {
     e.stopPropagation();
     // Fire outbound click tracking asynchronously without blocking navigation
     api.public.trackDomainClick(domainId).catch(() => {});
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(url, '_blank');
   };
 
   const handleOpenReport = (e: React.MouseEvent, domain?: DomainItemData) => {
@@ -113,12 +121,12 @@ export function DirectoryCard({ website }: DirectoryCardProps) {
                     {website.name}
                   </Link>
                   {website.isFeatured && (
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-brand-orange-500/10 text-brand-orange-600 dark:text-brand-orange-400 border border-brand-orange-500/20">
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-fs-xs font-semibold bg-brand-orange-500/10 text-brand-orange-600 dark:text-brand-orange-400 border border-brand-orange-500/20">
                       Featured
                     </span>
                   )}
                   {website.contentRating === ContentRating.MATURE && (
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-fs-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
                       18+
                     </span>
                   )}
@@ -164,13 +172,13 @@ export function DirectoryCard({ website }: DirectoryCardProps) {
               {website.tags.slice(0, 4).map((t) => (
                 <span
                   key={t.id}
-                  className="inline-flex items-center text-[10px] font-medium px-2 py-0.5 rounded-md bg-muted text-muted-foreground"
+                  className="inline-flex items-center text-fs-xs font-medium px-2 py-0.5 rounded-md bg-muted text-muted-foreground"
                 >
                   #{t.name}
                 </span>
               ))}
               {website.tags.length > 4 && (
-                <span className="text-[10px] text-muted-foreground/80 self-center">
+                <span className="text-fs-xs text-muted-foreground/80 self-center">
                   +{website.tags.length - 4} more
                 </span>
               )}
@@ -238,10 +246,10 @@ export function DirectoryCard({ website }: DirectoryCardProps) {
           {/* Expanded Mirrors Drawer */}
           {expanded && domains.length > 0 && (
             <div className="mt-3 space-y-1.5 pt-2 border-t border-dashed border-border/60 animate-in fade-in duration-200">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+              <p className="text-fs-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
                 All Verified Links:
               </p>
-              {domains.map((dom) => {
+              {sortedDomains.map((dom) => {
                 const latency = getLatencyBadge(dom.lastResponseMs);
                 const isActive = dom.status === DomainStatus.ACTIVE;
 
@@ -256,11 +264,11 @@ export function DirectoryCard({ website }: DirectoryCardProps) {
                           isActive ? 'bg-emerald-500' : 'bg-rose-500'
                         }`}
                       />
-                      <span className="truncate font-mono text-[11px] text-foreground">
+                      <span className="truncate font-mono text-fs-xs text-foreground">
                         {dom.hostname}
                       </span>
                       {dom.type !== DomainType.PRIMARY && (
-                        <span className="text-[10px] px-1 py-0.2 rounded bg-background text-muted-foreground border border-border/60">
+                        <span className="text-fs-xs px-1 py-0.2 rounded bg-background text-muted-foreground border border-border/60">
                           {dom.type.toLowerCase()}
                         </span>
                       )}
@@ -269,7 +277,7 @@ export function DirectoryCard({ website }: DirectoryCardProps) {
                     <div className="flex items-center gap-1.5 shrink-0">
                       {dom.lastResponseMs !== null && (
                         <span
-                          className={`text-[10px] px-1.5 py-0.5 rounded font-mono border ${latency.className}`}
+                          className={`text-fs-xs px-1.5 py-0.5 rounded font-mono border ${latency.className}`}
                         >
                           {latency.label}
                         </span>

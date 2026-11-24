@@ -130,7 +130,7 @@ export function CategoryRankCard({
             <span>{category.name}</span>
           </Link>
 
-          <span className="text-[11px] font-mono text-token-text-faint font-normal">
+          <span className="text-fs-xs font-mono text-token-text-faint font-normal">
             ({sortedWebsites.length})
           </span>
         </div>
@@ -204,7 +204,7 @@ export function CategoryRankCard({
                   {/* Left: Rank + Favicon Avatar + Site Name + Quiet Sentence-Case Tags */}
                   <div className="flex items-center gap-2.5 min-w-0 pr-2">
                     {/* Rank Number */}
-                    <span className="w-5 text-right font-mono font-medium text-token-text-faint tabular-nums text-[11px] group-hover:text-token">
+                    <span className="w-5 text-right font-mono font-medium text-token-text-faint tabular-nums text-fs-xs group-hover:text-token">
                       {index + 1}.
                     </span>
 
@@ -220,7 +220,7 @@ export function CategoryRankCard({
                           }}
                         />
                       ) : (
-                        <span className="text-[10px] font-bold text-token/70">
+                        <span className="text-fs-xs font-bold text-token/70">
                           {site.name.charAt(0)}
                         </span>
                       )}
@@ -238,20 +238,20 @@ export function CategoryRankCard({
                       {site.tags?.slice(0, 2).map((t) => (
                         <span
                           key={t.id || t.slug}
-                          className="px-2 py-0.2 rounded-full text-[10px] font-mono text-token/60 bg-surface-2 border border-token/10"
+                          className="px-2 py-0.2 rounded-full text-fs-xs font-mono text-token/60 bg-surface-2 border border-token/10"
                         >
                           {toSentenceCase(t.name)}
                         </span>
                       ))}
                       {site.tags && site.tags.length > 2 && (
-                        <span className="text-[9px] font-mono text-token-text-faint">
+                        <span className="text-fs-xs font-mono text-token-text-faint">
                           +{site.tags.length - 2}
                         </span>
                       )}
 
                       {/* Mirror count chip */}
                       {domains.length > 1 && (
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-semibold text-primary bg-primary/10 border border-primary/20">
+                        <span className="px-1.5 py-0.2 rounded text-fs-xs font-mono font-semibold text-primary bg-primary/10 border border-primary/20">
                           {domains.length} mirrors
                         </span>
                       )}
@@ -323,7 +323,7 @@ export function CategoryRankCard({
                               href={fastestDomain.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-chip bg-primary hover:opacity-90 text-primary-fg font-medium text-[11px] shadow-subtle shrink-0 self-start sm:self-auto transition-opacity"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-chip bg-primary hover:opacity-90 text-primary-fg font-medium text-fs-xs shadow-subtle shrink-0 self-start sm:self-auto transition-opacity"
                             >
                               <Zap className="w-3 h-3 text-accent fill-accent" />
                               <span>Open Fastest Mirror</span>
@@ -334,9 +334,9 @@ export function CategoryRankCard({
 
                         {/* Working Mirrors Fleet List */}
                         <div className="space-y-1.5">
-                          <div className="flex items-center justify-between text-[11px] font-mono text-token/50">
+                          <div className="flex items-center justify-between text-fs-xs font-mono text-token/50">
                             <span>Working Domains &amp; Mirrors ({domains.length}):</span>
-                            <span className="text-[10px] text-status-online flex items-center gap-1">
+                            <span className="text-fs-xs text-status-online flex items-center gap-1">
                               <span className="w-1.5 h-1.5 rounded-full bg-status-online" />
                               Active Health Checked
                             </span>
@@ -350,7 +350,7 @@ export function CategoryRankCard({
                               >
                                 <div className="flex items-center gap-2 truncate pr-2">
                                   <span
-                                    className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider ${
+                                    className={`px-1.5 py-0.5 rounded text-fs-xs font-mono font-bold uppercase tracking-wider ${
                                       dom.type === 'PRIMARY'
                                         ? 'bg-primary/10 text-primary border border-primary/20'
                                         : 'bg-surface-2 text-token/60 border border-token/10'
@@ -364,7 +364,7 @@ export function CategoryRankCard({
                                   </span>
 
                                   {dom.lastResponseMs && (
-                                    <span className="text-[10px] text-status-online font-mono font-medium">
+                                    <span className="text-fs-xs text-status-online font-mono font-medium">
                                       {dom.lastResponseMs}ms
                                     </span>
                                   )}
@@ -391,7 +391,7 @@ export function CategoryRankCard({
                                     href={dom.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-chip bg-surface-2 hover:bg-token/10 text-token font-medium text-[11px] border border-token/10 transition-colors"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-chip bg-surface-2 hover:bg-token/10 text-token font-medium text-fs-xs border border-token/10 transition-colors"
                                   >
                                     <span>Visit</span>
                                     <ExternalLink className="w-2.5 h-2.5 text-token/40" />
@@ -403,7 +403,7 @@ export function CategoryRankCard({
                         </div>
 
                         {/* Actions Row */}
-                        <div className="flex items-center justify-between pt-2 border-t border-token/10 text-[11px]">
+                        <div className="flex items-center justify-between pt-2 border-t border-token/10 text-fs-xs">
                           <Link
                             href={`/website/${site.slug}`}
                             className="text-primary hover:underline font-medium inline-flex items-center gap-1"

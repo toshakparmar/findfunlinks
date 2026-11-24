@@ -26,7 +26,7 @@ import {
   ChangePasswordSchema,
   ChangePasswordInput,
   UserProfile,
-} from '@findfunlinks/contracts';
+} from '@finallinks/contracts';
 
 const REFRESH_COOKIE_NAME = 'refresh_token';
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days

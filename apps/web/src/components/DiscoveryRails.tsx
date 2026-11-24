@@ -41,7 +41,7 @@ export function DiscoveryRails({ websites }: DiscoveryRailsProps) {
             <h3 className="font-display font-bold text-base text-token tracking-tight">
               Trending This Week
             </h3>
-            <span className="text-[11px] font-mono text-token/40">Most active mirrors</span>
+            <span className="text-fs-xs font-mono text-token/40">Most active mirrors</span>
           </div>
         </div>
 
@@ -73,27 +73,27 @@ export function DiscoveryRails({ websites }: DiscoveryRailsProps) {
                       <h4 className="font-semibold text-token text-xs truncate group-hover:text-primary transition-colors">
                         {site.name}
                       </h4>
-                      <span className="text-[10px] text-token/40 font-mono">
+                      <span className="text-fs-xs text-token/40 font-mono">
                         {site.categoryName}
                       </span>
                     </div>
                   </div>
-                  <span className="px-1.5 py-0.5 rounded text-[9px] font-mono text-status-online bg-status-online/10 shrink-0">
+                  <span className="px-1.5 py-0.5 rounded text-fs-xs font-mono text-status-online bg-status-online/10 shrink-0">
                     Active
                   </span>
                 </div>
-                <p className="text-[11px] text-token/60 line-clamp-2 leading-relaxed">
+                <p className="text-fs-xs text-token/60 line-clamp-2 leading-relaxed">
                   {site.tagline || site.description}
                 </p>
               </div>
 
-              <div className="flex items-center justify-between pt-3 mt-3 border-t border-token/5 text-[11px]">
-                <span className="font-mono text-token/40 text-[10px]">
+              <div className="flex items-center justify-between pt-3 mt-3 border-t border-token/5 text-fs-xs">
+                <span className="font-mono text-token/40 text-fs-xs">
                   {site.domains?.length || 1} live mirrors
                 </span>
                 <Link
                   href={`/website/${site.slug}`}
-                  className="inline-flex items-center gap-1 font-medium text-primary hover:underline text-[11px]"
+                  className="inline-flex items-center gap-1 font-medium text-primary hover:underline text-fs-xs"
                 >
                   <span>Details</span>
                   <ArrowRight className="w-3 h-3" />
@@ -115,7 +115,7 @@ export function DiscoveryRails({ websites }: DiscoveryRailsProps) {
             <h3 className="font-display font-bold text-base text-token tracking-tight">
               Editor&apos;s Picks
             </h3>
-            <span className="text-[11px] font-mono text-token/40">Hand-curated treasures</span>
+            <span className="text-fs-xs font-mono text-token/40">Hand-curated treasures</span>
           </div>
 
           <div className="space-y-2">
@@ -143,7 +143,7 @@ export function DiscoveryRails({ websites }: DiscoveryRailsProps) {
                     <h4 className="font-semibold text-token text-xs truncate group-hover:text-accent transition-colors">
                       {site.name}
                     </h4>
-                    <p className="text-[11px] text-token/50 truncate max-w-sm">
+                    <p className="text-fs-xs text-token/50 truncate max-w-sm">
                       {site.tagline || site.description}
                     </p>
                   </div>
@@ -176,7 +176,7 @@ export function DiscoveryRails({ websites }: DiscoveryRailsProps) {
             <h3 className="font-display font-bold text-base text-token tracking-tight">
               Fastest Monitored Fleet
             </h3>
-            <span className="text-[11px] font-mono text-token/40">Verified latency &lt; 50ms</span>
+            <span className="text-fs-xs font-mono text-token/40">Verified latency &lt; 50ms</span>
           </div>
 
           <div className="space-y-2">
@@ -193,14 +193,14 @@ export function DiscoveryRails({ websites }: DiscoveryRailsProps) {
                     </div>
                     <div className="truncate">
                       <h4 className="font-semibold text-token text-xs truncate">{site.name}</h4>
-                      <span className="text-[10px] text-token/40 font-mono">
+                      <span className="text-fs-xs text-token/40 font-mono">
                         {site.domains?.[0]?.hostname || 'verified mirror'}
                       </span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2.5 shrink-0">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold text-status-online bg-status-online/10 border border-status-online/20">
+                    <span className="px-2 py-0.5 rounded text-fs-xs font-mono font-semibold text-status-online bg-status-online/10 border border-status-online/20">
                       {ms}ms
                     </span>
                     {site.domains?.[0] && (

@@ -140,7 +140,7 @@ export function SectionFullscreenModal({
                           {site.tags?.slice(0, 2).map((t) => (
                             <span
                               key={t.id}
-                              className="px-1.5 py-0.2 rounded text-[10px] font-mono text-token/60 bg-surface-1 border border-token/10"
+                              className="px-1.5 py-0.2 rounded text-fs-xs font-mono text-token/60 bg-surface-1 border border-token/10"
                             >
                               {t.name}
                             </span>
@@ -180,7 +180,7 @@ export function SectionFullscreenModal({
 
                 {/* Mirrors summary */}
                 {site.domains && site.domains.length > 0 && (
-                  <div className="pt-2 border-t border-token/5 flex flex-wrap items-center gap-2 text-[11px] text-token/60 font-mono">
+                  <div className="pt-2 border-t border-token/5 flex flex-wrap items-center gap-2 text-fs-xs text-token/60 font-mono">
                     <span className="text-token/40">Working Mirrors:</span>
                     {site.domains.map((dom) => (
                       <span
@@ -189,7 +189,7 @@ export function SectionFullscreenModal({
                       >
                         <span>{dom.hostname}</span>
                         {dom.lastResponseMs && (
-                          <span className="text-status-online text-[10px]">
+                          <span className="text-status-online text-fs-xs">
                             {dom.lastResponseMs}ms
                           </span>
                         )}
