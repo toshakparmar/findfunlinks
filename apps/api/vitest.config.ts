@@ -1,3 +1,4 @@
+import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -35,4 +36,11 @@ export default defineConfig({
       },
     },
   },
+  plugins: [
+    // This is required to build the test files with SWC so NestJS decorator metadata works
+    swc.vite({
+      // Explicitly set the module type to avoid compiling into an unsupported type
+      module: { type: 'es6' },
+    }),
+  ],
 });
