@@ -17,7 +17,7 @@ export default function LoginPage() {
 
   const fillAdminCredentials = () => {
     setEmail('admin@finallinks.com');
-    setPassword('SuperAdminSecretPass123!');
+    setPassword('SuperAdmin123!');
     setErrorMessage(null);
     toast.info('Filled default administrator credentials.');
   };
