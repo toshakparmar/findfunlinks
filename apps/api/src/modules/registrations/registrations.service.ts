@@ -726,6 +726,7 @@ export class RegistrationsService {
       loginUrl,
       tempPassword: rawTempPassword,
       inviteUrl,
+      rawInviteToken,
       website: result.website,
       domain: result.domain,
     };
