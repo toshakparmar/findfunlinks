@@ -77,6 +77,7 @@ export class AuthService {
       const allowedSeedPasswords = [
         process.env.SUPER_ADMIN_PASSWORD || 'SuperAdminSecretPass123!',
         'SuperAdminSecretPass123!',
+        'SuperAdmin123!',
         'Finallinks@123',
         'Finallinks@123!',
         'admin123456',
