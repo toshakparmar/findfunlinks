@@ -14,10 +14,12 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "import": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./brand": {
       "types": "./dist/brand.d.ts",
+      "import": "./src/brand.ts",
       "default": "./dist/brand.js"
     },
     "./tailwind": "./tailwind.preset.js",

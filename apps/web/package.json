@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prebuild": "pnpm --filter @finallinks/config build && pnpm --filter @finallinks/contracts build && pnpm --filter @finallinks/api-client build",
     "predev": "node -e \"try { require('fs').rmSync('.next', { recursive: true, force: true }); } catch {}\"",
     "dev": "next dev --port 3000",
     "build": "next build",
