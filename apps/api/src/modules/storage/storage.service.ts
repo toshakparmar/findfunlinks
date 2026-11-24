@@ -1,4 +1,4 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
@@ -17,13 +17,20 @@ export class StorageService {
   private readonly bucket: string;
   private readonly supabaseUrl: string;
 
-  constructor(private readonly config: ConfigService) {
+  constructor(@Optional() private readonly config?: ConfigService) {
     this.supabaseUrl =
-      this.config.get<string>('SUPABASE_URL') || 'https://elwszhwgeshqmjdhsbep.supabase.co';
+      this.config?.get<string>('SUPABASE_URL') ||
+      process.env.SUPABASE_URL ||
+      'https://elwszhwgeshqmjdhsbep.supabase.co';
     const serviceKey =
-      this.config.get<string>('SUPABASE_SERVICE_ROLE_KEY') ||
-      this.config.get<string>('SUPABASE_ANON_KEY');
-    this.bucket = this.config.get<string>('SUPABASE_STORAGE_BUCKET') || 'finallinks-media';
+      this.config?.get<string>('SUPABASE_SERVICE_ROLE_KEY') ||
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      this.config?.get<string>('SUPABASE_ANON_KEY') ||
+      process.env.SUPABASE_ANON_KEY;
+    this.bucket =
+      this.config?.get<string>('SUPABASE_STORAGE_BUCKET') ||
+      process.env.SUPABASE_STORAGE_BUCKET ||
+      'finallinks-media';
 
     if (
       this.supabaseUrl &&

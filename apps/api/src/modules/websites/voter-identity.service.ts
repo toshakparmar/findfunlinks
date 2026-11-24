@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import type { Request, Response } from 'express';
@@ -13,9 +13,10 @@ export interface VoterIdentity {
 export class VoterIdentityService {
   private readonly secret: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(@Optional() private readonly configService?: ConfigService) {
     this.secret =
-      this.configService.get<string>('JWT_ACCESS_SECRET') ||
+      this.configService?.get<string>('JWT_ACCESS_SECRET') ||
+      process.env.JWT_ACCESS_SECRET ||
       'finallinks_voter_identity_default_hmac_secret_key_32';
   }
 
@@ -33,7 +34,9 @@ export class VoterIdentityService {
     }
 
     if (isNew && res && typeof res.cookie === 'function') {
-      const isProd = this.configService.get<string>('NODE_ENV') === 'production';
+      const isProd =
+        this.configService?.get<string>('NODE_ENV') === 'production' ||
+        process.env.NODE_ENV === 'production';
       res.cookie('fl_voter', voterId, {
         httpOnly: true,
         secure: isProd,
