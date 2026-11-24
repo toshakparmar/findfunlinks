@@ -31,6 +31,26 @@ import {
 const REFRESH_COOKIE_NAME = 'refresh_token';
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
+function parseDurationToMs(duration?: string, defaultMs = 24 * 60 * 60 * 1000): number {
+  if (!duration) return defaultMs;
+  const match = duration.match(/^(\d+)([smhd])$/);
+  if (!match) return defaultMs;
+  const val = parseInt(match[1], 10);
+  const unit = match[2];
+  switch (unit) {
+    case 's':
+      return val * 1000;
+    case 'm':
+      return val * 60 * 1000;
+    case 'h':
+      return val * 60 * 60 * 1000;
+    case 'd':
+      return val * 24 * 60 * 60 * 1000;
+    default:
+      return defaultMs;
+  }
+}
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -48,12 +68,16 @@ export class AuthController {
 
   private setAuthCookies(res: Response, refreshToken: string, accessToken: string) {
     this.setRefreshCookie(res, refreshToken);
+    const accessMaxAge = parseDurationToMs(
+      process.env.JWT_EXPIRES_IN,
+      24 * 60 * 60 * 1000, // default 1 day session
+    );
     res.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 15 * 60 * 1000, // 15 mins matching access token lifetime
+      maxAge: accessMaxAge,
     });
   }
 
