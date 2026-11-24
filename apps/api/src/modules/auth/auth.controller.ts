@@ -34,7 +34,7 @@ const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 function parseDurationToMs(duration?: string, defaultMs = 24 * 60 * 60 * 1000): number {
   if (!duration) return defaultMs;
   const match = duration.match(/^(\d+)([smhd])$/);
-  if (!match) return defaultMs;
+  if (!match || !match[1] || !match[2]) return defaultMs;
   const val = parseInt(match[1], 10);
   const unit = match[2];
   switch (unit) {
