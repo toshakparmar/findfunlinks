@@ -174,50 +174,54 @@ pnpm format
 
 ## ☁️ Production Deployment Guide
 
+For a step-by-step walkthrough with Supabase PostgreSQL and Storage configuration, see **[docs/DEPLOYMENT_BACKEND_RENDER.md](file:///d:/Freelancing%20Projects/FindFunLinks/docs/DEPLOYMENT_BACKEND_RENDER.md)**.
+
 ### 1. Deploy Backend API on Render
 
-Render is ideal for deploying the NestJS backend and managing PostgreSQL and Redis.
+Render provides rock-solid hosting for the NestJS backend API connected to Supabase (or any PostgreSQL instance).
 
-#### A. Set Up Database & Redis
+#### A. One-Click Blueprint Deployment (Recommended)
 
-1. On [Render Dashboard](https://dashboard.render.com/), create a new **PostgreSQL** database:
-   - Name: `finallinks-db`
-   - Copy the **Internal Database URL** (or External if hosting outside Render).
-2. Create a new **Redis** instance:
-   - Name: `finallinks-redis`
-   - Copy the **Internal Redis URL**.
+FinalLinks includes a `render.yaml` blueprint. In [Render Dashboard](https://dashboard.render.com/), click **New +** -> **Blueprint**, select this repository, and provide your environment secrets.
 
-#### B. Create Render Web Service for NestJS API
+#### B. Manual Web Service Setup
 
-1. Click **New +** -> **Web Service** -> Connect your GitHub repo (`findfunlinks`).
+1. In [Render Dashboard](https://dashboard.render.com/), click **New +** -> **Web Service** -> Connect GitHub repo (`findfunlinks`).
 2. Configure settings:
    - **Name:** `finallinks-api`
-   - **Language / Environment:** `Node`
+   - **Environment:** `Node`
    - **Branch:** `main`
-   - **Root Directory:** _(leave blank / repository root)_
+   - **Root Directory:** _(leave blank / root)_
    - **Build Command:**
      ```bash
-     pnpm install && pnpm --filter @finallinks/contracts build && pnpm --filter @finallinks/api build && pnpm --filter @finallinks/api prisma migrate deploy
+     pnpm install --frozen-lockfile && pnpm --filter @finallinks/contracts build && npx prisma generate --schema=apps/api/prisma/schema.prisma && npx prisma migrate deploy --schema=apps/api/prisma/schema.prisma && pnpm --filter @finallinks/api build
      ```
    - **Start Command:**
      ```bash
-     pnpm --filter @finallinks/api start:prod
+     node apps/api/dist/main.js
      ```
-3. Set the Environment Variables on Render:
+   - **Health Check Path:** `/api/v1/health`
+3. Set the Production Environment Variables on Render:
    ```env
    NODE_ENV=production
-   PORT=4000
-   DATABASE_URL=postgresql://user:password@hostname:5432/finallinks-db
-   REDIS_URL=redis://hostname:6379
-   JWT_SECRET=your-secure-random-jwt-secret-string-at-least-32-chars
-   JWT_REFRESH_SECRET=your-secure-random-jwt-refresh-secret-string
-   FRONTEND_URL=https://your-web-app.vercel.app
-   ADMIN_URL=https://your-admin-app.vercel.app
-   SMTP_HOST=smtp.sendgrid.net (or your provider)
-   SMTP_PORT=587
-   SMTP_USER=apikey
-   SMTP_PASS=your-smtp-api-key
-   SMTP_FROM=no-reply@finallinks.com
+   PORT=10000
+   ENABLE_SWAGGER=true
+   DATABASE_URL="postgresql://postgres.[REF]:[PASS]@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+   DIRECT_URL="postgresql://postgres.[REF]:[PASS]@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres"
+   JWT_ACCESS_SECRET="generate_random_32_characters_secret_key_access"
+   JWT_REFRESH_SECRET="generate_random_32_characters_secret_key_refresh"
+   CORS_ORIGIN="https://finallinks.com,https://admin.finallinks.com,https://your-web.vercel.app,https://your-admin.vercel.app"
+   SUPABASE_URL="https://[YOUR_PROJECT_REF].supabase.co"
+   SUPABASE_ANON_KEY="your-supabase-anon-key"
+   SUPABASE_SERVICE_ROLE_KEY="your-supabase-service-role-key"
+   SUPABASE_STORAGE_BUCKET="finallinks-media"
+   PUBLIC_WEB_URL="https://finallinks.com"
+   ADMIN_PANEL_URL="https://admin.finallinks.com"
+   OWNER_PANEL_URL="https://admin.finallinks.com"
+   ALLOW_TEMP_PASSWORD_EMAIL=true
+   ```
+   ```
+
    ```
 4. Click **Create Web Service**. Your API will be live at `https://finallinks-api.onrender.com` (Swagger at `/docs`).
 

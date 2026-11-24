@@ -1,0 +1,54 @@
+# Render Infrastructure-as-Code Blueprint
+# Deploy FinalLinks NestJS API on Render
+version: '1'
+
+services:
+  - type: web
+    name: finallinks-api
+    runtime: node
+    plan: starter
+    region: oregon
+    rootDir: .
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @finallinks/contracts build && npx prisma generate --schema=apps/api/prisma/schema.prisma && npx prisma migrate deploy --schema=apps/api/prisma/schema.prisma && pnpm --filter @finallinks/api build
+    startCommand: node apps/api/dist/main.js
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: ENABLE_SWAGGER
+        value: 'true'
+      # Database: Supabase PostgreSQL (Set your actual credentials in Render dashboard)
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      # Authentication & Security: Generate with `openssl rand -hex 32`
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: REFRESH_TOKEN_EXPIRES_IN
+        value: 7d
+      # CORS: Add your Vercel frontend domains (comma-separated, no trailing slash)
+      - key: CORS_ORIGIN
+        sync: false
+      # Supabase Storage & Media
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: finallinks-media
+      # Application URLs
+      - key: ADMIN_PANEL_URL
+        sync: false
+      - key: PUBLIC_WEB_URL
+        sync: false
+      - key: ALLOW_TEMP_PASSWORD_EMAIL
+        value: 'true'
