@@ -65,7 +65,7 @@ You can deploy using either **Blueprint (1-Click)** or **Manual Web Service Setu
    - **Runtime:** `Node`
    - **Build Command:**
      ```bash
-     pnpm install --frozen-lockfile && pnpm --filter @finallinks/contracts build && npx prisma generate --schema=apps/api/prisma/schema.prisma && npx prisma migrate deploy --schema=apps/api/prisma/schema.prisma && pnpm --filter @finallinks/api build
+     pnpm install --frozen-lockfile && pnpm --filter @finallinks/contracts build && pnpm --filter @finallinks/api db:generate && pnpm --filter @finallinks/api db:migrate:deploy && pnpm --filter @finallinks/api build
      ```
    - **Start Command:**
      ```bash
