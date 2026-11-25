@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { CategoryTileStrip } from './CategoryTileStrip';
 import { CategoryCard, CategoryCardSiteItem } from './CategoryCard';
 import { useSearch } from '../lib/search-context';
-import { useWebsiteModal } from '../lib/website-modal-context';
 import { CLIENT_18_CATEGORIES } from '../lib/client-catalog';
 
 export interface DirectoryViewProps {
@@ -13,8 +13,8 @@ export interface DirectoryViewProps {
 }
 
 export function DirectoryView(props?: DirectoryViewProps) {
+  const router = useRouter();
   const { searchQuery } = useSearch();
-  const { openWebsiteModal } = useWebsiteModal();
 
   // Dynamic categories from DB via props, fallback to client catalog
   const visibleCategories = React.useMemo(() => {
@@ -79,7 +79,7 @@ export function DirectoryView(props?: DirectoryViewProps) {
   const q = searchQuery?.toLowerCase().trim() || '';
 
   const handleSelectSite = (site: CategoryCardSiteItem) => {
-    openWebsiteModal(site.slug);
+    router.push(`/website/${encodeURIComponent(site.slug)}`);
   };
 
   return (

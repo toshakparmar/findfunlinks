@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Info, Flag, ArrowRight, RefreshCw } from 'lucide-react';
 import { CircularLoader } from './ui/CircularLoader';
 import { HighlightList, MirrorChip, StarButton } from '@finallinks/ui';
 import type { WebsitePreview, Engagement } from '@finallinks/contracts';
 import { formatTimeAgo } from '../lib/api';
-import { useWebsiteModal } from '../lib/website-modal-context';
 
 export interface SiteRowPanelProps {
   slug: string;
@@ -29,7 +29,6 @@ export const SiteRowPanel: React.FC<SiteRowPanelProps> = ({
   onClose,
   onReport,
 }) => {
-  const { openWebsiteModal } = useWebsiteModal();
   const [data, setData] = useState<WebsitePreview | null>(null);
   const [engagement, setEngagement] = useState<Engagement | null>(null);
   const [loading, setLoading] = useState(true);
@@ -154,13 +153,12 @@ export const SiteRowPanel: React.FC<SiteRowPanelProps> = ({
                 {data.shortDescription && (
                   <p className="text-fs-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                     {data.shortDescription}{' '}
-                    <button
-                      type="button"
-                      onClick={() => openWebsiteModal(slug)}
+                    <Link
+                      href={`/website/${encodeURIComponent(slug)}`}
                       className="font-medium text-brand-blue-400 hover:underline inline-flex items-center ml-1 text-fs-xs"
                     >
                       Read more &rarr;
-                    </button>
+                    </Link>
                   </p>
                 )}
 
@@ -228,13 +226,12 @@ export const SiteRowPanel: React.FC<SiteRowPanelProps> = ({
                 {/* View All Domains Link if > 8 domains */}
                 {data.domainsCount > 8 && (
                   <div className="pt-1 text-center">
-                    <button
-                      type="button"
-                      onClick={() => openWebsiteModal(slug)}
+                    <Link
+                      href={`/website/${encodeURIComponent(slug)}`}
                       className="text-fs-xs font-semibold text-brand-blue-400 hover:underline inline-flex items-center gap-1"
                     >
                       View all {data.domainsCount} domains &rarr;
-                    </button>
+                    </Link>
                   </div>
                 )}
               </div>
@@ -275,14 +272,13 @@ export const SiteRowPanel: React.FC<SiteRowPanelProps> = ({
                   <span>Report</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => openWebsiteModal(slug)}
+                <Link
+                  href={`/website/${encodeURIComponent(slug)}`}
                   className="inline-flex items-center gap-1 px-3 py-1 rounded-lg font-semibold text-brand-blue-400 hover:text-brand-blue-300 hover:bg-brand-blue-500/10 transition-colors"
                 >
                   <span>View details</span>
                   <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                </Link>
               </div>
             </div>
           </div>

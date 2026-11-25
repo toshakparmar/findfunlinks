@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { SiteHeader } from './SiteHeader';
 import { Sidebar } from './Sidebar';
@@ -14,7 +14,6 @@ import { ReportModal } from './ReportModal';
 import { ScrollProgressBar } from './ScrollProgressBar';
 import { GlobalNavigationLoader } from './GlobalNavigationLoader';
 import { useSearch } from '../lib/search-context';
-import { useWebsiteModal } from '../lib/website-modal-context';
 import { CLIENT_18_CATEGORIES } from '../lib/client-catalog';
 
 interface MainLayoutProps {
@@ -23,7 +22,7 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const { reportModalWebsite, setReportModalWebsite } = useSearch();
-  const { openWebsiteModal } = useWebsiteModal();
+  const router = useRouter();
 
   const { resolvedTheme, setTheme } = useTheme();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -91,7 +90,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   const handleSelectSearchResult = (item: SearchResultItem) => {
     setIsSearchOpen(false);
-    openWebsiteModal(item.slug);
+    router.push(`/website/${encodeURIComponent(item.slug)}`);
   };
 
   const pathname = usePathname();

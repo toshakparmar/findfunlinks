@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface WebsiteModalContextType {
   activeSlug: string | null;
@@ -12,24 +13,24 @@ interface WebsiteModalContextType {
 const WebsiteModalContext = createContext<WebsiteModalContextType | undefined>(undefined);
 
 export function WebsiteModalProvider({ children }: { children: React.ReactNode }) {
-  const [activeSlug, setActiveSlug] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
-  const openWebsiteModal = useCallback((slug: string) => {
-    setActiveSlug(slug);
-    setIsOpen(true);
-  }, []);
+  const openWebsiteModal = useCallback(
+    (slug: string) => {
+      if (slug) {
+        router.push(`/website/${encodeURIComponent(slug)}`);
+      }
+    },
+    [router],
+  );
 
-  const closeWebsiteModal = useCallback(() => {
-    setIsOpen(false);
-    setActiveSlug(null);
-  }, []);
+  const closeWebsiteModal = useCallback(() => {}, []);
 
   return (
     <WebsiteModalContext.Provider
       value={{
-        activeSlug,
-        isOpen,
+        activeSlug: null,
+        isOpen: false,
         openWebsiteModal,
         closeWebsiteModal,
       }}

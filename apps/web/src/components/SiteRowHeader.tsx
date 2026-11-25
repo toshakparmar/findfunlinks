@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useRef } from 'react';
+import Link from 'next/link';
 import { ExternalLink, ChevronDown } from 'lucide-react';
 import { NewBadge, Logo } from '@finallinks/ui';
-import { useWebsiteModal } from '../lib/website-modal-context';
 
 export interface SiteRowHeaderProps {
   rank: number;
@@ -40,15 +40,8 @@ export const SiteRowHeader: React.FC<SiteRowHeaderProps> = ({
   onToggle,
   onExternalClick,
 }) => {
-  const { openWebsiteModal } = useWebsiteModal();
   const label = displayName || name;
   const prefetchTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleNameClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openWebsiteModal(slug);
-  };
 
   const prefetchPreview = () => {
     if (prefetchTimerRef.current) return;
@@ -106,10 +99,10 @@ export const SiteRowHeader: React.FC<SiteRowHeaderProps> = ({
           {rank}.
         </span>
 
-        {/* Site Name and Favicon Modal Trigger Button */}
-        <button
-          type="button"
-          onClick={handleNameClick}
+        {/* Site Name and Favicon Link directly to Website Detail Page */}
+        <Link
+          href={`/website/${encodeURIComponent(slug)}`}
+          onClick={(e) => e.stopPropagation()}
           className="flex items-center min-w-0 group/link mr-1.5 sm:mr-2 text-left select-none focus:outline-none"
           title={`View full details for ${name}`}
         >
@@ -149,7 +142,7 @@ export const SiteRowHeader: React.FC<SiteRowHeaderProps> = ({
           <span className="truncate font-medium text-[13px] sm:text-sm md:text-fs-base text-slate-900 dark:text-[var(--text,#F1F5F9)] group-hover/link:text-[var(--primary,#2563EB)] dark:group-hover/link:text-brand-blue-400 transition-colors">
             {label}
           </span>
-        </button>
+        </Link>
 
         {/* Badges container */}
         <div className="hidden sm:flex items-center gap-1.5 shrink-0 ml-1">

@@ -6,7 +6,6 @@ import { Toaster } from 'sonner';
 import { SearchProvider } from '../lib/search-context';
 import { FavoritesProvider } from '../lib/favorites-context';
 import { WebsiteModalProvider } from '../lib/website-modal-context';
-import { WebsiteDetailModal } from './WebsiteDetailModal';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   // Automatically clean up any stale service workers (e.g. from previous local dev projects / MSW)
@@ -31,7 +30,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <SearchProvider>
           <FavoritesProvider>
             {children}
-            <WebsiteDetailModal />
             <Toaster
               position="bottom-right"
               richColors
