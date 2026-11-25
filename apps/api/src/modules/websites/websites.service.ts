@@ -29,6 +29,7 @@ export interface CreateWebsiteAdminInput {
   ownerId?: string;
   ownerName?: string;
   ownerEmail?: string;
+  createdByAdmin?: boolean;
 }
 
 function slugify(text: string): string {
@@ -908,7 +909,38 @@ export class WebsitesService {
     let tempPasswordDispatched: string | null = null;
 
     if (!resolvedOwnerId) {
-      if (input.ownerEmail && input.ownerName) {
+      if (input.createdByAdmin || (!input.ownerEmail && !input.ownerName)) {
+        // Created directly by Admin - No external owner account required
+        let ownerRole = await this.prisma.role.findFirst({
+          where: { type: RoleType.WEBSITE_OWNER },
+        });
+        if (!ownerRole) {
+          ownerRole = await this.prisma.role.create({
+            data: {
+              name: 'Website Owner',
+              description: 'Approved website owner managing their website and domains',
+              type: RoleType.WEBSITE_OWNER,
+              isSystem: true,
+            },
+          });
+        }
+
+        const adminListingEmail = `admin+listing-${Date.now()}-${randomBytes(3).toString('hex')}@finallinks.internal`;
+        const tempPassword = `Admin-${randomBytes(6).toString('hex')}!`;
+        const passwordHash = await argon2.hash(tempPassword);
+
+        const adminOwnerUser = await this.prisma.user.create({
+          data: {
+            email: adminListingEmail,
+            name: `${input.name} (Admin)`,
+            passwordHash,
+            status: UserStatus.ACTIVE,
+            mustChangePassword: false,
+            roleId: ownerRole.id,
+          },
+        });
+        resolvedOwnerId = adminOwnerUser.id;
+      } else if (input.ownerEmail && input.ownerName) {
         const ownerEmail = input.ownerEmail.toLowerCase().trim();
         const existingUser = await this.prisma.user.findUnique({
           where: { email: ownerEmail },

@@ -11,6 +11,7 @@ export interface CategoryTab {
   name: string;
   slug: string;
   count?: number;
+  homeLimit?: number;
 }
 
 interface DirectoryGridProps {

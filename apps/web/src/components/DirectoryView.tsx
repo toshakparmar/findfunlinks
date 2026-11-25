@@ -66,7 +66,11 @@ export function DirectoryView(props?: DirectoryViewProps) {
           };
         }
         const fallbackCat = CLIENT_18_CATEGORIES.find((c) => c.slug === cat.slug);
-        return fallbackCat || CLIENT_18_CATEGORIES[catIdx % CLIENT_18_CATEGORIES.length]!;
+        const resolved = fallbackCat || CLIENT_18_CATEGORIES[catIdx % CLIENT_18_CATEGORIES.length]!;
+        return {
+          ...resolved,
+          homeLimit: cat.homeLimit ?? resolved.homeLimit ?? 10,
+        };
       });
       return mapped.filter((c): c is (typeof CLIENT_18_CATEGORIES)[number] =>
         Boolean(c && c.sites),
@@ -115,7 +119,7 @@ export function DirectoryView(props?: DirectoryViewProps) {
                   accentKey: cat.accentKey,
                   themeColor: cat.themeColor,
                   total: cat.total,
-                  homeLimit: 10,
+                  homeLimit: cat.homeLimit ?? 10,
                 }}
                 sites={matchingSites}
                 onSelectSite={handleSelectSite}

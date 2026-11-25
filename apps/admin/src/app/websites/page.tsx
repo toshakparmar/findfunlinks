@@ -26,6 +26,7 @@ import {
   X,
   Globe,
   User,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface AdminWebsiteItem {
@@ -76,7 +77,7 @@ export default function WebsitesAdminPage() {
   const [regTagline, setRegTagline] = useState('');
   const [regDescription, setRegDescription] = useState('');
   const [regContentRating, setRegContentRating] = useState<'ALL' | 'MATURE'>('ALL');
-  const [ownerMode, setOwnerMode] = useState<'new' | 'existing'>('new');
+  const [ownerMode, setOwnerMode] = useState<'admin' | 'new' | 'existing'>('admin');
   const [regOwnerId, setRegOwnerId] = useState('');
   const [regOwnerName, setRegOwnerName] = useState('');
   const [regOwnerEmail, setRegOwnerEmail] = useState('');
@@ -186,9 +187,11 @@ export default function WebsitesAdminPage() {
         toast.error('Please provide owner name and email address.');
         return;
       }
-    } else if (!regOwnerId) {
-      toast.error('Please select an unassigned owner user.');
-      return;
+    } else if (ownerMode === 'existing') {
+      if (!regOwnerId) {
+        toast.error('Please select an unassigned owner user.');
+        return;
+      }
     }
 
     try {
@@ -200,6 +203,7 @@ export default function WebsitesAdminPage() {
         tagline: regTagline.trim() || undefined,
         description: regDescription.trim() || undefined,
         contentRating: regContentRating,
+        createdByAdmin: ownerMode === 'admin',
         ownerId: ownerMode === 'existing' ? regOwnerId : undefined,
         ownerName: ownerMode === 'new' ? regOwnerName.trim() : undefined,
         ownerEmail: ownerMode === 'new' ? regOwnerEmail.trim() : undefined,
@@ -208,7 +212,9 @@ export default function WebsitesAdminPage() {
       toast.success(
         ownerMode === 'new'
           ? `Website registered! Account credentials emailed to ${regOwnerEmail}.`
-          : 'Website registered successfully!',
+          : ownerMode === 'admin'
+            ? `Website "${regName.trim()}" registered successfully as Admin Listing!`
+            : 'Website registered successfully!',
       );
 
       setRegisterModalOpen(false);
@@ -751,7 +757,20 @@ export default function WebsitesAdminPage() {
                   Owner Account Assignment
                 </span>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setOwnerMode('admin')}
+                    className={`h-10 rounded-lg text-xs font-semibold border transition-colors flex items-center justify-center gap-1.5 ${
+                      ownerMode === 'admin'
+                        ? 'border-[#0B9DF7] bg-[#0B9DF7]/15 text-[#0B9DF7]'
+                        : 'border-[#33373D] bg-[#16181B] text-[#9CA3AF] hover:text-white'
+                    }`}
+                  >
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    Created by Admin
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => setOwnerMode('new')}
@@ -779,7 +798,18 @@ export default function WebsitesAdminPage() {
                   </button>
                 </div>
 
-                {ownerMode === 'new' ? (
+                {ownerMode === 'admin' ? (
+                  <div className="space-y-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
+                    <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
+                      <ShieldCheck className="h-4 w-4 shrink-0" />
+                      <span>Created by Admin (Direct Platform Listing)</span>
+                    </div>
+                    <p className="text-[11px] text-[#D1D5DB] leading-relaxed">
+                      This website will be registered directly as an official platform directory
+                      listing. No owner name, email, or external account credentials are required.
+                    </p>
+                  </div>
+                ) : ownerMode === 'new' ? (
                   <div className="space-y-3 rounded-xl border border-[#33373D] bg-[#16181B] p-3.5">
                     <div>
                       <label className="block text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">
@@ -836,7 +866,7 @@ export default function WebsitesAdminPage() {
                     {availableOwners.filter((o) => !o.hasWebsite).length === 0 && (
                       <p className="text-[11px] text-amber-400">
                         All existing owners already manage a website. Please select &quot;Create New
-                        Owner&quot;.
+                        Owner&quot; or &quot;Created by Admin&quot;.
                       </p>
                     )}
                   </div>

@@ -474,6 +474,7 @@ export class ApiClient {
       ownerId?: string;
       ownerName?: string;
       ownerEmail?: string;
+      createdByAdmin?: boolean;
     }) =>
       this.request<{
         success: boolean;

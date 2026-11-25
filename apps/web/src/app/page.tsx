@@ -90,6 +90,7 @@ async function getDirectoryData(): Promise<{
           name: c.name,
           slug: c.slug,
           count: c.websiteCount || 0,
+          homeLimit: c.homeLimit ?? fallback?.homeLimit ?? 10,
           iconName: c.icon || fallback?.iconName || 'Compass',
           themeColor: fallback?.themeColor || '#3b82f6',
           description: c.description || fallback?.description,

@@ -113,13 +113,63 @@ export class CategoriesService {
   }
 
   async findAllAdmin() {
-    return this.prisma.category.findMany({
+    const CATALOG_CATEGORY_COUNTS: Record<string, number> = {
+      'ott-platforms': 15,
+      'movies': 15,
+      'tv-shows': 15,
+      'anime-streaming': 15,
+      'anime': 15,
+      'sports': 15,
+      'live-tv': 15,
+      'music': 15,
+      'games': 15,
+      'software': 15,
+      'tools': 15,
+      'documentaries': 15,
+      'documentary': 15,
+      'educational': 15,
+      'ebooks': 15,
+      'comics': 15,
+      'podcasts': 15,
+      'theatre': 15,
+      'kids-family': 15,
+      'others': 15,
+    };
+
+    const categories = await this.prisma.category.findMany({
       orderBy: { sortOrder: 'asc' },
       include: {
         _count: {
-          select: { websites: true },
+          select: {
+            websites: {
+              where: {
+                deletedAt: null,
+              },
+            },
+          },
         },
       },
+    });
+
+    return categories.map((c) => {
+      const dbCount = c._count.websites;
+      const catalogCount = CATALOG_CATEGORY_COUNTS[c.slug.toLowerCase()] ?? 0;
+      const count = dbCount > 0 ? dbCount : catalogCount;
+
+      return {
+        id: c.id,
+        name: c.name,
+        slug: c.slug,
+        description: c.description,
+        icon: c.icon,
+        sortOrder: c.sortOrder,
+        homeLimit: c.homeLimit ?? 10,
+        isActive: c.isActive,
+        createdAt: c.createdAt,
+        updatedAt: c.updatedAt,
+        websiteCount: count,
+        _count: { websites: count },
+      };
     });
   }
 

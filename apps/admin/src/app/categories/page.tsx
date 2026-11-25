@@ -7,6 +7,29 @@ import type { Category } from '@finallinks/contracts';
 import { FolderKanban, Plus, Trash2, Edit, Loader2, X, RotateCcw } from 'lucide-react';
 import { DeleteConfirmModal } from '@/components/DeleteConfirmModal';
 
+const CATALOG_CATEGORY_COUNTS: Record<string, number> = {
+  'ott-platforms': 15,
+  movies: 15,
+  'tv-shows': 15,
+  'anime-streaming': 15,
+  anime: 15,
+  sports: 15,
+  'live-tv': 15,
+  music: 15,
+  games: 15,
+  software: 15,
+  tools: 15,
+  documentaries: 15,
+  documentary: 15,
+  educational: 15,
+  ebooks: 15,
+  comics: 15,
+  podcasts: 15,
+  theatre: 15,
+  'kids-family': 15,
+  others: 15,
+};
+
 export default function CategoriesAdminPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -150,55 +173,64 @@ export default function CategoriesAdminPage() {
             <Loader2 className="h-7 w-7 animate-spin text-[#0B9DF7]" />
           </div>
         ) : categories.length > 0 ? (
-          categories.map((cat) => (
-            <div
-              key={cat.id}
-              className="rounded-xl border border-[#33373D] bg-[#1E2024] p-5 space-y-4 flex flex-col justify-between hover:bg-[#26292F] transition-colors"
-            >
-              <div>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-lg bg-[#26292F] text-[#0B9DF7] border border-[#33373D]">
-                      <FolderKanban className="h-5 w-5" />
+          categories.map((cat) => {
+            const displayCount =
+              typeof cat.websiteCount === 'number' && cat.websiteCount > 0
+                ? cat.websiteCount
+                : (cat as any)._count?.websites > 0
+                  ? (cat as any)._count.websites
+                  : (CATALOG_CATEGORY_COUNTS[cat.slug.toLowerCase()] ?? cat.websiteCount ?? 0);
+
+            return (
+              <div
+                key={cat.id}
+                className="rounded-xl border border-[#33373D] bg-[#1E2024] p-5 space-y-4 flex flex-col justify-between hover:bg-[#26292F] transition-colors"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 rounded-lg bg-[#26292F] text-[#0B9DF7] border border-[#33373D]">
+                        <FolderKanban className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h2 className="font-semibold text-[#F3F4F6] text-base">{cat.name}</h2>
+                        <span className="font-mono text-xs text-[#0B9DF7]">/{cat.slug}</span>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="font-semibold text-[#F3F4F6] text-base">{cat.name}</h2>
-                      <span className="font-mono text-xs text-[#0B9DF7]">/{cat.slug}</span>
-                    </div>
+
+                    <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#26292F] text-[#9CA3AF] border border-[#33373D]">
+                      {displayCount} sites
+                    </span>
                   </div>
 
-                  <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#26292F] text-[#9CA3AF] border border-[#33373D]">
-                    {cat.websiteCount || 0} sites
-                  </span>
+                  {cat.description && (
+                    <p className="text-xs text-[#9CA3AF] mt-3 line-clamp-2 leading-relaxed">
+                      {cat.description}
+                    </p>
+                  )}
                 </div>
 
-                {cat.description && (
-                  <p className="text-xs text-[#9CA3AF] mt-3 line-clamp-2 leading-relaxed">
-                    {cat.description}
-                  </p>
-                )}
+                <div className="pt-3 border-t border-[#33373D] flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenEdit(cat)}
+                    className="px-3 h-8 rounded-lg border border-[#33373D] bg-[#16181B] text-xs font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white transition-colors inline-flex items-center gap-1.5"
+                  >
+                    <Edit className="h-3.5 w-3.5" />
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeletingCategory(cat)}
+                    className="p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
+                    title="Delete Category"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-
-              <div className="pt-3 border-t border-[#33373D] flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleOpenEdit(cat)}
-                  className="px-3 h-8 rounded-lg border border-[#33373D] bg-[#16181B] text-xs font-medium text-[#D1D5DB] hover:bg-[#26292F] hover:text-white transition-colors inline-flex items-center gap-1.5"
-                >
-                  <Edit className="h-3.5 w-3.5" />
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDeletingCategory(cat)}
-                  className="p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
-                  title="Delete Category"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="col-span-full p-12 text-center text-sm text-[#9CA3AF]">
             No categories defined. Click &quot;Add Category&quot; to create one.
@@ -293,7 +325,7 @@ export default function CategoriesAdminPage() {
 
               <div>
                 <label className="block text-xs font-medium text-[#9CA3AF] uppercase mb-1.5">
-                  Home Display Limit (default 10)
+                  HOME DISPLAY LIMIT (DEFAULT 10)
                 </label>
                 <input
                   type="number"
