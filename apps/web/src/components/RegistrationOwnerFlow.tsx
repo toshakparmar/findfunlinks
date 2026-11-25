@@ -126,8 +126,8 @@ export function RegistrationOwnerFlow({
   const contentRatingValue = watch('contentRating') || ContentRating.ALL;
 
   const handleAddMirror = () => {
-    if (mirrors.length >= 10) {
-      toast.error('Maximum 10 additional mirror domains allowed.');
+    if (mirrors.length >= 4) {
+      toast.error('Maximum 4 additional mirror domains allowed (5 total domains limit).');
       return;
     }
     setMirrors([...mirrors, '']);
@@ -746,7 +746,9 @@ export function RegistrationOwnerFlow({
                   <div className="flex items-center justify-between">
                     <label className="text-xs sm:text-fs-sm font-semibold text-token">
                       Additional working domains / mirrors{' '}
-                      <span className="text-token/40 font-normal">(optional, max 10)</span>
+                      <span className="text-token/40 font-normal">
+                        (optional, max 4 additional mirrors — 5 total limit)
+                      </span>
                     </label>
                     <button
                       type="button"

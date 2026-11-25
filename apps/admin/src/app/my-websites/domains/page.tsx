@@ -95,6 +95,10 @@ export default function OwnerDomainsPage() {
   const handleCreateSingle = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!singleForm.url) return;
+    if (domains.length >= 5) {
+      toast.error('Maximum 5 domains and mirrors allowed per website.');
+      return;
+    }
     setSubmitting(true);
     try {
       const created = await api.owner.createDomain(singleForm);
@@ -112,6 +116,10 @@ export default function OwnerDomainsPage() {
   const handleCreateBulk = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bulkText.trim()) return;
+    if (domains.length >= 5) {
+      toast.error('Maximum 5 domains and mirrors allowed per website.');
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -255,18 +263,30 @@ export default function OwnerDomainsPage() {
             </button>
           )}
           <button
-            onClick={() => setBulkModalOpen(true)}
+            onClick={() => {
+              if (domains.length >= 5) {
+                toast.error('Maximum 5 domains and mirrors allowed per website.');
+                return;
+              }
+              setBulkModalOpen(true);
+            }}
             className="inline-flex items-center gap-2 h-10 px-3.5 rounded-lg border border-[#33373D] bg-[#1E2024] text-sm font-medium text-[#F3F4F6] hover:bg-[#26292F] transition-colors"
           >
             <Layers className="w-4 h-4 text-[#0B9DF7]" />
             Bulk Import
           </button>
           <button
-            onClick={() => setSingleModalOpen(true)}
+            onClick={() => {
+              if (domains.length >= 5) {
+                toast.error('Maximum 5 domains and mirrors allowed per website.');
+                return;
+              }
+              setSingleModalOpen(true);
+            }}
             className="inline-flex items-center gap-2 h-10 px-4 rounded-lg bg-[#0B9DF7] hover:bg-[#0A8FE0] text-sm font-semibold text-white transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Add Mirror
+            Add Mirror {domains.length >= 5 ? '(5/5 limit)' : `(${domains.length}/5)`}
           </button>
         </div>
       </div>

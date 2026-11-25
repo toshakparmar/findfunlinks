@@ -169,14 +169,14 @@ export const SiteRowHeader: React.FC<SiteRowHeaderProps> = ({
 
       {/* Right section: External Link and Chevron Button */}
       <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
-        {/* External Link Icon (hidden on narrow mobile <= 479px per 4.1) */}
+        {/* External Link Icon (visible on mobile, tablet, and desktop) */}
         <a
           href={targetUrl}
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleExternalClick}
           aria-label={`Open ${name} in a new tab`}
-          className="hidden min-[480px]:flex items-center justify-center p-2 rounded-lg text-[var(--text-3,#6B7893)] hover:text-white hover:bg-slate-800/50 transition-colors shrink-0 cursor-pointer"
+          className="flex items-center justify-center p-1.5 sm:p-2 rounded-lg text-[var(--text-3,#6B7893)] hover:text-white hover:bg-slate-800/50 transition-colors shrink-0 cursor-pointer"
           title={`Open ${name} in a new tab`}
         >
           <ExternalLink className="w-3.5 h-3.5 stroke-[2] group-hover/row:stroke-[var(--accent,#3B82F6)] transition-colors" />

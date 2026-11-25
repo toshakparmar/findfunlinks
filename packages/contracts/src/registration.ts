@@ -97,7 +97,7 @@ export const SubmitRegistrationSchema = z.object({
         .regex(SafeUrlRegex, 'Valid HTTP/HTTPS mirror URL required')
         .refine(isSafePublicUrl, { message: 'Mirror must be a public web domain.' }),
     )
-    .max(10, 'Maximum 10 additional mirror domains allowed during initial application')
+    .max(4, 'Maximum 4 additional mirror domains allowed (5 total domains limit)')
     .default([]),
   categoryId: z.string().min(1, 'Valid category is required'),
   contentRating: z.nativeEnum(ContentRating).default(ContentRating.ALL),
@@ -164,7 +164,7 @@ export const ResubmitRegistrationSchema = z.object({
   primaryUrl: z.string().trim().regex(SafeUrlRegex).refine(isSafePublicUrl).optional(),
   additionalDomains: z
     .array(z.string().trim().regex(SafeUrlRegex).refine(isSafePublicUrl))
-    .max(10)
+    .max(4)
     .optional(),
   categoryId: z.string().optional(),
   contentRating: z.nativeEnum(ContentRating).optional(),

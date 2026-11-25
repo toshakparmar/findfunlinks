@@ -165,7 +165,7 @@ export class RegistrationsService {
           (input as any).telegramId?.trim() || input.telegramOrDiscord?.trim() || null,
         websiteName: input.websiteName.trim(),
         primaryUrl: input.primaryUrl.trim(),
-        additionalDomains: input.additionalDomains || [],
+        additionalDomains: (input.additionalDomains || []).slice(0, 4),
         description: input.description.trim(),
         categoryId: input.categoryId,
         proposedTags: input.proposedTags || [],
@@ -617,9 +617,9 @@ export class RegistrationsService {
           },
         });
 
-        // 4b. Additional Mirrors
+        // 4b. Additional Mirrors (max 4 mirrors, up to 5 total domains)
         if (reg.additionalDomains && Array.isArray(reg.additionalDomains)) {
-          for (const mirrorUrl of reg.additionalDomains) {
+          for (const mirrorUrl of reg.additionalDomains.slice(0, 4)) {
             try {
               const mirrorHostname = this.normalizeHostname(mirrorUrl);
               const exists = await tx.domain.findUnique({ where: { hostname: mirrorHostname } });

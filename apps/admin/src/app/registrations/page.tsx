@@ -520,16 +520,19 @@ function RegistrationsContent() {
                 </div>
               </div>
 
-              {/* Mirrors / Additional Domains */}
+              {/* Mirrors / Additional Domains (Max 4 additional mirrors) */}
               {Array.isArray(selectedItem.additionalDomains) &&
                 selectedItem.additionalDomains.length > 0 && (
                   <div className="p-4 rounded-xl bg-[#16181B] border border-[#33373D] space-y-2">
                     <div className="flex items-center gap-2 font-semibold text-[#F3F4F6]">
                       <Radio className="h-4 w-4 text-[#0B9DF7]" />
-                      <span>Additional Mirrors ({selectedItem.additionalDomains.length})</span>
+                      <span>
+                        Additional Mirrors ({selectedItem.additionalDomains.slice(0, 4).length} /
+                        Max 4)
+                      </span>
                     </div>
                     <div className="space-y-1.5">
-                      {selectedItem.additionalDomains.map((m: string, i: number) => (
+                      {selectedItem.additionalDomains.slice(0, 4).map((m: string, i: number) => (
                         <div
                           key={i}
                           className="font-mono text-xs text-[#0B9DF7] bg-[#1E2024] p-2.5 rounded-lg border border-[#33373D]"

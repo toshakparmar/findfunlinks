@@ -258,9 +258,9 @@ export const SiteRowPanel: React.FC<SiteRowPanelProps> = ({
                   <span className="tabular-nums">{formatTimeAgo(data.lastVerifiedAt)}</span>
                 </div>
 
-                {/* Stack of Top Mirror Buttons */}
+                {/* Stack of Top Mirror Buttons (Max 5 domains) */}
                 <div className="space-y-1.5 pt-1">
-                  {(data.mirrors || []).slice(0, 8).map((m) => (
+                  {(data.mirrors || []).slice(0, 5).map((m) => (
                     <MirrorChip
                       key={m.id}
                       id={m.id}
@@ -274,17 +274,15 @@ export const SiteRowPanel: React.FC<SiteRowPanelProps> = ({
                   ))}
                 </div>
 
-                {/* View All Domains Link if > 8 domains */}
-                {data.domainsCount > 8 && (
-                  <div className="pt-1 text-center">
-                    <Link
-                      href={`/website/${encodeURIComponent(slug)}`}
-                      className="text-fs-xs font-semibold text-brand-blue-400 hover:underline inline-flex items-center gap-1"
-                    >
-                      View all {data.domainsCount} domains &rarr;
-                    </Link>
-                  </div>
-                )}
+                {/* View Details Link */}
+                <div className="pt-1 text-center">
+                  <Link
+                    href={`/website/${encodeURIComponent(slug)}`}
+                    className="text-fs-xs font-semibold text-brand-blue-400 hover:underline inline-flex items-center gap-1"
+                  >
+                    View details &amp; all mirrors &rarr;
+                  </Link>
+                </div>
               </div>
             </div>
 

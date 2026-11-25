@@ -179,14 +179,14 @@ export const SiteDomainsDrawer: React.FC<SiteDomainsDrawerProps> = ({
           <div>
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider">
-                Active Mirrors & Domains ({site.domains?.length || 0})
+                Active Mirrors &amp; Domains ({site.domains?.slice(0, 5).length || 0})
               </h4>
               <span className="text-fs-xs text-[var(--text-3,#6B7893)]">Click link to open</span>
             </div>
 
             <div className="space-y-2">
               {site.domains && site.domains.length > 0 ? (
-                site.domains.map((domain, index) => {
+                site.domains.slice(0, 5).map((domain, index) => {
                   const isOnline = domain.status === 'ACTIVE';
                   const isDegraded = domain.status === 'DEGRADED';
                   const statusColor = isOnline ? '#22C55E' : isDegraded ? '#F59E0B' : '#EF4444';

@@ -59,7 +59,7 @@ export function CategoriesOverview({
           iconName="LayoutGrid"
           accentColor="#00A3FF"
           total={1820}
-          showCount={false}
+          showCount={true}
         />
 
         {/* 29 Seeded Categories + Dynamic DB Categories */}
@@ -72,7 +72,7 @@ export function CategoriesOverview({
             iconName={cat.iconName}
             accentColor={cat.themeColor}
             total={cat.total}
-            showCount={false}
+            showCount={true}
           />
         ))}
       </div>

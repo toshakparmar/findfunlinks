@@ -145,6 +145,14 @@ export class DomainsService {
   async create(websiteId: string, input: CreateDomainInput, user: UserContext) {
     await this.verifyWebsiteOwnership(websiteId, user);
 
+    // Enforce maximum 5 domains and mirrors per website
+    const currentDomainCount = await this.prisma.domain.count({
+      where: { websiteId },
+    });
+    if (currentDomainCount >= 5) {
+      throw new BadRequestException('A website can have a maximum of 5 domains and mirrors.');
+    }
+
     const fullUrl = this.ensureFullUrl(input.url);
     const hostname = this.normalizeHostname(input.url);
 
@@ -177,6 +185,15 @@ export class DomainsService {
 
   async createBulk(websiteId: string, input: BulkCreateDomainInput, user: UserContext) {
     await this.verifyWebsiteOwnership(websiteId, user);
+
+    const initialCount = await this.prisma.domain.count({
+      where: { websiteId },
+    });
+    if (initialCount >= 5) {
+      throw new BadRequestException(
+        'A website can have a maximum of 5 domains and mirrors. Maximum limit already reached.',
+      );
+    }
 
     const addedDomains: Array<Record<string, unknown>> = [];
     const skippedReasons: Array<{ line: string; reason: string }> = [];
@@ -212,6 +229,15 @@ export class DomainsService {
     // Parse each entry in the items array
     for (const item of itemsToProcess) {
       try {
+        const currentCount = await this.prisma.domain.count({ where: { websiteId } });
+        if (currentCount >= 5) {
+          skippedReasons.push({
+            line: item.url,
+            reason: 'Maximum limit of 5 domains per website reached.',
+          });
+          continue;
+        }
+
         const fullUrl = this.ensureFullUrl(item.url);
         const hostname = this.normalizeHostname(item.url);
 
