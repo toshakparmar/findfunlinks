@@ -204,11 +204,11 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
   ];
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8 animate-in fade-in duration-150">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-8 space-y-4 sm:space-y-8 pb-24 sm:pb-8 animate-in fade-in duration-150">
       {/* 1. Breadcrumb Navigation (Readable in Light & Dark Mode) */}
       <nav
         aria-label="Breadcrumb"
-        className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-[#9CA3AF] overflow-x-auto no-scrollbar py-0.5"
+        className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-medium text-slate-500 dark:text-[#9CA3AF] overflow-x-auto no-scrollbar py-0.5"
       >
         <Link
           href="/"
@@ -235,7 +235,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
 
       {/* 2. Website Hero Banner Card (Responsive for Mobile, Tablet, Desktop) */}
       <div
-        className="rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#070D1E] p-4 sm:p-7 md:p-8 shadow-xl dark:shadow-2xl relative overflow-hidden transition-colors"
+        className="rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#070D1E] p-3.5 sm:p-7 md:p-8 shadow-xl dark:shadow-2xl relative overflow-hidden transition-colors"
         style={{
           boxShadow: `0 0 35px -10px color-mix(in srgb, ${accentColor} 20%, transparent)`,
         }}
@@ -246,11 +246,11 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
           style={{ backgroundColor: accentColor }}
         />
 
-        <div className="relative z-10 flex flex-col md:flex-row items-start justify-between gap-5 sm:gap-6">
-          <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5 md:gap-6 min-w-0 flex-1 w-full">
+        <div className="relative z-10 flex flex-col md:flex-row items-start justify-between gap-3 sm:gap-6">
+          <div className="flex items-start gap-3 sm:gap-5 md:gap-6 min-w-0 flex-1 w-full">
             {/* Website Favicon / Logo Box */}
             <div
-              className="h-14 w-14 sm:h-18 sm:w-18 md:h-20 md:w-20 shrink-0 rounded-2xl p-2 bg-slate-50 dark:bg-[#060A16] flex items-center justify-center border-2 overflow-hidden shadow-sm dark:shadow-lg transition-transform"
+              className="h-12 w-12 sm:h-18 sm:w-18 md:h-20 md:w-20 shrink-0 rounded-xl sm:rounded-2xl p-1.5 sm:p-2 bg-slate-50 dark:bg-[#060A16] flex items-center justify-center border-2 overflow-hidden shadow-sm dark:shadow-lg transition-transform"
               style={{
                 borderColor: accentColor,
                 boxShadow: `0 0 16px -2px color-mix(in srgb, ${accentColor} 35%, transparent)`,
@@ -270,7 +270,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                 />
               ) : null}
               <div
-                className={`w-full h-full items-center justify-center font-extrabold text-xl sm:text-2xl ${
+                className={`w-full h-full items-center justify-center font-extrabold text-base sm:text-2xl ${
                   website.logoUrl ? 'hidden' : 'flex'
                 }`}
                 style={{ color: accentColor }}
@@ -279,28 +279,38 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
               </div>
             </div>
 
-            {/* Title, Category & Dynamic Badges */}
-            <div className="space-y-2.5 min-w-0 flex-1 w-full">
+            {/* Title, Tagline & Badges */}
+            <div className="space-y-1.5 sm:space-y-2.5 min-w-0 flex-1">
+              {/* H1 Main Heading */}
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight break-words leading-tight">
+                {website.name}
+              </h1>
+
+              {/* Subtitle / Tagline */}
+              <p className="text-[11px] sm:text-xs md:text-sm text-slate-600 dark:text-[#9CA3AF] max-w-2xl leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-none">
+                {website.tagline || `Official verified directory listing for ${website.name}.`}
+              </p>
+
               {/* Badges Bar (Responsive wrap) */}
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap pt-0.5">
                 {website.categoryName && (
                   <Link
                     href={`/category/${website.categorySlug || 'all-links'}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-colors shadow-sm"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-bold border transition-colors shadow-sm"
                     style={{
                       borderColor: `color-mix(in srgb, ${accentColor} 50%, transparent)`,
                       backgroundColor: `color-mix(in srgb, ${accentColor} 10%, transparent)`,
                       color: accentColor,
                     }}
                   >
-                    <CategoryIcon className="w-3.5 h-3.5" />
+                    <CategoryIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     <span>{website.categoryName}</span>
                   </Link>
                 )}
 
                 {/* Content Language Badge */}
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-[#0B132B] text-slate-700 dark:text-[#93C5FD] border border-slate-200 dark:border-[#1A2442]">
-                  <Languages className="w-3.5 h-3.5 text-[#0B9DF7]" />
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-slate-100 dark:bg-[#0B132B] text-slate-700 dark:text-[#93C5FD] border border-slate-200 dark:border-[#1A2442]">
+                  <Languages className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0B9DF7]" />
                   <span>{website.language || 'English'}</span>
                 </span>
 
@@ -310,7 +320,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                     href={`https://t.me/${website.telegramId.replace('@', '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#0088cc]/10 dark:bg-[#0088cc]/15 text-[#0088cc] dark:text-[#38bdf8] border border-[#0088cc]/25 dark:border-[#0088cc]/30 hover:bg-[#0088cc]/20 transition-colors"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-[#0088cc]/10 dark:bg-[#0088cc]/15 text-[#0088cc] dark:text-[#38bdf8] border border-[#0088cc]/25 dark:border-[#0088cc]/30 hover:bg-[#0088cc]/20 transition-colors"
                     title={`Contact on Telegram: ${website.telegramId}`}
                   >
                     <Send className="w-3 h-3" />
@@ -324,7 +334,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
 
                 {/* Content Rating Badge */}
                 <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold border ${
                     website.contentRating === ContentRating.MATURE
                       ? 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-500/30'
                       : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30'
@@ -337,7 +347,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                 <button
                   type="button"
                   onClick={handleToggleStar}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
+                  className={`inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
                     isStarred
                       ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-400 dark:border-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.3)]'
                       : 'bg-slate-100 dark:bg-[#0B132B] text-slate-700 dark:text-[#D1D5DB] border border-slate-200 dark:border-[#1A2442] hover:border-amber-400 hover:text-amber-600 dark:hover:text-amber-400'
@@ -345,7 +355,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                   title={isStarred ? 'Remove your star' : 'Give star to this website'}
                 >
                   <Star
-                    className={`w-3.5 h-3.5 transition-transform ${
+                    className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform ${
                       isStarred
                         ? 'fill-amber-400 text-amber-500 scale-110'
                         : 'text-amber-500 hover:scale-110'
@@ -355,27 +365,17 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                   <span className="font-mono tabular-nums opacity-90">({starCount})</span>
                 </button>
               </div>
-
-              {/* H1 Main Heading */}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight break-words">
-                {website.name}
-              </h1>
-
-              {/* Subtitle / Tagline */}
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-[#9CA3AF] max-w-2xl leading-relaxed">
-                {website.tagline || `Official verified directory listing for ${website.name}.`}
-              </p>
             </div>
           </div>
 
           {/* Action Buttons (Share & Report Link) */}
-          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto self-stretch md:self-auto pt-2 md:pt-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 w-full sm:w-auto self-stretch md:self-auto pt-1 sm:pt-0">
             <button
               type="button"
               onClick={handleShare}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#1A2442] bg-slate-100 dark:bg-[#0B132B] px-4 py-2 text-xs font-semibold text-slate-700 dark:text-[#D1D5DB] hover:bg-slate-200 dark:hover:bg-[#16203D] hover:text-slate-900 dark:hover:text-white transition-colors shadow-sm"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1 sm:gap-1.5 rounded-lg sm:rounded-xl border border-slate-200 dark:border-[#1A2442] bg-slate-100 dark:bg-[#0B132B] px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-[#D1D5DB] hover:bg-slate-200 dark:hover:bg-[#16203D] hover:text-slate-900 dark:hover:text-white transition-colors shadow-sm"
             >
-              <Share2 className="h-3.5 w-3.5" />
+              <Share2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               <span>Share</span>
             </button>
 
@@ -385,24 +385,24 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                 setSelectedDomainForReport(undefined);
                 setReportModalOpen(true);
               }}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#1A2442] bg-slate-100 dark:bg-[#0B132B] px-4 py-2 text-xs font-semibold text-slate-600 dark:text-[#9CA3AF] hover:text-rose-500 dark:hover:text-rose-400 hover:bg-slate-200 dark:hover:bg-[#16203D] transition-colors shadow-sm"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1 sm:gap-1.5 rounded-lg sm:rounded-xl border border-slate-200 dark:border-[#1A2442] bg-slate-100 dark:bg-[#0B132B] px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-[#9CA3AF] hover:text-rose-500 dark:hover:text-rose-400 hover:bg-slate-200 dark:hover:bg-[#16203D] transition-colors shadow-sm"
             >
-              <Flag className="h-3.5 w-3.5" />
+              <Flag className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               <span>Report Link</span>
             </button>
           </div>
         </div>
 
         {/* 3. WORKING DOMAINS & MIRRORS (Max 5) — Placed directly at top for instant access on laptop, tablet & mobile without scrolling */}
-        <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-slate-200 dark:border-[#1A2442] space-y-3.5 sm:space-y-4">
+        <div className="mt-3.5 sm:mt-6 pt-3.5 sm:pt-6 border-t border-slate-200 dark:border-[#1A2442] space-y-2.5 sm:space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Radio className="h-4 w-4 text-[#00A3FF]" />
-              <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Radio className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#00A3FF]" />
+              <h2 className="text-[11px] sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                 Working Domains &amp; Mirrors ({displayedDomains.length})
               </h2>
             </div>
-            <span className="text-[11px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-500/20">
+            <span className="text-[10px] sm:text-[11px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-500/20">
               auto-monitored
             </span>
           </div>
@@ -518,19 +518,19 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
               </div>
 
               {/* Mobile Cards Stack (< 640px) */}
-              <div className="block sm:hidden space-y-2.5">
+              <div className="block sm:hidden space-y-2">
                 {displayedDomains.map((dom) => {
                   const isActive = dom.status === DomainStatus.ACTIVE;
 
                   return (
                     <div
                       key={dom.id}
-                      className="p-3.5 rounded-xl border border-slate-200 dark:border-[#1A2442] bg-slate-50 dark:bg-[#0B132B]/60 space-y-3"
+                      className="p-2.5 rounded-xl border border-slate-200 dark:border-[#1A2442] bg-slate-50 dark:bg-[#0B132B]/60 space-y-2"
                     >
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5 font-medium text-xs">
+                      <div className="flex items-center justify-between gap-1.5">
+                        <div className="flex items-center gap-1.5 font-medium text-[11px]">
                           <span
-                            className={`h-2 w-2 rounded-full ${
+                            className={`h-1.5 w-1.5 rounded-full ${
                               isActive ? 'bg-emerald-500' : 'bg-rose-500'
                             }`}
                           />
@@ -545,11 +545,11 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-1.5">
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-200 dark:bg-[#070D1E] text-slate-600 dark:text-[#9CA3AF] border border-slate-300 dark:border-[#1A2442] uppercase">
+                        <div className="flex items-center gap-1">
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-slate-200 dark:bg-[#070D1E] text-slate-600 dark:text-[#9CA3AF] border border-slate-300 dark:border-[#1A2442] uppercase">
                             {dom.type}
                           </span>
-                          <span className="px-1.5 py-0.5 rounded font-mono text-[11px] bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
+                          <span className="px-1.5 py-0.5 rounded font-mono text-[10px] bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
                             {dom.lastResponseMs ? `${dom.lastResponseMs}ms` : '48ms'}
                           </span>
                         </div>
@@ -560,22 +560,22 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                           {dom.hostname}
                         </p>
                         {dom.label && (
-                          <p className="text-[11px] text-slate-500 dark:text-[#9CA3AF] truncate mt-0.5">
+                          <p className="text-[10px] text-slate-500 dark:text-[#9CA3AF] truncate mt-0.5">
                             {dom.label}
                           </p>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2 pt-1 border-t border-slate-200 dark:border-[#1A2442]">
+                      <div className="flex items-center gap-1.5 pt-1.5 border-t border-slate-200 dark:border-[#1A2442]">
                         <button
                           type="button"
                           onClick={() => handleCopy(dom.url)}
-                          className="flex-1 py-2 px-3 rounded-lg border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#0B132B] text-xs font-semibold text-slate-700 dark:text-[#D1D5DB] flex items-center justify-center gap-1.5"
+                          className="flex-1 py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#0B132B] text-[11px] font-semibold text-slate-700 dark:text-[#D1D5DB] flex items-center justify-center gap-1"
                         >
                           {copiedUrl === dom.url ? (
-                            <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                            <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                           ) : (
-                            <Copy className="h-3.5 w-3.5" />
+                            <Copy className="h-3 w-3" />
                           )}
                           <span>Copy</span>
                         </button>
@@ -583,11 +583,11 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                         <button
                           type="button"
                           onClick={() => handleOpenDomain(dom)}
-                          className="flex-1 py-2 px-3 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
+                          className="flex-1 py-1.5 px-2.5 rounded-lg text-[11px] font-bold text-white flex items-center justify-center gap-1 shadow-sm active:scale-95"
                           style={{ backgroundColor: accentColor }}
                         >
                           <span>Visit</span>
-                          <ExternalLink className="h-3.5 w-3.5" />
+                          <ExternalLink className="h-3 w-3" />
                         </button>
 
                         <button
@@ -596,10 +596,10 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                             setSelectedDomainForReport(dom);
                             setReportModalOpen(true);
                           }}
-                          className="p-2 rounded-lg border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#0B132B] text-slate-400 hover:text-rose-500"
+                          className="p-1.5 rounded-lg border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#0B132B] text-slate-400 hover:text-rose-500"
                           title="Report broken mirror"
                         >
-                          <Flag className="h-3.5 w-3.5" />
+                          <Flag className="h-3 w-3" />
                         </button>
                       </div>
                     </div>
@@ -615,11 +615,11 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
         </div>
 
         {/* 4. Features & Highlights 4-Grid (Responsive for Mobile & Tablet) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-slate-200 dark:border-[#1A2442]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mt-3.5 sm:mt-6 pt-3.5 sm:pt-6 border-t border-slate-200 dark:border-[#1A2442]">
           {highlights.map((h, i) => (
             <div
               key={i}
-              className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 dark:bg-[#0B132B]/70 border border-slate-200 dark:border-[#1A2442] text-xs sm:text-sm text-slate-700 dark:text-[#D1D5DB] font-medium transition-colors hover:border-slate-300 dark:hover:border-[#2A3B66]"
+              className="flex items-center gap-2 p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-[#0B132B]/70 border border-slate-200 dark:border-[#1A2442] text-[11px] sm:text-sm text-slate-700 dark:text-[#D1D5DB] font-medium transition-colors hover:border-slate-300 dark:hover:border-[#2A3B66]"
             >
               <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">+</span>
               <span className="truncate">{h}</span>
@@ -627,54 +627,54 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
           ))}
         </div>
 
-        {/* 4. Recommended Fast Live Mirror CTA Bar (Responsive full width for Mobile) */}
+        {/* 5. Recommended Fast Live Mirror CTA Bar (Responsive full width for Mobile) */}
         {primaryDomain && (
-          <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-slate-200 dark:border-[#1A2442] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-50/90 dark:bg-[#060A16]/60 -mx-4 -mb-4 sm:-mx-7 sm:-mb-7 md:-mx-8 md:-mb-8 p-4 sm:p-7 md:p-8 rounded-b-2xl sm:rounded-b-3xl">
-            <div className="flex items-center gap-3">
-              <span className="flex h-3 w-3 relative shrink-0">
+          <div className="mt-3.5 sm:mt-6 pt-3.5 sm:pt-6 border-t border-slate-200 dark:border-[#1A2442] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 bg-slate-50/90 dark:bg-[#060A16]/60 -mx-3.5 -mb-3.5 sm:-mx-7 sm:-mb-7 md:-mx-8 md:-mb-8 p-3.5 sm:p-7 md:p-8 rounded-b-2xl sm:rounded-b-3xl">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <span className="flex h-2.5 w-2.5 sm:h-3 sm:w-3 relative shrink-0">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-emerald-500" />
               </span>
               <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                  <span className="text-[11px] sm:text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                     Recommended Fast Mirror
                   </span>
-                  <span className="text-[11px] font-mono text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
+                  <span className="text-[10px] sm:text-[11px] font-mono text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
                     {primaryDomain.lastResponseMs ? `${primaryDomain.lastResponseMs}ms` : '115ms'}
                   </span>
                 </div>
-                <p className="text-xs font-mono text-slate-600 dark:text-[#9CA3AF] truncate mt-0.5">
+                <p className="text-[11px] sm:text-xs font-mono text-slate-600 dark:text-[#9CA3AF] truncate mt-0.5">
                   {primaryDomain.hostname}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5 w-full sm:w-auto">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => handleCopy(primaryDomain.url)}
-                className="h-11 px-3.5 rounded-xl border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#0B132B] text-slate-600 dark:text-[#9CA3AF] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#16203D] transition-colors flex items-center justify-center shrink-0"
+                className="h-9 sm:h-11 px-3 sm:px-3.5 rounded-lg sm:rounded-xl border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#0B132B] text-slate-600 dark:text-[#9CA3AF] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#16203D] transition-colors flex items-center justify-center shrink-0"
                 title="Copy mirror URL"
               >
                 {copiedUrl === primaryDomain.url ? (
-                  <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                 ) : (
-                  <Copy className="h-4 w-4" />
+                  <Copy className="h-3.5 w-3.5" />
                 )}
               </button>
 
               <button
                 type="button"
                 onClick={() => handleOpenDomain(primaryDomain)}
-                className="flex-1 sm:flex-none h-11 px-6 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95"
+                className="flex-1 sm:flex-none h-9 sm:h-11 px-4 sm:px-6 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm text-white flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95"
                 style={{
                   backgroundColor: accentColor,
                   boxShadow: `0 0 20px -2px color-mix(in srgb, ${accentColor} 55%, transparent)`,
                 }}
               >
                 <span>Visit {website.name}</span>
-                <ExternalLink className="h-4 w-4" />
+                <ExternalLink className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
@@ -682,12 +682,12 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
       </div>
 
       {/* 5. Details Section: About Website & Specifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
         {/* Left Column: About & Description Section (2 Columns on Desktop) */}
-        <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-8">
           {/* About & Description Section */}
-          <div className="rounded-2xl border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#070D1E] p-5 sm:p-6 shadow-xl space-y-4">
-            <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+          <div className="rounded-xl sm:rounded-2xl border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#070D1E] p-4 sm:p-6 shadow-xl space-y-3 sm:space-y-4">
+            <h2 className="text-xs sm:text-base font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               About {website.name}
             </h2>
             <div className="text-xs sm:text-sm text-slate-700 dark:text-[#D1D5DB] leading-relaxed whitespace-pre-wrap">
@@ -696,15 +696,15 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
 
             {/* Tags Pills */}
             {website.tags && website.tags.length > 0 && (
-              <div className="pt-4 border-t border-slate-200 dark:border-[#1A2442]">
-                <p className="text-[11px] font-semibold text-slate-500 dark:text-[#9CA3AF] uppercase tracking-wider mb-2">
-                  Tags & Category
+              <div className="pt-3 sm:pt-4 border-t border-slate-200 dark:border-[#1A2442]">
+                <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-[#9CA3AF] uppercase tracking-wider mb-1.5 sm:mb-2">
+                  Tags &amp; Category
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {website.tags.map((t) => (
                     <span
                       key={t.id}
-                      className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#0B132B] text-xs font-medium text-slate-700 dark:text-[#D1D5DB] border border-slate-200 dark:border-[#1A2442]"
+                      className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg bg-slate-100 dark:bg-[#0B132B] text-[11px] sm:text-xs font-medium text-slate-700 dark:text-[#D1D5DB] border border-slate-200 dark:border-[#1A2442]"
                     >
                       #{t.name}
                     </span>
@@ -716,29 +716,29 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
         </div>
 
         {/* Right Sidebar: Rate Website, Guarantee & Spec Sheet */}
-        <div className="space-y-6">
-          {/* Rate & Give Stars Card (Matching Image 1 Design & Functionality) */}
-          <div className="rounded-2xl border border-amber-300/60 dark:border-amber-500/30 bg-white dark:bg-[#070D1E] p-5 space-y-3.5 shadow-lg">
+        <div className="space-y-4 sm:space-y-6">
+          {/* Rate & Give Stars Card */}
+          <div className="rounded-xl sm:rounded-2xl border border-amber-300/60 dark:border-amber-500/30 bg-white dark:bg-[#070D1E] p-4 sm:p-5 space-y-2.5 sm:space-y-3.5 shadow-lg">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm">
-                <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
+              <div className="flex items-center gap-1.5 sm:gap-2 text-slate-900 dark:text-white font-bold text-xs sm:text-sm">
+                <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-amber-400 text-amber-500" />
                 <span>Rate &amp; Give Stars</span>
               </div>
-              <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+              <span className="text-[10px] sm:text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 sm:px-2.5 py-0.5 rounded-full border border-amber-500/20">
                 {isStarred ? 'Starred' : 'Give Star'}
               </span>
             </div>
 
-            <p className="text-xs text-slate-600 dark:text-[#94A3B8] leading-relaxed">
+            <p className="text-[11px] sm:text-xs text-slate-600 dark:text-[#94A3B8] leading-relaxed">
               Help the community by starring {website.name}. Your vote calibrates directory ranking.
             </p>
 
-            {/* Interactive Star Button matching Image 1 */}
-            <div className="pt-1 flex items-center gap-3">
+            {/* Interactive Star Button */}
+            <div className="pt-1 flex items-center gap-2.5 sm:gap-3 flex-wrap">
               <button
                 type="button"
                 onClick={handleToggleStar}
-                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
                   isStarred
                     ? 'bg-amber-500/20 text-amber-400 border border-amber-400/50 shadow-[0_0_16px_rgba(245,158,11,0.35)]'
                     : 'bg-slate-100 dark:bg-[#0B132B] text-slate-700 dark:text-[#D1D5DB] border border-slate-200 dark:border-[#1A2442] hover:border-amber-400/50 hover:text-amber-500 hover:bg-amber-500/5'
@@ -746,27 +746,31 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
                 title={isStarred ? 'Remove your star' : 'Give star to this website'}
               >
                 <Star
-                  className={`w-4 h-4 transition-transform ${
+                  className={`w-3.5 h-3.5 transition-transform ${
                     isStarred ? 'fill-amber-400 text-amber-400 scale-110' : 'text-amber-500'
                   } ${starAnimating ? 'animate-bounce' : ''}`}
                 />
-                <span className="font-mono tabular-nums text-sm font-bold">{starCount}</span>
-                <span className="text-xs font-semibold">{isStarred ? 'Starred' : 'Give Star'}</span>
+                <span className="font-mono tabular-nums text-xs sm:text-sm font-bold">
+                  {starCount}
+                </span>
+                <span className="text-[11px] sm:text-xs font-semibold">
+                  {isStarred ? 'Starred' : 'Give Star'}
+                </span>
               </button>
 
-              <span className="text-xs text-slate-500 dark:text-[#64748B]">
+              <span className="text-[11px] sm:text-xs text-slate-500 dark:text-[#64748B]">
                 {isStarred ? '✓ You gave a star!' : 'Click to add your star'}
               </span>
             </div>
           </div>
 
           {/* FinalLinks 5m Telemetry Guarantee Box */}
-          <div className="rounded-2xl border border-emerald-300 dark:border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-950/20 p-5 space-y-3 shadow-lg">
-            <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-400 font-bold text-sm">
-              <ShieldCheck className="h-5 w-5 shrink-0" />
+          <div className="rounded-xl sm:rounded-2xl border border-emerald-300 dark:border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-950/20 p-4 sm:p-5 space-y-2 sm:space-y-3 shadow-lg">
+            <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-400 font-bold text-xs sm:text-sm">
+              <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
               <span>FinalLinks 5m Telemetry Guarantee</span>
             </div>
-            <p className="text-xs text-slate-600 dark:text-[#9CA3AF] leading-relaxed">
+            <p className="text-[11px] sm:text-xs text-slate-600 dark:text-[#9CA3AF] leading-relaxed">
               Every mirror endpoint is continuously pinged every 5 minutes for DNS resolution, SSL
               security, and live uptime. Down or hijacked links are automatically replaced with
               active mirrors.
@@ -774,25 +778,25 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
           </div>
 
           {/* Listing Specs Card */}
-          <div className="rounded-2xl border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#070D1E] p-5 space-y-3.5 text-xs shadow-xl">
-            <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] pb-2 border-b border-slate-200 dark:border-[#1A2442]">
+          <div className="rounded-xl sm:rounded-2xl border border-slate-200 dark:border-[#1A2442] bg-white dark:bg-[#070D1E] p-4 sm:p-5 space-y-2.5 sm:space-y-3.5 text-xs shadow-xl">
+            <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px] sm:text-[11px] pb-1.5 sm:pb-2 border-b border-slate-200 dark:border-[#1A2442]">
               Directory Listing Specs
             </h3>
 
-            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-[#1A2442]/60">
+            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-[#1A2442]/60 text-[11px] sm:text-xs">
               <span className="text-slate-500 dark:text-[#9CA3AF]">Category</span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {website.categoryName || 'General'}
               </span>
             </div>
 
-            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-[#1A2442]/60">
+            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-[#1A2442]/60 text-[11px] sm:text-xs">
               <span className="text-slate-500 dark:text-[#9CA3AF]">Content Language</span>
               <span className="font-semibold text-[#0B9DF7]">{website.language || 'English'}</span>
             </div>
 
             {website.telegramId && (
-              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-[#1A2442]/60">
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-[#1A2442]/60 text-[11px] sm:text-xs">
                 <span className="text-slate-500 dark:text-[#9CA3AF]">Telegram ID</span>
                 <a
                   href={`https://t.me/${website.telegramId.replace('@', '')}`}
@@ -807,25 +811,25 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
               </div>
             )}
 
-            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-[#1A2442]/60">
+            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-[#1A2442]/60 text-[11px] sm:text-xs">
               <span className="text-slate-500 dark:text-[#9CA3AF]">Content Rating</span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {website.contentRating === ContentRating.MATURE ? '18+ Mature' : 'All Audiences'}
               </span>
             </div>
 
-            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-[#1A2442]/60">
+            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-[#1A2442]/60 text-[11px] sm:text-xs">
               <span className="text-slate-500 dark:text-[#9CA3AF]">Monitored Mirrors</span>
               <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                 {displayedDomains.length} live endpoints
               </span>
             </div>
 
-            <div className="flex justify-between py-1">
+            <div className="flex justify-between py-1 text-[11px] sm:text-xs">
               <span className="text-slate-500 dark:text-[#9CA3AF]">Status</span>
               <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Verified & Listed
+                Verified &amp; Listed
               </span>
             </div>
           </div>
