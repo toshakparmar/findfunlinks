@@ -645,7 +645,7 @@ export default function WebsitesAdminPage() {
       {/* Register Website Modal */}
       {registerModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-lg rounded-2xl border border-[#33373D] bg-[#1E2024] p-6 shadow-2xl space-y-5 animate-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl rounded-2xl border border-[#33373D] bg-[#1E2024] p-6 sm:p-7 shadow-2xl space-y-5 animate-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-[#33373D] pb-3.5">
               <div className="flex items-center gap-2.5">
                 <Globe className="h-5 w-5 text-[#0B9DF7]" />
@@ -663,35 +663,37 @@ export default function WebsitesAdminPage() {
             </div>
 
             <form onSubmit={handleRegisterSubmit} className="space-y-4 text-sm">
-              <div>
-                <label className="block text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1.5">
-                  Website Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={regName}
-                  onChange={(e) => setRegName(e.target.value)}
-                  placeholder="e.g. AnimeWave Portal"
-                  className="w-full h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] transition-colors"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1.5">
+                    Website Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={regName}
+                    onChange={(e) => setRegName(e.target.value)}
+                    placeholder="e.g. AnimeWave Portal"
+                    className="w-full h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1.5">
+                    Primary Mirror URL *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={regUrl}
+                    onChange={(e) => setRegUrl(e.target.value)}
+                    placeholder="https://animewave.org"
+                    className="w-full h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] transition-colors font-mono text-xs"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1.5">
-                  Primary Mirror URL *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={regUrl}
-                  onChange={(e) => setRegUrl(e.target.value)}
-                  placeholder="https://animewave.org"
-                  className="w-full h-11 rounded-lg border border-[#33373D] bg-[#16181B] px-3.5 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] transition-colors font-mono text-xs"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1.5">
                     Category *
@@ -757,44 +759,44 @@ export default function WebsitesAdminPage() {
                   Owner Account Assignment
                 </span>
 
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   <button
                     type="button"
                     onClick={() => setOwnerMode('admin')}
-                    className={`h-10 rounded-lg text-xs font-semibold border transition-colors flex items-center justify-center gap-1.5 ${
+                    className={`h-11 rounded-lg text-xs font-semibold border transition-colors flex items-center justify-center gap-1.5 px-2 ${
                       ownerMode === 'admin'
                         ? 'border-[#0B9DF7] bg-[#0B9DF7]/15 text-[#0B9DF7]'
                         : 'border-[#33373D] bg-[#16181B] text-[#9CA3AF] hover:text-white'
                     }`}
                   >
-                    <ShieldCheck className="h-3.5 w-3.5" />
-                    Created by Admin
+                    <ShieldCheck className="h-4 w-4 shrink-0" />
+                    <span>Created by Admin</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setOwnerMode('new')}
-                    className={`h-10 rounded-lg text-xs font-semibold border transition-colors flex items-center justify-center gap-1.5 ${
+                    className={`h-11 rounded-lg text-xs font-semibold border transition-colors flex items-center justify-center gap-1.5 px-2 ${
                       ownerMode === 'new'
                         ? 'border-[#0B9DF7] bg-[#0B9DF7]/15 text-[#0B9DF7]'
                         : 'border-[#33373D] bg-[#16181B] text-[#9CA3AF] hover:text-white'
                     }`}
                   >
-                    <User className="h-3.5 w-3.5" />
-                    Create New Owner
+                    <User className="h-4 w-4 shrink-0" />
+                    <span>Create New Owner</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setOwnerMode('existing')}
-                    className={`h-10 rounded-lg text-xs font-semibold border transition-colors flex items-center justify-center gap-1.5 ${
+                    className={`h-11 rounded-lg text-xs font-semibold border transition-colors flex items-center justify-center gap-1.5 px-2 ${
                       ownerMode === 'existing'
                         ? 'border-[#0B9DF7] bg-[#0B9DF7]/15 text-[#0B9DF7]'
                         : 'border-[#33373D] bg-[#16181B] text-[#9CA3AF] hover:text-white'
                     }`}
                   >
-                    <User className="h-3.5 w-3.5" />
-                    Assign Existing Owner
+                    <User className="h-4 w-4 shrink-0" />
+                    <span>Assign Existing Owner</span>
                   </button>
                 </div>
 
@@ -811,31 +813,33 @@ export default function WebsitesAdminPage() {
                   </div>
                 ) : ownerMode === 'new' ? (
                   <div className="space-y-3 rounded-xl border border-[#33373D] bg-[#16181B] p-3.5">
-                    <div>
-                      <label className="block text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">
-                        Owner Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        required={ownerMode === 'new'}
-                        value={regOwnerName}
-                        onChange={(e) => setRegOwnerName(e.target.value)}
-                        placeholder="John Doe"
-                        className="w-full h-10 rounded-lg border border-[#33373D] bg-[#1E2024] px-3 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">
-                        Owner Email * (Credentials sent here)
-                      </label>
-                      <input
-                        type="email"
-                        required={ownerMode === 'new'}
-                        value={regOwnerEmail}
-                        onChange={(e) => setRegOwnerEmail(e.target.value)}
-                        placeholder="owner@example.com"
-                        className="w-full h-10 rounded-lg border border-[#33373D] bg-[#1E2024] px-3 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] text-xs"
-                      />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">
+                          Owner Full Name *
+                        </label>
+                        <input
+                          type="text"
+                          required={ownerMode === 'new'}
+                          value={regOwnerName}
+                          onChange={(e) => setRegOwnerName(e.target.value)}
+                          placeholder="John Doe"
+                          className="w-full h-10 rounded-lg border border-[#33373D] bg-[#1E2024] px-3 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">
+                          Owner Email * (Credentials sent here)
+                        </label>
+                        <input
+                          type="email"
+                          required={ownerMode === 'new'}
+                          value={regOwnerEmail}
+                          onChange={(e) => setRegOwnerEmail(e.target.value)}
+                          placeholder="owner@example.com"
+                          className="w-full h-10 rounded-lg border border-[#33373D] bg-[#1E2024] px-3 text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none focus:border-[#0B9DF7] text-xs"
+                        />
+                      </div>
                     </div>
                     <p className="text-[11px] text-[#9CA3AF] leading-relaxed">
                       💡 A secure temporary password will be generated and dispatched to this email
