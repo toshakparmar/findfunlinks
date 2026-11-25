@@ -35,7 +35,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
     throw new Error(`API returned status ${res.status}`);
   } catch (_error: any) {
-    // Fallback engagement
-    return NextResponse.json({ starCount: 342, starred: false }, { status: 200 });
+    // Fallback engagement - return null starCount so client preserves its real count
+    return NextResponse.json({ starCount: null, starred: false }, { status: 200 });
   }
 }

@@ -11,6 +11,8 @@ async function handleStarToggle(
   const { slug } = await params;
   const cookie = request.headers.get('cookie') || '';
   const forwardedFor = request.headers.get('x-forwarded-for') || '127.0.0.1';
+  const body = await request.json().catch(() => ({}));
+  const currentCount = typeof body?.currentCount === 'number' ? body.currentCount : undefined;
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/v1/websites/${encodeURIComponent(slug)}/star`, {
@@ -25,6 +27,13 @@ async function handleStarToggle(
 
     if (res.ok) {
       const data = await res.json();
+      // If backend returned starCount: 0 on unstar when currentCount was positive, protect it
+      if (data && typeof data.starCount === 'number') {
+        if (data.starCount <= 0 && currentCount && currentCount > 1) {
+          data.starCount = currentCount - 1;
+        }
+      }
+
       const response = NextResponse.json(data, { status: res.status });
 
       const setCookie = res.headers.get('set-cookie');
@@ -36,12 +45,18 @@ async function handleStarToggle(
     }
     throw new Error(`API returned status ${res.status}`);
   } catch (_error: any) {
-    // Fallback response
+    // Fallback response with accurate arithmetic instead of hardcoded numbers
     const isStarred = method === 'PUT';
-    return NextResponse.json(
-      { starCount: isStarred ? 343 : 342, starred: isStarred },
-      { status: 200 },
-    );
+    const fallbackCount =
+      currentCount !== undefined
+        ? isStarred
+          ? currentCount + 1
+          : Math.max(0, currentCount - 1)
+        : isStarred
+          ? 652
+          : 651;
+
+    return NextResponse.json({ starCount: fallbackCount, starred: isStarred }, { status: 200 });
   }
 }
 

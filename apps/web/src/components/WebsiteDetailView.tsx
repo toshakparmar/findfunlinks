@@ -21,7 +21,6 @@ import {
   Send,
   Languages,
   Star,
-  Sparkles,
 } from 'lucide-react';
 
 interface WebsiteDetailViewProps {
@@ -68,8 +67,6 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
   const initialStars = website.stars || website.starCount || website.viewCount || 890;
   const [starCount, setStarCount] = useState<number>(initialStars);
   const [isStarred, setIsStarred] = useState<boolean>(false);
-  const [userRating, setUserRating] = useState<number>(0);
-  const [hoverRating, setHoverRating] = useState<number>(0);
   const [starAnimating, setStarAnimating] = useState(false);
 
   // Load user star and rating status from localStorage & live server telemetry
@@ -79,10 +76,6 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
         const storedStar = localStorage.getItem(`finallinks_star_${website.slug}`);
         if (storedStar === 'true') {
           setIsStarred(true);
-        }
-        const storedRating = localStorage.getItem(`finallinks_rating_${website.slug}`);
-        if (storedRating) {
-          setUserRating(parseInt(storedRating, 10));
         }
       } catch {}
 
@@ -122,6 +115,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
       const res = await fetch(`/api/public/websites/${encodeURIComponent(website.slug)}/star`, {
         method: nextStarred ? 'PUT' : 'DELETE',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentCount: starCount }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -145,15 +139,6 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
         toast.success(`⭐ You gave a star to ${website.name}!`);
       }
     }
-  };
-
-  // Handle 5-Star Rating Widget
-  const handleRateWebsite = (stars: number) => {
-    setUserRating(stars);
-    try {
-      localStorage.setItem(`finallinks_rating_${website.slug}`, String(stars));
-    } catch {}
-    toast.success(`⭐ Rated ${website.name} ${stars}/5 stars! Thank you!`);
   };
 
   const catMeta = getCategoryMetadata(website.categorySlug || '', website.categoryName);
@@ -726,55 +711,47 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
 
         {/* Right Sidebar: Rate Website, Guarantee & Spec Sheet */}
         <div className="space-y-6">
-          {/* Rate & Give Stars Card (Dynamic Interactive 5-Star Widget) */}
-          <div className="rounded-2xl border border-amber-300 dark:border-amber-500/30 bg-amber-50/70 dark:bg-amber-950/20 p-5 space-y-3.5 shadow-lg">
+          {/* Rate & Give Stars Card (Matching Image 1 Design & Functionality) */}
+          <div className="rounded-2xl border border-amber-300/60 dark:border-amber-500/30 bg-white dark:bg-[#070D1E] p-5 space-y-3.5 shadow-lg">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-amber-800 dark:text-amber-400 font-bold text-sm">
-                <Sparkles className="h-4 w-4" />
-                <span>Rate & Give Stars</span>
+              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm">
+                <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
+                <span>Rate &amp; Give Stars</span>
               </div>
-              <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-300">
-                {userRating > 0 ? `${userRating}/5` : 'Rate'}
+              <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                {isStarred ? 'Starred' : 'Give Star'}
               </span>
             </div>
 
-            <p className="text-xs text-slate-600 dark:text-[#9CA3AF] leading-relaxed">
-              Help the community by rating {website.name}. Your vote calibrates directory ranking.
+            <p className="text-xs text-slate-600 dark:text-[#94A3B8] leading-relaxed">
+              Help the community by starring {website.name}. Your vote calibrates directory ranking.
             </p>
 
-            {/* 5 Interactive Stars */}
-            <div className="flex items-center gap-2 pt-1">
-              {[1, 2, 3, 4, 5].map((starIndex) => {
-                const filled =
-                  hoverRating >= starIndex || (!hoverRating && userRating >= starIndex);
+            {/* Interactive Star Button matching Image 1 */}
+            <div className="pt-1 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleToggleStar}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
+                  isStarred
+                    ? 'bg-amber-500/20 text-amber-400 border border-amber-400/50 shadow-[0_0_16px_rgba(245,158,11,0.35)]'
+                    : 'bg-slate-100 dark:bg-[#0B132B] text-slate-700 dark:text-[#D1D5DB] border border-slate-200 dark:border-[#1A2442] hover:border-amber-400/50 hover:text-amber-500 hover:bg-amber-500/5'
+                }`}
+                title={isStarred ? 'Remove your star' : 'Give star to this website'}
+              >
+                <Star
+                  className={`w-4 h-4 transition-transform ${
+                    isStarred ? 'fill-amber-400 text-amber-400 scale-110' : 'text-amber-500'
+                  } ${starAnimating ? 'animate-bounce' : ''}`}
+                />
+                <span className="font-mono tabular-nums text-sm font-bold">{starCount}</span>
+                <span className="text-xs font-semibold">{isStarred ? 'Starred' : 'Give Star'}</span>
+              </button>
 
-                return (
-                  <button
-                    key={starIndex}
-                    type="button"
-                    onMouseEnter={() => setHoverRating(starIndex)}
-                    onMouseLeave={() => setHoverRating(0)}
-                    onClick={() => handleRateWebsite(starIndex)}
-                    className="p-1 text-amber-400 hover:scale-125 transition-transform cursor-pointer focus:outline-none"
-                    title={`Rate ${starIndex} out of 5 stars`}
-                  >
-                    <Star
-                      className={`h-6 w-6 transition-colors ${
-                        filled
-                          ? 'fill-amber-400 text-amber-500 drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]'
-                          : 'text-slate-300 dark:text-slate-600'
-                      }`}
-                    />
-                  </button>
-                );
-              })}
+              <span className="text-xs text-slate-500 dark:text-[#64748B]">
+                {isStarred ? '✓ You gave a star!' : 'Click to add your star'}
+              </span>
             </div>
-
-            {userRating > 0 && (
-              <p className="text-[11px] font-medium text-emerald-700 dark:text-emerald-400 pt-1">
-                ✓ You rated this website {userRating} stars!
-              </p>
-            )}
           </div>
 
           {/* FinalLinks 5m Telemetry Guarantee Box */}

@@ -35,7 +35,9 @@ export const StarButton: React.FC<StarButtonProps> = ({
 
   useEffect(() => {
     setStarred(initialStarred);
-    setCount(initialCount);
+    if (typeof initialCount === 'number' && initialCount > 0) {
+      setCount(initialCount);
+    }
   }, [initialStarred, initialCount]);
 
   const handleClick = async (e: React.MouseEvent) => {
@@ -43,8 +45,10 @@ export const StarButton: React.FC<StarButtonProps> = ({
     e.preventDefault();
     if (disabled || loading) return;
 
+    const prevStarred = starred;
+    const prevCount = count;
     const nextStarred = !starred;
-    const nextCount = nextStarred ? count + 1 : Math.max(0, count - 1);
+    const nextCount = nextStarred ? prevCount + 1 : Math.max(0, prevCount - 1);
 
     // Optimistic UI
     setStarred(nextStarred);
@@ -58,14 +62,14 @@ export const StarButton: React.FC<StarButtonProps> = ({
         const result = await onToggle(nextStarred);
         if (result && typeof result.count === 'number') {
           // Safeguard: if result.count is 0 but we were unstarring a site with existing stars, use nextCount
-          const finalCount = result.count === 0 && nextCount > 0 ? nextCount : result.count;
+          const finalCount = result.count <= 0 && nextCount > 0 ? nextCount : result.count;
           setCount(finalCount);
-          setStarred(result.starred);
+          setStarred(result.starred ?? nextStarred);
         }
       } catch {
         // Revert to state before click on failure
-        setStarred(starred);
-        setCount(count);
+        setStarred(prevStarred);
+        setCount(prevCount);
       } finally {
         setLoading(false);
       }

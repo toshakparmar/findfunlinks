@@ -78,29 +78,80 @@ export const SiteRowPanel: React.FC<SiteRowPanelProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  // Check localStorage on mount for this website
+  const [localStarred, setLocalStarred] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(`finallinks_star_${slug}`);
+        if (stored === 'true') {
+          setLocalStarred(true);
+        }
+      } catch {}
+    }
+  }, [slug]);
+
   const handleStarToggle = async (nextStarred: boolean) => {
+    const currentStars =
+      engagement?.starCount && engagement.starCount > 0
+        ? engagement.starCount
+        : data?.starCount && data.starCount > 0
+          ? data.starCount
+          : 651;
+
+    const nextCount = nextStarred ? currentStars + 1 : Math.max(0, currentStars - 1);
+    setLocalStarred(nextStarred);
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(`finallinks_star_${slug}`, String(nextStarred));
+      } catch {}
+    }
+
     try {
       const res = await fetch(`/api/public/websites/${encodeURIComponent(slug)}/star`, {
         method: nextStarred ? 'PUT' : 'DELETE',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentCount: currentStars }),
       });
+
       if (res.ok) {
         const result: Engagement = await res.json();
-        setEngagement(result);
+        const safeCount =
+          result && typeof result.starCount === 'number' && result.starCount > 0
+            ? result.starCount
+            : nextCount;
+
+        const updated = {
+          starCount: safeCount,
+          starred: result?.starred ?? nextStarred,
+        };
+        setEngagement(updated);
         if (data) {
-          setData({ ...data, starCount: result.starCount });
+          setData({ ...data, starCount: safeCount });
         }
-        return { count: result.starCount, starred: result.starred };
+        return { count: safeCount, starred: updated.starred };
       }
-      return undefined;
     } catch (e) {
-      console.error('Failed to toggle star:', e);
-      throw e;
+      console.warn('Network issue during star toggle, using optimistic state:', e);
     }
+
+    // Fallback if API fails: maintain optimistic count
+    const fallback = { starCount: nextCount, starred: nextStarred };
+    setEngagement(fallback);
+    if (data) {
+      setData({ ...data, starCount: nextCount });
+    }
+    return { count: nextCount, starred: nextStarred };
   };
 
-  const currentStarCount = engagement?.starCount ?? data?.starCount ?? 0;
-  const isStarred = engagement?.starred ?? false;
+  const isStarred = localStarred || (engagement?.starred ?? false);
+  const currentStarCount =
+    engagement?.starCount && engagement.starCount > 0
+      ? engagement.starCount
+      : data?.starCount && data.starCount > 0
+        ? data.starCount
+        : 0;
 
   return (
     <motion.div

@@ -104,7 +104,7 @@ export async function GET(
       accentKey: foundCat.themeColor || '#2563EB',
     },
     rankInCategory: foundSite.rank || 1,
-    starCount: 342,
+    starCount: foundSite.stars || foundSite.starCount || foundSite.viewCount || 651,
     domainsCount: mirrors.length,
     onlineCount: activeMirrors.length,
     fastestMirror: mirrors[0] ? { url: mirrors[0].url, ms: mirrors[0].responseMs } : null,
