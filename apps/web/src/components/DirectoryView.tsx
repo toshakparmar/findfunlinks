@@ -115,6 +115,7 @@ export function DirectoryView(props?: DirectoryViewProps) {
                   accentKey: cat.accentKey,
                   themeColor: cat.themeColor,
                   total: cat.total,
+                  homeLimit: 10,
                 }}
                 sites={matchingSites}
                 onSelectSite={handleSelectSite}

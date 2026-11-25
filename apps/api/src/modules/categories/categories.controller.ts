@@ -45,7 +45,7 @@ export class CategoriesController {
   async findBySlug(
     @Param('slug') slug: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(1000), ParseIntPipe) limit: number,
   ) {
     return this.categoriesService.findBySlug(slug, page, limit);
   }

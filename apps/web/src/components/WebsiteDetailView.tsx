@@ -41,6 +41,8 @@ interface WebsiteDetailViewProps {
     telegramId?: string | null;
     contentRating: ContentRating;
     isFeatured?: boolean;
+    stars?: number;
+    starCount?: number;
     viewCount?: number;
     socialLinks?: Record<string, string>;
     domains: DomainItemData[];
@@ -63,14 +65,14 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
   // Dynamic Starring State & Persistence
-  const initialStars = website.viewCount || 890;
+  const initialStars = website.stars || website.starCount || website.viewCount || 890;
   const [starCount, setStarCount] = useState<number>(initialStars);
   const [isStarred, setIsStarred] = useState<boolean>(false);
   const [userRating, setUserRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [starAnimating, setStarAnimating] = useState(false);
 
-  // Load user star and rating status from localStorage
+  // Load user star and rating status from localStorage & live server telemetry
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -83,6 +85,19 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
           setUserRating(parseInt(storedRating, 10));
         }
       } catch {}
+
+      // Fetch live engagement status to ensure star count is accurate
+      fetch(`/api/public/websites/${encodeURIComponent(website.slug)}/engagement`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data && typeof data.starCount === 'number' && data.starCount > 0) {
+            setStarCount(data.starCount);
+            if (typeof data.starred === 'boolean') {
+              setIsStarred(data.starred);
+            }
+          }
+        })
+        .catch(() => {});
     }
   }, [website.slug]);
 
@@ -104,10 +119,21 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
 
     // Call backend star API
     try {
-      await fetch(`/api/public/websites/${encodeURIComponent(website.slug)}/star`, {
+      const res = await fetch(`/api/public/websites/${encodeURIComponent(website.slug)}/star`, {
         method: nextStarred ? 'PUT' : 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data.starCount === 'number') {
+          // Safeguard: If website had existing stars, don't drop to 0
+          const finalCount = data.starCount === 0 && nextCount > 0 ? nextCount : data.starCount;
+          setStarCount(finalCount);
+          if (typeof data.starred === 'boolean') {
+            setIsStarred(data.starred);
+          }
+        }
+      }
       if (nextStarred) {
         toast.success(`⭐ You gave a star to ${website.name}! Thank you!`);
       } else {

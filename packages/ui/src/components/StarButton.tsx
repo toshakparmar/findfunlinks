@@ -57,13 +57,15 @@ export const StarButton: React.FC<StarButtonProps> = ({
       try {
         const result = await onToggle(nextStarred);
         if (result && typeof result.count === 'number') {
-          setCount(result.count);
+          // Safeguard: if result.count is 0 but we were unstarring a site with existing stars, use nextCount
+          const finalCount = result.count === 0 && nextCount > 0 ? nextCount : result.count;
+          setCount(finalCount);
           setStarred(result.starred);
         }
       } catch {
-        // Revert on failure
-        setStarred(!nextStarred);
-        setCount(starred ? count : count - 1);
+        // Revert to state before click on failure
+        setStarred(starred);
+        setCount(count);
       } finally {
         setLoading(false);
       }

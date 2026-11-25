@@ -259,7 +259,7 @@ export class ApiClient {
         method: star ? 'PUT' : 'DELETE',
       }),
     getCategories: () => this.request<Category[]>('/api/v1/categories'),
-    getCategoryBySlug: (slug: string, page = 1, limit = 20) =>
+    getCategoryBySlug: (slug: string, page = 1, limit = 1000) =>
       this.request<CategoryWithWebsites>(`/api/v1/categories/${slug}?page=${page}&limit=${limit}`),
     getTags: () => this.request<Tag[]>('/api/v1/tags'),
     submitRegistration: (input: SubmitRegistrationInput) =>

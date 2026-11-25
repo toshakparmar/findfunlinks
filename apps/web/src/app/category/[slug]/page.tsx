@@ -67,7 +67,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   let sites: any[] = [];
 
   try {
-    const data: any = await api.public.getCategoryBySlug(slug).catch(() => null);
+    const data: any = await api.public.getCategoryBySlug(slug, 1, 1000).catch(() => null);
     const cat = data?.category || data;
     if (cat && (cat.name || cat.slug)) {
       category = {
@@ -78,7 +78,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         description: cat.description,
         total: data.pagination?.total ?? (data.websites || []).length,
       };
-      sites = (data.websites || []).map((w: any, idx: number) => ({
+      const dbSites = (data.websites || []).map((w: any, idx: number) => ({
         id: w.id,
         rank: idx + 1,
         name: w.name,
@@ -91,6 +91,22 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         createdAt: w.createdAt,
         isFeatured: w.isFeatured,
       }));
+
+      // Merge with static catalog if available so that all websites in DB and catalog are visible
+      const staticCat = ALL_CATALOG_CATEGORIES.find((c) => c.slug === slug);
+      if (staticCat && staticCat.sites) {
+        const existingSlugs = new Set(dbSites.map((s: any) => s.slug.toLowerCase()));
+        const additionalSites = staticCat.sites
+          .filter((s: any) => !existingSlugs.has(s.slug.toLowerCase()))
+          .map((s: any, idx: number) => ({
+            ...s,
+            rank: dbSites.length + idx + 1,
+          }));
+        sites = [...dbSites, ...additionalSites];
+        category.total = sites.length;
+      } else {
+        sites = dbSites;
+      }
     }
   } catch {}
 

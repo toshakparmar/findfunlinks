@@ -69,6 +69,8 @@ function buildCatalogSitePayload(found: any, cat: any) {
     telegramId: found.telegramId || null,
     contentRating: (found.contentRating as ContentRating) || ContentRating.ALL,
     isFeatured: found.isFeatured ?? true,
+    stars: found.stars || found.starCount || found.viewCount || 890,
+    starCount: found.starCount || found.stars || found.viewCount || 890,
     viewCount: found.viewCount || 890,
     domains: rawDomains.map((d: any, idx: number) => ({
       id: String(d.id || `${found.id}-m-${idx}`),
@@ -220,6 +222,8 @@ export default async function WebsiteDetailPage({ params }: WebsitePageProps) {
         telegramId: (data as any).telegramId || null,
         contentRating: (data.contentRating as ContentRating) || ContentRating.ALL,
         isFeatured: data.isFeatured ?? true,
+        stars: (data as any).stars ?? (data as any).starCount ?? data.viewCount ?? 850,
+        starCount: (data as any).starCount ?? (data as any).stars ?? data.viewCount ?? 850,
         viewCount: data.viewCount || 850,
         socialLinks: (data as unknown as { socialLinks?: Record<string, string> }).socialLinks,
         domains: (data.domains || []).map((d) => ({

@@ -42,7 +42,7 @@ export class CategoriesService {
     }));
   }
 
-  async findBySlug(slug: string, page = 1, limit = 20) {
+  async findBySlug(slug: string, page = 1, limit = 1000) {
     const category = await this.prisma.category.findUnique({
       where: { slug: slug.toLowerCase() },
     });

@@ -247,6 +247,8 @@ export class WebsitesService {
       seoDescription: website.seoDescription,
       socialLinks: website.socialLinks,
       viewCount: website.viewCount + 1,
+      stars: Math.max(website.stars || 0, website.starCount || 0),
+      starCount: Math.max(website.stars || 0, website.starCount || 0),
       category: website.category,
       tags: website.tags.map((t) => t.tag),
       domains: website.domains,
@@ -490,8 +492,10 @@ export class WebsitesService {
     });
 
     const isStarred = existingStar?.status === 'VALID';
+    const currentStars = Math.max(website.stars || 0, website.starCount || 0);
     return {
-      starCount: website.starCount ?? website.stars ?? 0,
+      starCount: currentStars,
+      stars: currentStars,
       starred: isStarred,
     };
   }
@@ -526,10 +530,23 @@ export class WebsitesService {
         },
       });
 
+      // Fetch accurate true current count inside transaction
+      const currentWebsite = await tx.website.findUnique({
+        where: { id: website.id },
+        select: { stars: true, starCount: true },
+      });
+      const currentCount = Math.max(
+        currentWebsite?.stars || 0,
+        currentWebsite?.starCount || 0,
+        website.stars || 0,
+        website.starCount || 0,
+      );
+
       if (star) {
         if (existing && existing.status === 'VALID') {
           return {
-            starCount: website.starCount ?? website.stars ?? 0,
+            starCount: currentCount,
+            stars: currentCount,
             starred: true,
           };
         }
@@ -550,24 +567,27 @@ export class WebsitesService {
           });
         }
 
+        const newCount = currentCount + 1;
         const updated = await tx.website.update({
           where: { id: website.id },
           data: {
-            starCount: { increment: 1 },
-            stars: { increment: 1 },
+            starCount: newCount,
+            stars: newCount,
           },
-          select: { starCount: true },
+          select: { starCount: true, stars: true },
         });
 
         return {
           starCount: updated.starCount,
+          stars: updated.stars,
           starred: true,
         };
       } else {
         // Unstar
         if (!existing || existing.status !== 'VALID') {
           return {
-            starCount: website.starCount ?? website.stars ?? 0,
+            starCount: currentCount,
+            stars: currentCount,
             starred: false,
           };
         }
@@ -577,7 +597,6 @@ export class WebsitesService {
           data: { status: 'REMOVED' },
         });
 
-        const currentCount = website.starCount ?? website.stars ?? 0;
         const newCount = Math.max(0, currentCount - 1);
 
         const updated = await tx.website.update({
@@ -586,11 +605,12 @@ export class WebsitesService {
             starCount: newCount,
             stars: newCount,
           },
-          select: { starCount: true },
+          select: { starCount: true, stars: true },
         });
 
         return {
           starCount: updated.starCount,
+          stars: updated.stars,
           starred: false,
         };
       }
@@ -802,12 +822,19 @@ export class WebsitesService {
       throw new NotFoundException(`Website not found`);
     }
 
+    const currentCount = Math.max(website.stars || 0, website.starCount || 0);
+    const newCount = currentCount + 1;
+
     const updated = await this.prisma.website.update({
       where: { id: website.id },
-      data: { stars: { increment: 1 } },
+      data: {
+        stars: newCount,
+        starCount: newCount,
+      },
+      select: { stars: true, starCount: true },
     });
 
-    return { success: true, stars: updated.stars };
+    return { success: true, stars: updated.stars, starCount: updated.starCount };
   }
 
   async updateStars(id: string, stars: number) {
@@ -816,12 +843,16 @@ export class WebsitesService {
       throw new NotFoundException(`Website with ID "${id}" not found`);
     }
 
+    const validStars = Math.max(0, Number(stars) || 0);
     const updated = await this.prisma.website.update({
       where: { id },
-      data: { stars: Math.max(0, Number(stars) || 0) },
+      data: {
+        stars: validStars,
+        starCount: validStars,
+      },
     });
 
-    return { success: true, stars: updated.stars, website: updated };
+    return { success: true, stars: updated.stars, starCount: updated.starCount, website: updated };
   }
 
   async updateAdmin(id: string, input: UpdateWebsiteInput) {
