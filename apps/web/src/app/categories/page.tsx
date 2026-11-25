@@ -23,16 +23,22 @@ export default async function CategoriesPage() {
   try {
     const res = await api.public.getCategories().catch(() => null);
     if (res && Array.isArray(res) && res.length > 0) {
-      categories = res.map((c, idx) => ({
-        id: c.id,
-        name: c.name,
-        slug: c.slug,
-        iconName: c.icon || 'Folder',
-        accentKey: 'accent-blue',
-        themeColor: '#2563EB',
-        total: c.websiteCount ?? 0,
-        homeOrder: idx + 1,
-      }));
+      // Merge live database categories with our catalog metadata (vibrant theme colors & icons)
+      categories = res.map((c, idx) => {
+        const catalogMatch = CATEGORIES_29_CATALOG.find(
+          (cat) => cat.slug.toLowerCase() === c.slug.toLowerCase(),
+        );
+        return {
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+          iconName: c.icon || catalogMatch?.iconName || 'Folder',
+          accentKey: catalogMatch?.accentKey || 'accent-blue',
+          themeColor: catalogMatch?.themeColor || '#2563EB',
+          total: c.websiteCount ?? 0,
+          homeOrder: idx + 1,
+        };
+      });
     }
   } catch {}
 

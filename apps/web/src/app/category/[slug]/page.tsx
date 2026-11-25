@@ -2,8 +2,11 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CLIENT_18_CATEGORIES } from '../../../lib/client-catalog';
+import { EXTENDED_CATALOG_CATEGORIES } from '../../../lib/extended-catalog';
 import { CategoryDetailView } from '../../../components/CategoryDetailView';
 import { api } from '../../../lib/api';
+
+const ALL_CATALOG_CATEGORIES = [...CLIENT_18_CATEGORIES, ...EXTENDED_CATALOG_CATEGORIES];
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -24,7 +27,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   } catch {}
 
   if (!categoryName) {
-    const staticCat = CLIENT_18_CATEGORIES.find((c) => c.slug === slug);
+    const staticCat = ALL_CATALOG_CATEGORIES.find((c) => c.slug === slug);
     if (staticCat) {
       categoryName = staticCat.name;
       categorySlug = staticCat.slug;
@@ -92,7 +95,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   } catch {}
 
   if (!category) {
-    const staticCat = CLIENT_18_CATEGORIES.find((c) => c.slug === slug);
+    const staticCat = ALL_CATALOG_CATEGORIES.find((c) => c.slug === slug);
     if (staticCat) {
       category = {
         id: staticCat.id,
