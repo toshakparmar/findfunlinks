@@ -7,4 +7,5 @@ export * from './domain';
 export * from './category';
 export * from './tag';
 export * from './report';
+export * from './languages';
 export { ZodError } from 'zod';

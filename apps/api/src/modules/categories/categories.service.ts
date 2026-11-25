@@ -61,7 +61,13 @@ export class CategoriesService {
         },
         skip,
         take: limit,
-        orderBy: [{ isFeatured: 'desc' }, { viewCount: 'desc' }, { name: 'asc' }],
+        orderBy: [
+          { sortOrder: 'asc' },
+          { isFeatured: 'desc' },
+          { stars: 'desc' },
+          { viewCount: 'desc' },
+          { name: 'asc' },
+        ],
         include: {
           domains: {
             where: { isPublic: true },

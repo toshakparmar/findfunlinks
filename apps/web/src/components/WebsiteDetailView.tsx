@@ -430,7 +430,7 @@ export function WebsiteDetailView({ website }: WebsiteDetailViewProps) {
             {website.language && (
               <div className="flex justify-between py-1.5 border-b border-border/40">
                 <span className="text-muted-foreground">Language</span>
-                <span className="font-medium text-foreground uppercase">{website.language}</span>
+                <span className="font-medium text-foreground">{website.language}</span>
               </div>
             )}
 

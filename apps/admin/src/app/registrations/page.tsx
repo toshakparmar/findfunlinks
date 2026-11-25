@@ -437,6 +437,12 @@ function RegistrationsContent() {
                       {selectedItem.contentRating}
                     </div>
                   </div>
+                  <div>
+                    <span className="text-[#9CA3AF]">Language:</span>
+                    <div className="font-semibold text-[#0B9DF7] capitalize mt-0.5">
+                      {(selectedItem as any).language || 'English'}
+                    </div>
+                  </div>
                 </div>
 
                 <div>
@@ -505,8 +511,8 @@ function RegistrationsContent() {
                   )}
                   {selectedItem.telegramOrDiscord && (
                     <div>
-                      <span className="text-[#9CA3AF]">Discord / Telegram:</span>
-                      <div className="font-mono text-[#F3F4F6] mt-0.5">
+                      <span className="text-[#9CA3AF]">Telegram ID:</span>
+                      <div className="font-mono text-[#0B9DF7] font-medium mt-0.5">
                         {selectedItem.telegramOrDiscord}
                       </div>
                     </div>

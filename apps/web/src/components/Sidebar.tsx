@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -26,9 +26,11 @@ import {
   MoreHorizontal,
   ArrowRight,
   PlusCircle,
+  Folder,
 } from 'lucide-react';
 import { getActive } from '../lib/nav';
 import { CLIENT_18_CATEGORIES } from '../lib/client-catalog';
+import { api } from '../lib/api';
 
 export interface SidebarCategoryItem {
   id?: string;
@@ -72,21 +74,49 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Baby,
   MoreHorizontal,
   LayoutGrid,
+  Folder,
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ categories, className = '' }) => {
   const pathname = usePathname();
   const { sidebar: activeSidebarSlug } = getActive(pathname || '/');
+  const [dynamicCategories, setDynamicCategories] = useState<SidebarCategoryItem[]>([]);
 
-  // Use all 18 categories with distinct icons
+  useEffect(() => {
+    if (categories && categories.length > 0) return;
+
+    let isMounted = true;
+    api.public
+      .getCategories()
+      .then((res) => {
+        if (!isMounted || !Array.isArray(res) || res.length === 0) return;
+        setDynamicCategories(
+          res.map((c) => ({
+            id: c.id,
+            slug: c.slug,
+            name: c.name,
+            iconName: c.icon || 'Folder',
+          })),
+        );
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, [categories]);
+
+  // Use passed categories, fetched dynamic categories, or client catalog fallback
   const listCategories: SidebarCategoryItem[] =
     categories && categories.length > 0
       ? categories
-      : CLIENT_18_CATEGORIES.map((c) => ({
-          slug: c.slug,
-          name: c.name,
-          iconName: c.iconName,
-        }));
+      : dynamicCategories.length > 0
+        ? dynamicCategories
+        : CLIENT_18_CATEGORIES.map((c) => ({
+            slug: c.slug,
+            name: c.name,
+            iconName: c.iconName,
+          }));
 
   const isAllActive = activeSidebarSlug === 'all';
 

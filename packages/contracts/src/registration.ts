@@ -73,6 +73,7 @@ export const SubmitRegistrationSchema = z.object({
     .default(ApplicantRole.OWNER),
   applicantCountry: z.string().trim().min(2).max(100).default('Global'),
   country: z.string().trim().optional(),
+  telegramId: z.string().trim().max(100).optional(),
   telegramOrDiscord: z.string().trim().max(100).optional(),
 
   // 2. Website details
@@ -113,7 +114,8 @@ export const SubmitRegistrationSchema = z.object({
     .optional()
     .or(z.literal('')),
   proposedTags: z.array(z.string().trim().min(1).max(30)).max(10).default([]),
-  language: z.string().trim().min(2).max(10).default('en'),
+  language: z.string().trim().min(2).max(50).default('en'),
+  contentLanguage: z.string().trim().min(2).max(50).optional(),
 
   // 3. Ownership verification
   verificationMethod: z

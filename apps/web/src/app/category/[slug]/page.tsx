@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CLIENT_18_CATEGORIES } from '../../../lib/client-catalog';
 import { CategoryDetailView } from '../../../components/CategoryDetailView';
+import { api } from '../../../lib/api';
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -10,16 +11,34 @@ interface CategoryPageProps {
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const category = CLIENT_18_CATEGORIES.find((c) => c.slug === slug);
+  let categoryName = '';
+  let categorySlug = slug;
 
-  if (!category) {
+  try {
+    const data: any = await api.public.getCategoryBySlug(slug).catch(() => null);
+    const cat = data?.category || data;
+    if (cat && (cat.name || cat.slug)) {
+      categoryName = cat.name;
+      categorySlug = cat.slug;
+    }
+  } catch {}
+
+  if (!categoryName) {
+    const staticCat = CLIENT_18_CATEGORIES.find((c) => c.slug === slug);
+    if (staticCat) {
+      categoryName = staticCat.name;
+      categorySlug = staticCat.slug;
+    }
+  }
+
+  if (!categoryName) {
     return {
       title: 'Category Not Found — FinalLinks',
     };
   }
 
-  const title = `${category.name} Websites & Working Mirrors — FinalLinks`;
-  const description = `Browse verified, official ${category.name} websites and all their live working mirrors and domains so you never get stuck behind a broken link.`;
+  const title = `${categoryName} Websites & Working Mirrors — FinalLinks`;
+  const description = `Browse verified, official ${categoryName} websites and all their live working mirrors and domains so you never get stuck behind a broken link.`;
 
   return {
     title,
@@ -28,7 +47,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
       title,
       description,
       type: 'website',
-      url: `https://finallinks.com/category/${category.slug}`,
+      url: `https://finallinks.com/category/${categorySlug}`,
     },
     twitter: {
       card: 'summary_large_image',
@@ -40,7 +59,53 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
-  const category = CLIENT_18_CATEGORIES.find((c) => c.slug === slug);
+
+  let category: any = null;
+  let sites: any[] = [];
+
+  try {
+    const data: any = await api.public.getCategoryBySlug(slug).catch(() => null);
+    const cat = data?.category || data;
+    if (cat && (cat.name || cat.slug)) {
+      category = {
+        id: cat.id,
+        slug: cat.slug,
+        name: cat.name,
+        iconName: cat.icon || 'Folder',
+        description: cat.description,
+        total: data.pagination?.total ?? (data.websites || []).length,
+      };
+      sites = (data.websites || []).map((w: any, idx: number) => ({
+        id: w.id,
+        rank: idx + 1,
+        name: w.name,
+        displayName: w.name,
+        slug: w.slug,
+        faviconUrl: w.logoUrl,
+        bestDomainUrl: w.domains?.[0]?.hostname ? `https://${w.domains[0].hostname}` : undefined,
+        domainsCount: w.domains?.length || 0,
+        domains: w.domains || [],
+        createdAt: w.createdAt,
+        isFeatured: w.isFeatured,
+      }));
+    }
+  } catch {}
+
+  if (!category) {
+    const staticCat = CLIENT_18_CATEGORIES.find((c) => c.slug === slug);
+    if (staticCat) {
+      category = {
+        id: staticCat.id,
+        slug: staticCat.slug,
+        name: staticCat.name,
+        iconName: staticCat.iconName,
+        accentKey: staticCat.accentKey,
+        themeColor: staticCat.themeColor,
+        total: staticCat.total ?? staticCat.sites.length,
+      };
+      sites = staticCat.sites;
+    }
+  }
 
   if (!category) {
     notFound();
@@ -77,7 +142,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         '@type': 'ItemList',
         name: `${category.name} Websites`,
         description: `Verified ${category.name} websites and active mirrors`,
-        itemListElement: category.sites.map((site, index) => ({
+        itemListElement: sites.map((site: any, index: number) => ({
           '@type': 'ListItem',
           position: index + 1,
           name: site.name,
@@ -108,9 +173,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             iconName: category.iconName,
             accentKey: category.accentKey,
             themeColor: category.themeColor,
-            total: category.total ?? category.sites.length,
+            total: category.total ?? sites.length,
           }}
-          sites={category.sites}
+          sites={sites}
         />
       </React.Suspense>
     </>

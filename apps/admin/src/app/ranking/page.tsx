@@ -47,7 +47,10 @@ export default function WebsiteRankingPage() {
     try {
       const [catsRes, sitesRes] = await Promise.all([
         api.public.getCategories().catch(() => []),
-        api.admin.getWebsites({ limit: 100 }),
+        api.admin.getWebsites({
+          categoryId: selectedCategoryId === 'ALL' ? undefined : selectedCategoryId,
+          limit: 300,
+        }),
       ]);
 
       setCategories(catsRes);
@@ -79,7 +82,7 @@ export default function WebsiteRankingPage() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [selectedCategoryId]);
 
   // Filter websites by selected category and search query
   const filteredWebsites = useMemo(() => {
@@ -251,17 +254,16 @@ export default function WebsiteRankingPage() {
           <select
             value={selectedCategoryId}
             onChange={(e) => setSelectedCategoryId(e.target.value)}
-            className="w-full md:w-64 h-11 px-3.5 rounded-lg border border-[#33373D] bg-[#16181B] text-sm font-medium text-[#F3F4F6] focus:outline-none focus:border-[#0B9DF7] cursor-pointer"
+            className="w-full md:w-64 h-11 px-3.5 rounded-lg border border-[#33373D] bg-[#16181B] text-sm font-medium text-[#F3F4F6] focus:outline-none focus:border-[#0B9DF7] focus:ring-1 focus:ring-[#0B9DF7] cursor-pointer shadow-inner"
           >
-            <option value="ALL">All Categories ({websites.length} sites)</option>
-            {categories.map((c) => {
-              const count = websites.filter((w) => w.categoryId === c.id).length;
-              return (
-                <option key={c.id} value={c.id}>
-                  {c.name} ({count})
-                </option>
-              );
-            })}
+            <option value="ALL" className="bg-[#16181B] text-[#F3F4F6]">
+              All Categories ({categories.reduce((acc, c) => acc + (c.websiteCount ?? 0), 0)} sites)
+            </option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id} className="bg-[#16181B] text-[#F3F4F6]">
+                {c.name} ({c.websiteCount ?? 0})
+              </option>
+            ))}
           </select>
         </div>
       </div>

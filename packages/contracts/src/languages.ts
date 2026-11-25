@@ -1,0 +1,41 @@
+export const SUPPORTED_LANGUAGES = [
+  'Arabic',
+  'Bengali',
+  'Cantonese',
+  'Chinese',
+  'Danish',
+  'Dutch',
+  'English',
+  'Filipino',
+  'French',
+  'German',
+  'Greek',
+  'Hebrew',
+  'Hindi',
+  'Indonesian',
+  'Italian',
+  'Japanese',
+  'Korean',
+  'Malay',
+  'Norwegian',
+  'Polish',
+  'Portuguese',
+  'Romanian',
+  'Russian',
+  'Spanish',
+  'Swedish',
+  'Tamil',
+  'Telugu',
+  'Thai',
+  'Turkish',
+  'Ukrainian',
+  'Urdu',
+  'Vietnamese',
+] as const;
+
+export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
+
+export const LANGUAGE_OPTIONS = SUPPORTED_LANGUAGES.map((lang) => ({
+  value: lang,
+  label: lang,
+}));

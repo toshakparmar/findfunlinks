@@ -11,6 +11,7 @@ import {
   ContentRating,
   ApplicantRole,
   VerificationMethod,
+  LANGUAGE_OPTIONS,
 } from '@finallinks/contracts';
 import { api } from '../lib/api';
 import { CategoryTab } from './DirectoryGrid';
@@ -34,7 +35,10 @@ interface RegistrationOwnerFlowProps {
   categories: CategoryTab[];
 }
 
-export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps) {
+const CONTENT_LANGUAGES = LANGUAGE_OPTIONS;
+
+export function RegistrationOwnerFlow({ categories: initialCategories }: RegistrationOwnerFlowProps) {
+  const [categories, setCategories] = useState<CategoryTab[]>(initialCategories);
   const [submitting, setSubmitting] = useState(false);
   const [copiedToken, setCopiedToken] = useState(false);
   const [copiedRef, setCopiedRef] = useState(false);
@@ -61,6 +65,27 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
     setTempVerifyToken(result);
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+    api.public
+      .getCategories()
+      .then((res) => {
+        if (!isMounted || !Array.isArray(res) || res.length === 0) return;
+        setCategories(
+          res.map((c) => ({
+            id: c.id,
+            name: c.name,
+            slug: c.slug,
+          })),
+        );
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -73,11 +98,15 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
       applicantName: '',
       applicantEmail: '',
       applicantPhone: '',
+      telegramId: '',
+      telegramOrDiscord: '',
       applicantRole: ApplicantRole.OWNER,
       websiteName: '',
       primaryUrl: '',
       additionalDomains: [],
       categoryId: categories[0]?.id || '',
+      language: 'English',
+      contentLanguage: 'English',
       contentRating: ContentRating.ALL,
       description: '',
       logoUrl: '',
@@ -619,6 +648,22 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                   )}
                 </div>
 
+                {/* Telegram / Discord Handle (Optional) */}
+                <div className="space-y-1.5 sm:space-y-2">
+                  <label className="text-xs sm:text-fs-sm font-semibold text-token">
+                    Telegram ID <span className="text-token/40 font-normal">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    {...register('telegramId')}
+                    placeholder="@yourhandle or t.me/username"
+                    className="w-full h-10 sm:h-11 md:h-12 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm md:text-fs-base bg-surface-2 border border-token/10 focus:border-primary focus:outline-none text-token placeholder:text-token/30 transition-colors"
+                  />
+                  <p className="text-[10px] sm:text-fs-xs text-token/50">
+                    Allows our admin and curation team to easily connect with you.
+                  </p>
+                </div>
+
                 {/* Your Role */}
                 <div className="space-y-1.5 sm:space-y-2">
                   <label className="text-xs sm:text-fs-sm font-semibold text-token">
@@ -761,35 +806,51 @@ export function RegistrationOwnerFlow({ categories }: RegistrationOwnerFlowProps
                     )}
                   </div>
 
-                  {/* Content Rating */}
+                  {/* Content Language */}
                   <div className="space-y-1.5 sm:space-y-2">
                     <label className="text-xs sm:text-fs-sm font-semibold text-token">
-                      Content rating <span className="text-hot">*</span>
+                      Content language <span className="text-hot">*</span>
                     </label>
-                    <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
-                      <button
-                        type="button"
-                        onClick={() => setValue('contentRating', ContentRating.ALL)}
-                        className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold border transition-all text-center cursor-pointer ${
-                          contentRatingValue === ContentRating.ALL
-                            ? 'bg-[var(--primary,#2563EB)] border-[var(--primary,#2563EB)] text-white shadow-sm'
-                            : 'bg-surface-2 border-token/10 text-token/70 hover:text-white hover:border-token/20'
-                        }`}
-                      >
-                        All Audiences
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setValue('contentRating', ContentRating.MATURE)}
-                        className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold border transition-all text-center cursor-pointer ${
-                          contentRatingValue === ContentRating.MATURE
-                            ? 'bg-[var(--hot,#EF4444)] border-[var(--hot,#EF4444)] text-white shadow-sm'
-                            : 'bg-surface-2 border-token/10 text-token/70 hover:text-white hover:border-token/20'
-                        }`}
-                      >
-                        Mature (18+)
-                      </button>
-                    </div>
+                    <CustomSelect
+                      value={watch('contentLanguage') || watch('language') || 'English'}
+                      onChange={(val) => {
+                        setValue('contentLanguage', val, { shouldValidate: true });
+                        setValue('language', val, { shouldValidate: true });
+                      }}
+                      size="md"
+                      options={CONTENT_LANGUAGES}
+                    />
+                  </div>
+                </div>
+
+                {/* Content Rating */}
+                <div className="space-y-1.5 sm:space-y-2">
+                  <label className="text-xs sm:text-fs-sm font-semibold text-token">
+                    Content rating <span className="text-hot">*</span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setValue('contentRating', ContentRating.ALL)}
+                      className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold border transition-all text-center cursor-pointer ${
+                        contentRatingValue === ContentRating.ALL
+                          ? 'bg-[var(--primary,#2563EB)] border-[var(--primary,#2563EB)] text-white shadow-sm'
+                          : 'bg-surface-2 border-token/10 text-token/70 hover:text-white hover:border-token/20'
+                      }`}
+                    >
+                      All Audiences
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setValue('contentRating', ContentRating.MATURE)}
+                      className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold border transition-all text-center cursor-pointer ${
+                        contentRatingValue === ContentRating.MATURE
+                          ? 'bg-[var(--hot,#EF4444)] border-[var(--hot,#EF4444)] text-white shadow-sm'
+                          : 'bg-surface-2 border-token/10 text-token/70 hover:text-white hover:border-token/20'
+                      }`}
+                    >
+                      Mature (18+)
+                    </button>
                   </div>
                 </div>
 
