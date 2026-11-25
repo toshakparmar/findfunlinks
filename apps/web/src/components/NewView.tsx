@@ -273,7 +273,7 @@ export function NewView() {
                     <p className="text-fs-xs text-[var(--text-3,#6B7893)]">{group.subtitle}</p>
                   </div>
                 </div>
-                <span className="text-fs-xs font-semibold text-slate-700 dark:text-[var(--text-2,#A8B3C7)] bg-slate-100 dark:bg-[var(--line,#1A2442)]/50 px-2.5 py-0.5 rounded-full border border-[var(--line,#1A2442)] tabular-nums">
+                <span className="text-fs-xs font-semibold text-slate-700 dark:text-[#93C5FD] bg-slate-100 dark:bg-[#16203D] px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-[#1E2C52] tabular-nums shadow-xs">
                   {group.items.length} sites
                 </span>
               </div>

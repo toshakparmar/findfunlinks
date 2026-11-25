@@ -107,7 +107,7 @@ export function RequestsView() {
               </div>
             </div>
 
-            <span className="text-[9px] sm:text-xs font-semibold text-slate-300 bg-[var(--line,#1A2442)]/70 px-1.5 sm:px-2 py-0.5 rounded-full border border-[var(--line,#1A2442)] shrink-0 whitespace-nowrap">
+            <span className="text-[9px] sm:text-xs font-semibold text-slate-700 dark:text-[#93C5FD] bg-slate-100 dark:bg-[#16203D] px-2 py-0.5 rounded-full border border-slate-200 dark:border-[#1E2C52] shrink-0 whitespace-nowrap shadow-xs">
               Verified Tier
             </span>
           </div>

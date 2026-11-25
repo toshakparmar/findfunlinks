@@ -103,7 +103,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
           </div>
 
           {/* Count Pill: Total websites in category */}
-          <div className="px-2 sm:px-2.5 py-0.5 rounded-full text-xs sm:text-fs-sm font-semibold bg-slate-100 dark:bg-[#0A1226] border border-[var(--line,#1A2442)] text-slate-600 dark:text-[var(--text-2,#A8B3C7)] shrink-0 select-none">
+          <div className="px-2 sm:px-2.5 py-0.5 rounded-full text-xs sm:text-fs-sm font-semibold bg-slate-100 dark:bg-[#16203D] border border-slate-200 dark:border-[#1E2C52] text-slate-700 dark:text-[#93C5FD] shrink-0 select-none tabular-nums shadow-xs">
             {totalCount} {totalCount === 1 ? 'Site' : 'Sites'}
           </div>
         </div>

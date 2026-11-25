@@ -206,7 +206,7 @@ export const SiteDomainsDrawer: React.FC<SiteDomainsDrawerProps> = ({
                             {domain.domainName}
                           </span>
                           {domain.domainType && (
-                            <span className="px-1.5 py-0.2 rounded text-fs-xs font-semibold uppercase tracking-wider bg-slate-100 dark:bg-[var(--card,#0A1226)] text-slate-700 dark:text-[var(--text-2,#A8B3C7)] border border-[var(--line,#1A2442)]">
+                            <span className="px-1.5 py-0.5 rounded text-fs-xs font-semibold uppercase tracking-wider bg-slate-100 dark:bg-[#16203D] text-slate-700 dark:text-[#93C5FD] border border-slate-200 dark:border-[#1E2C52]">
                               {domain.domainType}
                             </span>
                           )}
