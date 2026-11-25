@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { CircularLoader, Logo } from '@finallinks/ui';
 import { api, type Category } from '../../lib/api';
 import { StatusBadge } from '../../components/StatusBadge';
+import { AdminSelect } from '../../components/AdminSelect';
 import {
   Search,
   Save,
@@ -251,20 +252,27 @@ export default function WebsiteRankingPage() {
             <SlidersHorizontal className="w-4 h-4 text-[#0B9DF7]" />
             <span>Category:</span>
           </div>
-          <select
-            value={selectedCategoryId}
-            onChange={(e) => setSelectedCategoryId(e.target.value)}
-            className="w-full md:w-64 h-11 px-3.5 rounded-lg border border-[#33373D] bg-[#16181B] text-sm font-medium text-[#F3F4F6] focus:outline-none focus:border-[#0B9DF7] focus:ring-1 focus:ring-[#0B9DF7] cursor-pointer shadow-inner"
-          >
-            <option value="ALL" className="bg-[#16181B] text-[#F3F4F6]">
-              All Categories ({categories.reduce((acc, c) => acc + (c.websiteCount ?? 0), 0)} sites)
-            </option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id} className="bg-[#16181B] text-[#F3F4F6]">
-                {c.name} ({c.websiteCount ?? 0})
-              </option>
-            ))}
-          </select>
+          <div className="w-full md:w-64">
+            <AdminSelect
+              value={selectedCategoryId}
+              onChange={setSelectedCategoryId}
+              searchable={true}
+              placeholder="Select category..."
+              options={[
+                {
+                  value: 'ALL',
+                  label: `All Categories (${categories.reduce(
+                    (acc, c) => acc + (c.websiteCount ?? 0),
+                    0,
+                  )} sites)`,
+                },
+                ...categories.map((c) => ({
+                  value: c.id,
+                  label: `${c.name} (${c.websiteCount ?? 0})`,
+                })),
+              ]}
+            />
+          </div>
         </div>
       </div>
 

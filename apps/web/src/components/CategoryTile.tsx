@@ -28,9 +28,9 @@ export function CategoryTile({
   name,
   slug,
   iconName,
-  accentColor = '#3B82F6',
+  accentColor = '#00A3FF',
   total,
-  showCount = true,
+  showCount = false,
   href,
   className = '',
 }: CategoryTileProps) {
@@ -43,20 +43,20 @@ export function CategoryTile({
     <Link
       href={targetHref}
       aria-label={ariaLabel}
-      className={`group relative flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-[18px] min-h-[108px] sm:min-h-[120px] transition-all duration-200 select-none text-center outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary,#2563EB)] active:scale-[0.98] ${className}`}
+      className={`group relative flex flex-col items-center justify-center p-3 sm:p-4 rounded-[18px] min-h-[102px] sm:min-h-[114px] transition-all duration-200 select-none text-center outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary,#2563EB)] active:scale-[0.98] ${className}`}
       style={
         {
           '--tile-accent': accentColor,
         } as React.CSSProperties
       }
     >
-      {/* Dynamic Themed Background & Border styling */}
+      {/* Dynamic Themed Background & Border styling matching Images 2 & 3 */}
       <div
         className="absolute inset-0 rounded-[18px] transition-all duration-200 pointer-events-none"
         style={{
-          background: `linear-gradient(145deg, color-mix(in srgb, ${accentColor} 26%, var(--card,#0A1226)) 0%, color-mix(in srgb, ${accentColor} 6%, var(--bg,#050A18)) 100%)`,
-          border: `2px solid color-mix(in srgb, ${accentColor} 85%, transparent)`,
-          boxShadow: `0 0 22px -8px color-mix(in srgb, ${accentColor} 55%, transparent)`,
+          background: `linear-gradient(145deg, color-mix(in srgb, ${accentColor} 8%, #070D1E) 0%, #050A18 100%)`,
+          border: `2px solid ${accentColor}`,
+          boxShadow: `0 0 16px -2px color-mix(in srgb, ${accentColor} 45%, transparent)`,
         }}
       />
 
@@ -64,34 +64,34 @@ export function CategoryTile({
       <div
         className="absolute inset-0 rounded-[18px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
         style={{
-          boxShadow: `0 0 28px -4px color-mix(in srgb, ${accentColor} 75%, transparent), 0 0 0 1px color-mix(in srgb, ${accentColor} 95%, transparent)`,
+          boxShadow: `0 0 24px 0px color-mix(in srgb, ${accentColor} 70%, transparent), 0 0 0 1px ${accentColor}`,
         }}
       />
 
-      {/* Content Container (lift -3px on desktop hover) */}
+      {/* Content Container */}
       <div className="relative z-10 flex flex-col items-center justify-center w-full transition-transform duration-200 group-hover:-translate-y-0.5 sm:group-hover:-translate-y-1">
-        {/* Icon: 40-44px */}
+        {/* Icon */}
         <div
-          className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center mb-2 transition-transform duration-200 group-hover:scale-105"
+          className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center mb-1.5 transition-transform duration-200 group-hover:scale-105"
           style={{ color: accentColor }}
         >
           <IconComponent
             className="w-7 h-7 sm:w-8 sm:h-8"
             strokeWidth={2}
             style={{
-              filter: `drop-shadow(0 0 8px color-mix(in srgb, ${accentColor} 40%, transparent))`,
+              filter: `drop-shadow(0 0 8px color-mix(in srgb, ${accentColor} 60%, transparent))`,
             }}
           />
         </div>
 
-        {/* Label: 16-18px/600, wraps up to 2 lines */}
-        <span className="text-fs-sm sm:text-fs-base font-bold text-slate-900 dark:text-white tracking-tight leading-snug line-clamp-2 px-1 text-center transition-colors">
+        {/* Label: bold white text centered below icon */}
+        <span className="text-fs-sm sm:text-fs-base font-bold text-white tracking-tight leading-snug line-clamp-1 px-1 text-center transition-colors">
           {name}
         </span>
 
-        {/* Small muted count line: 13-14px */}
+        {/* Small count line only if explicitly enabled */}
         {showCount && countText && (
-          <span className="text-fs-xs font-medium text-slate-600 dark:text-[var(--text-2,#A8B3C7)] mt-0.5 tabular-nums transition-colors">
+          <span className="text-fs-xs font-medium text-slate-400 mt-0.5 tabular-nums transition-colors">
             {countText}
           </span>
         )}

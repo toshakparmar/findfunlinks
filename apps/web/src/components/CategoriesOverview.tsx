@@ -57,12 +57,12 @@ export function CategoriesOverview({
           slug="all-links"
           href="/"
           iconName="LayoutGrid"
-          accentColor="#2563EB"
+          accentColor="#00A3FF"
           total={1820}
-          showCount={true}
+          showCount={false}
         />
 
-        {/* 29 Seeded Categories */}
+        {/* 29 Seeded Categories + Dynamic DB Categories */}
         {categories.map((cat) => (
           <CategoryTile
             key={cat.slug}
@@ -72,7 +72,7 @@ export function CategoriesOverview({
             iconName={cat.iconName}
             accentColor={cat.themeColor}
             total={cat.total}
-            showCount={true}
+            showCount={false}
           />
         ))}
       </div>

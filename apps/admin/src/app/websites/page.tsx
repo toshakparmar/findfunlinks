@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { api } from '../../lib/api';
 import { StatusBadge } from '../../components/StatusBadge';
 import { DeleteConfirmModal } from '@/components/DeleteConfirmModal';
+import { AdminSelect } from '@/components/AdminSelect';
 import type { Category } from '@finallinks/contracts';
 import {
   Search,
@@ -346,35 +347,37 @@ export default function WebsitesAdminPage() {
         </div>
 
         {/* Category Filter */}
-        <div className="relative">
-          <FolderKanban className="h-4 w-4 text-[#6B7280] absolute left-3.5 top-3.5" />
-          <select
+        <div className="w-full">
+          <AdminSelect
             value={selectedCategoryId}
-            onChange={(e) => setSelectedCategoryId(e.target.value)}
-            className="w-full h-11 rounded-lg border border-[#33373D] bg-[#1E2024] pl-10 pr-4 text-sm text-[#F3F4F6] focus:outline-none focus:border-[#0B9DF7] transition-colors appearance-none"
-          >
-            <option value="ALL">All Categories</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedCategoryId}
+            searchable={true}
+            placeholder="All Categories"
+            prefix={<FolderKanban className="h-4 w-4 text-[#0B9DF7]" />}
+            options={[
+              { value: 'ALL', label: 'All Categories' },
+              ...categories.map((c) => ({
+                value: c.id,
+                label: c.name,
+              })),
+            ]}
+          />
         </div>
 
         {/* Status Filter */}
-        <div>
-          <select
+        <div className="w-full">
+          <AdminSelect
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full h-11 rounded-lg border border-[#33373D] bg-[#1E2024] px-4 text-sm text-[#F3F4F6] focus:outline-none focus:border-[#0B9DF7] transition-colors appearance-none"
-          >
-            <option value="ALL">All Statuses</option>
-            <option value="ACTIVE">Active Only</option>
-            <option value="PENDING_REVIEW">Pending Review</option>
-            <option value="SUSPENDED">Suspended</option>
-            <option value="ARCHIVED">Archived</option>
-          </select>
+            onChange={setStatusFilter}
+            placeholder="All Statuses"
+            options={[
+              { value: 'ALL', label: 'All Statuses' },
+              { value: 'ACTIVE', label: 'Active Only' },
+              { value: 'PENDING_REVIEW', label: 'Pending Review' },
+              { value: 'SUSPENDED', label: 'Suspended' },
+              { value: 'ARCHIVED', label: 'Archived' },
+            ]}
+          />
         </div>
       </div>
 

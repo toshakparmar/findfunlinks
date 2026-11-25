@@ -19,9 +19,9 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     id: 'movies',
     slug: 'movies',
     name: 'Movies',
-    iconName: 'Film',
+    iconName: 'Clapperboard',
     accentKey: 'accent-purple',
-    themeColor: '#8B5CF6',
+    themeColor: '#A855F7',
     total: 94,
     homeOrder: 1,
   },
@@ -39,7 +39,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     id: 'ott-platforms',
     slug: 'ott-platforms',
     name: 'OTT Platforms',
-    iconName: 'PlaySquare',
+    iconName: 'Tv2',
     accentKey: 'accent-red',
     themeColor: '#EF4444',
     total: 86,
@@ -71,7 +71,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Cartoons',
     iconName: 'Sparkles',
     accentKey: 'accent-orange',
-    themeColor: '#F97316',
+    themeColor: '#F59E0B',
     total: 38,
     homeOrder: 6,
   },
@@ -91,7 +91,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Web Series',
     iconName: 'Layers',
     accentKey: 'accent-purple',
-    themeColor: '#A855F7',
+    themeColor: '#8B5CF6',
     total: 64,
     homeOrder: 8,
   },
@@ -99,9 +99,9 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     id: 'k-drama',
     slug: 'k-drama',
     name: 'K-Drama',
-    iconName: 'Film',
+    iconName: 'Clapperboard',
     accentKey: 'accent-pink',
-    themeColor: '#D946EF',
+    themeColor: '#EC4899',
     total: 49,
     homeOrder: 9,
   },
@@ -111,7 +111,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'C-Drama',
     iconName: 'Landmark',
     accentKey: 'accent-red',
-    themeColor: '#DC2626',
+    themeColor: '#EF4444',
     total: 36,
     homeOrder: 10,
   },
@@ -121,7 +121,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Anime Movies',
     iconName: 'Disc3',
     accentKey: 'accent-purple',
-    themeColor: '#7C3AED',
+    themeColor: '#8B5CF6',
     total: 42,
     homeOrder: 11,
   },
@@ -131,7 +131,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Hollywood',
     iconName: 'Film',
     accentKey: 'accent-gold',
-    themeColor: '#CA8A04',
+    themeColor: '#EAB308',
     total: 75,
     homeOrder: 12,
   },
@@ -141,7 +141,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Bollywood',
     iconName: 'Film',
     accentKey: 'accent-pink',
-    themeColor: '#DB2777',
+    themeColor: '#D946EF',
     total: 68,
     homeOrder: 13,
   },
@@ -151,7 +151,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'South Indian',
     iconName: 'CircleDot',
     accentKey: 'accent-blue',
-    themeColor: '#2563EB',
+    themeColor: '#0284C7',
     total: 54,
     homeOrder: 14,
   },
@@ -161,7 +161,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Regional Movies',
     iconName: 'MapPin',
     accentKey: 'accent-purple',
-    themeColor: '#9333EA',
+    themeColor: '#8B5CF6',
     total: 33,
     homeOrder: 15,
   },
@@ -170,8 +170,8 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     slug: 'short-films',
     name: 'Short Films',
     iconName: 'PlaySquare',
-    accentKey: 'accent-green',
-    themeColor: '#14B8A6',
+    accentKey: 'accent-cyan',
+    themeColor: '#06B6D4',
     total: 28,
     homeOrder: 16,
   },
@@ -181,7 +181,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Stand-Up Comedy',
     iconName: 'Mic',
     accentKey: 'accent-orange',
-    themeColor: '#EA580C',
+    themeColor: '#F59E0B',
     total: 41,
     homeOrder: 17,
   },
@@ -201,7 +201,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Kids',
     iconName: 'Baby',
     accentKey: 'accent-green',
-    themeColor: '#16A34A',
+    themeColor: '#22C55E',
     total: 44,
     homeOrder: 19,
   },
@@ -221,7 +221,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'News',
     iconName: 'Newspaper',
     accentKey: 'accent-blue',
-    themeColor: '#3B82F6',
+    themeColor: '#0EA5E9',
     total: 51,
     homeOrder: 21,
   },
@@ -241,7 +241,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Gaming',
     iconName: 'Gamepad2',
     accentKey: 'accent-purple',
-    themeColor: '#8B5CF6',
+    themeColor: '#A855F7',
     total: 97,
     homeOrder: 23,
   },
@@ -250,8 +250,8 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     slug: 'esports',
     name: 'Esports',
     iconName: 'Trophy',
-    accentKey: 'accent-green',
-    themeColor: '#0D9488',
+    accentKey: 'accent-cyan',
+    themeColor: '#06B6D4',
     total: 35,
     homeOrder: 24,
   },
@@ -271,7 +271,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Cooking',
     iconName: 'UtensilsCrossed',
     accentKey: 'accent-orange',
-    themeColor: '#F97316',
+    themeColor: '#F59E0B',
     total: 34,
     homeOrder: 26,
   },
@@ -281,7 +281,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Travel',
     iconName: 'Plane',
     accentKey: 'accent-blue',
-    themeColor: '#2563EB',
+    themeColor: '#0EA5E9',
     total: 39,
     homeOrder: 27,
   },
@@ -291,7 +291,7 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Technology',
     iconName: 'Cpu',
     accentKey: 'accent-purple',
-    themeColor: '#6366F1',
+    themeColor: '#8B5CF6',
     total: 82,
     homeOrder: 28,
   },
@@ -301,15 +301,15 @@ export const CATEGORIES_29_CATALOG: DirectoryCategoryItem[] = [
     name: 'Education',
     iconName: 'GraduationCap',
     accentKey: 'accent-blue',
-    themeColor: '#3B82F6',
+    themeColor: '#0284C7',
     total: 58,
     homeOrder: 29,
   },
 ];
 
 /**
- * Category Slug Alias Resolver (Decision 9)
- * Maps old near-duplicate slugs cleanly to new slugs for backwards compatibility.
+ * Category Slug Alias Resolver
+ * Maps near-duplicate slugs cleanly to new slugs for backwards compatibility.
  */
 export const CATEGORY_SLUG_ALIASES: Record<string, string> = {
   'anime-streaming': 'anime',
@@ -321,4 +321,84 @@ export const CATEGORY_SLUG_ALIASES: Record<string, string> = {
 
 export function resolveCategorySlug(slug: string): string {
   return CATEGORY_SLUG_ALIASES[slug] || slug;
+}
+
+/**
+ * Extra metadata mappings for categories that may be added to or exist in the DB
+ * Ensures they get appropriate icons and vibrant neon theme colors instead of plain blue.
+ */
+export const EXTRA_CATEGORY_METADATA: Record<
+  string,
+  { iconName: string; themeColor: string; accentKey?: string }
+> = {
+  software: { iconName: 'Monitor', themeColor: '#3B82F6', accentKey: 'accent-blue' },
+  tools: { iconName: 'Wrench', themeColor: '#F59E0B', accentKey: 'accent-orange' },
+  ebooks: { iconName: 'BookOpen', themeColor: '#8B5CF6', accentKey: 'accent-purple' },
+  comics: { iconName: 'Sparkles', themeColor: '#EC4899', accentKey: 'accent-pink' },
+  podcasts: { iconName: 'Mic', themeColor: '#06B6D4', accentKey: 'accent-cyan' },
+  theatre: { iconName: 'Film', themeColor: '#D946EF', accentKey: 'accent-pink' },
+  'kids-family': { iconName: 'Baby', themeColor: '#22C55E', accentKey: 'accent-green' },
+  'anime-streaming': { iconName: 'Smile', themeColor: '#EC4899', accentKey: 'accent-pink' },
+  documentaries: { iconName: 'Video', themeColor: '#22C55E', accentKey: 'accent-green' },
+  educational: { iconName: 'GraduationCap', themeColor: '#0284C7', accentKey: 'accent-blue' },
+  games: { iconName: 'Gamepad2', themeColor: '#A855F7', accentKey: 'accent-purple' },
+  others: { iconName: 'MoreHorizontal', themeColor: '#14B8A6', accentKey: 'accent-green' },
+};
+
+const DYNAMIC_NEON_PALETTE = [
+  '#00A3FF',
+  '#A855F7',
+  '#EAB308',
+  '#EF4444',
+  '#EC4899',
+  '#06B6D4',
+  '#F59E0B',
+  '#22C55E',
+  '#8B5CF6',
+  '#D946EF',
+  '#14B8A6',
+  '#0EA5E9',
+];
+
+export function getCategoryMetadata(
+  slug: string,
+  name?: string,
+): { iconName: string; themeColor: string; accentKey: string } {
+  const normalized = (CATEGORY_SLUG_ALIASES[slug.toLowerCase()] || slug).toLowerCase();
+
+  // Check catalog match first
+  const catalogItem = CATEGORIES_29_CATALOG.find(
+    (c) =>
+      c.slug.toLowerCase() === normalized || c.name.toLowerCase() === (name || '').toLowerCase(),
+  );
+  if (catalogItem) {
+    return {
+      iconName: catalogItem.iconName,
+      themeColor: catalogItem.themeColor,
+      accentKey: catalogItem.accentKey,
+    };
+  }
+
+  // Check extra known category metadata
+  if (EXTRA_CATEGORY_METADATA[slug.toLowerCase()]) {
+    const extra = EXTRA_CATEGORY_METADATA[slug.toLowerCase()]!;
+    return {
+      iconName: extra.iconName,
+      themeColor: extra.themeColor,
+      accentKey: extra.accentKey || 'accent-blue',
+    };
+  }
+
+  // Deterministic vibrant neon color fallback (never plain blue)
+  let hash = 0;
+  const str = slug.toLowerCase();
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const colorIndex = Math.abs(hash) % DYNAMIC_NEON_PALETTE.length;
+  return {
+    iconName: 'Folder',
+    themeColor: DYNAMIC_NEON_PALETTE[colorIndex] || '#00A3FF',
+    accentKey: 'accent-cyan',
+  };
 }
