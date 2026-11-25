@@ -161,7 +161,8 @@ export class RegistrationsService {
         applicantPhone: input.applicantPhone?.trim() || null,
         applicantRole: input.applicantRole || 'OWNER',
         applicantCountry: (input as any).applicantCountry || input.country || 'Global',
-        telegramOrDiscord: (input as any).telegramId?.trim() || input.telegramOrDiscord?.trim() || null,
+        telegramOrDiscord:
+          (input as any).telegramId?.trim() || input.telegramOrDiscord?.trim() || null,
         websiteName: input.websiteName.trim(),
         primaryUrl: input.primaryUrl.trim(),
         additionalDomains: input.additionalDomains || [],

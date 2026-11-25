@@ -37,7 +37,9 @@ interface RegistrationOwnerFlowProps {
 
 const CONTENT_LANGUAGES = LANGUAGE_OPTIONS;
 
-export function RegistrationOwnerFlow({ categories: initialCategories }: RegistrationOwnerFlowProps) {
+export function RegistrationOwnerFlow({
+  categories: initialCategories,
+}: RegistrationOwnerFlowProps) {
   const [categories, setCategories] = useState<CategoryTab[]>(initialCategories);
   const [submitting, setSubmitting] = useState(false);
   const [copiedToken, setCopiedToken] = useState(false);
